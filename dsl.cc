@@ -46,12 +46,7 @@
 #include <QPainter>
 #include <QMap>
 #include <QStringList>
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
 #include <QRegularExpression>
-#else
-#include <QRegExp>
-#endif
 
 // For TIFF conversion
 #include <QImage>
@@ -1603,15 +1598,9 @@ void DslDictionary::getArticleText( uint32_t articleAddress, QString & headword,
 
     // Strip tags
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     text.replace( QRegularExpression( "\\[(|/)(p|trn|ex|com|\\*|t|br|m[0-9]?)\\]" ), " " );
     text.replace( QRegularExpression( "\\[(|/)lang(\\s[^\\]]*)?\\]" ), " " );
     text.remove( QRegularExpression( "\\[[^\\\\\\[\\]]+\\]" ) );
-#else
-    text.replace( QRegExp( "\\[(|/)(p|trn|ex|com|\\*|t|br|m[0-9]?)\\]" ), " " );
-    text.replace( QRegExp( "\\[(|/)lang(\\s[^\\]]*)?\\]" ), " " );
-    text.remove( QRegExp( "\\[[^\\\\\\[\\]]+\\]" ) );
-#endif
     text.remove( QString::fromLatin1( "<<" ) );
     text.remove( QString::fromLatin1( ">>" ) );
 

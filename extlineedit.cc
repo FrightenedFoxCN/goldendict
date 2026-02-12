@@ -5,9 +5,7 @@
 
 #include <QPainter>
 
-#if QT_VERSION >= 0x040600
 #include <QPropertyAnimation>
-#endif
 
 ExtLineEdit::ExtLineEdit(QWidget *parent) :
     QLineEdit(parent)
@@ -175,7 +173,6 @@ void IconButton::paintEvent(QPaintEvent *)
 
 void IconButton::animate(bool visible)
 {
-#if QT_VERSION >= 0x040600
   QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
   animation->setDuration(250);
   if (visible)
@@ -187,7 +184,4 @@ void IconButton::animate(bool visible)
     animation->setEndValue(0.0);
   }
   animation->start(QAbstractAnimation::DeleteWhenStopped);
-#else
-  setOpacity(visible ? 1.0 : 0.0);
-#endif
 }

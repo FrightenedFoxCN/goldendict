@@ -22,11 +22,7 @@
 
 #include <QImage>
 #include <QPainter>
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
 #include <QRegularExpression>
-#else
-#include <QRegExp>
-#endif
 
 #include "qt4x5.hh"
 #include "zipfile.hh"
@@ -282,16 +278,10 @@ void Class::isolateCSS( QString & css, QString const & wrapperSelector )
   if( css.isEmpty() )
     return;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
   QRegularExpression reg1( "\\/\\*(?:.(?!\\*\\/))*.?\\*\\/",
                            QRegularExpression::DotMatchesEverythingOption );
   QRegularExpression reg2( "[ \\*\\>\\+,;:\\[\\{\\]]" );
   QRegularExpression reg3( "[,;\\{]" );
-#else
-  QRegExp reg1( "\\/\\*(?:.(?!\\*\\/))*.?\\*\\/" );
-  QRegExp reg2( "[ \\*\\>\\+,;:\\[\\{\\]]" );
-  QRegExp reg3( "[,;\\{]" );
-#endif
 
   int currentPos = 0;
   QString newCSS;

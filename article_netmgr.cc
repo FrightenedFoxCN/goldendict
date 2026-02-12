@@ -190,11 +190,7 @@ sptr< Dictionary::DataRequest > ArticleNetworkAccessManager::getResource(
     // See if we have some dictionaries muted
 
     QStringList const mutedDictList = Qt4x5::Url::queryItemValue( url, "muted" ).split( ',' );
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
     QSet< QString > const mutedDicts( mutedDictList.cbegin(), mutedDictList.cend() );
-#else
-    QSet< QString > const mutedDicts = QSet< QString >::fromList( mutedDictList );
-#endif
 
     // Unpack contexts
 
@@ -407,11 +403,7 @@ void ArticleResourceReply::finishedSlot()
 {
   if ( req->dataSize() < 0 )
   {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
     emit errorOccurred( ContentNotFoundError );
-#else
-    emit error( ContentNotFoundError );
-#endif
   }
 
   finished();

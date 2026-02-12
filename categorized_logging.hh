@@ -6,10 +6,8 @@
 
 // Lots of changes have been made to Qt's implementation of categorized logging in versions 5.3 and 5.4.
 // __VA_ARGS__ was introduced in C++11.
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 ) && __cplusplus >= 201103L
 #include <QLoggingCategory>
 #define GD_CATEGORIZED_LOGGING
-#endif
 
 #ifdef GD_CATEGORIZED_LOGGING
 Q_DECLARE_LOGGING_CATEGORY( dictionaryResourceLc )

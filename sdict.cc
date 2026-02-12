@@ -29,9 +29,7 @@
 #include <QDebug>
 #include <QRegExp>
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
 #include <QRegularExpression>
-#endif
 
 #include "ufile.hh"
 #include "qt4x5.hh"
@@ -296,7 +294,6 @@ string SdictDictionary::convert( string const & in )
 
     QString result = QString::fromUtf8( inConverted.c_str(), inConverted.size() );
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     result.replace( QRegularExpression( "<\\s*(p|br)\\s*>",
                                         QRegularExpression::CaseInsensitiveOption ),
                     "<br/>" );
@@ -319,17 +316,6 @@ string SdictDictionary::convert( string const & in )
     result.replace( QRegularExpression( "<\\s*/l\\s*>",
                                         QRegularExpression::CaseInsensitiveOption ),
                     "</ul>" );
-#else
-    result.replace( QRegExp( "<\\s*(p|br)\\s*>", Qt::CaseInsensitive ), "<br/>" );
-    result.remove( QRegExp( "<\\s*/p\\s*>", Qt::CaseInsensitive ) );
-
-    result.replace( QRegExp( "<\\s*t\\s*>", Qt::CaseInsensitive ), "<span class=\"sdict_tr\" dir=\"ltr\">" );
-    result.replace( QRegExp( "<\\s*f\\s*>", Qt::CaseInsensitive ), "<span class=\"sdict_forms\">" );
-    result.replace( QRegExp( "<\\s*/(t|f)\\s*>", Qt::CaseInsensitive ), "</span>" );
-
-    result.replace( QRegExp( "<\\s*l\\s*>", Qt::CaseInsensitive ), "<ul>" );
-    result.replace( QRegExp( "<\\s*/l\\s*>", Qt::CaseInsensitive ), "</ul>" );
-#endif
 
     // Links handling
 

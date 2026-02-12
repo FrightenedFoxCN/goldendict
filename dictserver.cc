@@ -10,11 +10,7 @@
 #include "gddebug.hh"
 #include "htmlescape.hh"
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
 #include <QRegularExpression>
-#else
-#include <QRegExp>
-#endif
 
 namespace DictServer {
 
@@ -770,12 +766,8 @@ void DictServerArticleRequest::run()
 
             // Retreive MIME headers if any
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
             static QRegularExpression contentTypeExpr( "Content-Type\\s*:\\s*text/html",
                                                        QRegularExpression::CaseInsensitiveOption );
-#else
-            QRegExp contentTypeExpr( "Content-Type\\s*:\\s*text/html", Qt::CaseInsensitive );
-#endif
             bool contentInHtml = false;
             for( ; ; )
             {
@@ -785,14 +777,9 @@ void DictServerArticleRequest::run()
               if( reply == "\r\n" )
                 break;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
               QRegularExpressionMatch match = contentTypeExpr.match( reply );
               if( match.hasMatch() )
                 contentInHtml = true;
-#else
-              if( contentTypeExpr.indexIn( reply ) >= 0 )
-                contentInHtml = true;
-#endif
             }
 
             // Retrieve article text
@@ -812,7 +799,6 @@ void DictServerArticleRequest::run()
             if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) || !errorString.isEmpty() )
               break;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
             static QRegularExpression phonetic( "\\\\([^\\\\]+)\\\\",
                                                 QRegularExpression::CaseInsensitiveOption ); // phonetics: \stuff\ ...
             static QRegularExpression divs_inside_phonetic( "</div([^>]*)><div([^>]*)>",
@@ -823,13 +809,6 @@ void DictServerArticleRequest::run()
                                              QRegularExpression::CaseInsensitiveOption );
             static QRegularExpression tags( "<[^>]*>",
                                             QRegularExpression::CaseInsensitiveOption );
-#else
-            QRegExp phonetic( "\\\\([^\\\\]+)\\\\", Qt::CaseInsensitive ); // phonetics: \stuff\ ...
-            QRegExp divs_inside_phonetic( "</div([^>]*)><div([^>]*)>", Qt::CaseInsensitive );
-            QRegExp refs( "\\{([^\\{\\}]+)\\}", Qt::CaseInsensitive );     // links: {stuff}
-            QRegExp links( "<a href=\"gdlookup://localhost/([^\"]*)\">", Qt::CaseInsensitive );
-            QRegExp tags( "<[^>]*>", Qt::CaseInsensitive );
-#endif
             string articleStr;
             if( contentInHtml )
               articleStr = articleText.toUtf8().data();
@@ -842,7 +821,6 @@ void DictServerArticleRequest::run()
               articleText = articleText.replace(refs, "<a href=\"gdlookup://localhost/\\1\">\\1</a>" );
 
               pos = 0;
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
               QString articleNewText;
 
               // Handle phonetics
@@ -891,39 +869,6 @@ void DictServerArticleRequest::run()
                 articleText = articleNewText;
                 articleNewText.clear();
               }
-#else
-              // Handle phonetics
-
-              for( ; ; )
-              {
-                pos = articleText.indexOf( phonetic, pos );
-                if( pos < 0 )
-                  break;
-
-                QString phonetic_text = phonetic.cap( 1 );
-                phonetic_text.replace( divs_inside_phonetic, "</span></div\\1><div\\2><span class=\"dictd_phonetic\">" );
-                phonetic_text = "<span class=\"dictd_phonetic\">" + phonetic_text + "</span>";
-                articleText.replace( pos, phonetic.cap().length(), phonetic_text );
-                pos += phonetic_text.length();
-              }
-
-              // Handle links
-
-              pos = 0;
-              for( ; ; )
-              {
-                pos = articleText.indexOf( links, pos );
-                if( pos < 0 )
-                  break;
-
-                QString link = links.cap( 1 );
-                link.replace( tags, " " );
-                link.replace( "&nbsp;", " " );
-                articleText.replace( pos + 30, links.cap( 1 ).length(),
-                                     QString::fromUtf8( QUrl::toPercentEncoding( link.simplified() ) ) );
-                pos += 30;
-              }
-#endif
             }
 
             articleData += string( "<div class=\"dictd_article\">" )

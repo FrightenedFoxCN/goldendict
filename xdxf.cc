@@ -774,7 +774,6 @@ qint64 GzippedFile::readData( char * data, qint64 maxSize )
   // The returning value translates directly to QIODevice semantics
   int n = gzread( gz, data, maxSize );
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   // With QT 5.x QXmlStreamReader ask one byte instead of one UTF-8 char.
   // We read and return all bytes for char.
 
@@ -795,7 +794,6 @@ qint64 GzippedFile::readData( char * data, qint64 maxSize )
     if( addBytes )
       n += gzread( gz, data + 1, addBytes );
   }
-#endif
 
   return n;
 }
@@ -853,11 +851,7 @@ namespace {
 /// Deal with Qt 4.5 incompatibility
 QString readElementText( QXmlStreamReader & stream )
 {
-#if QT_VERSION >= 0x040600
     return stream.readElementText( QXmlStreamReader::SkipChildElements );
-#else
-    return stream.readElementText();
-#endif
 }
 
 }
