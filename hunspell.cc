@@ -13,7 +13,7 @@
 #include <QRunnable>
 #include <QThreadPool>
 #include <QSemaphore>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QDir>
 #include <QCoreApplication>
 #include <QFileInfo>
@@ -513,7 +513,7 @@ QVector< wstring > suggest( wstring & word, Mutex & hunspellMutex, Hunspell & hu
 
       wstring lowercasedWord = Folding::applySimpleCaseOnly( word );
 
-      static QRegExp cutStem( "^\\s*st:(((\\s+(?!\\w{2}:)(?!-)(?!\\+))|\\S+)+)" );
+      static QRegularExpression cutStem( "^\\s*st:(((\\s+(?!\\w{2}:)(?!-)(?!\\+))|\\S+)+)" );
 
 #ifdef OLD_HUNSPELL_INTERFACE
       for( int x = 0; x < suggestionsCount; ++x )
@@ -532,9 +532,10 @@ QVector< wstring > suggest( wstring & word, Mutex & hunspellMutex, Hunspell & hu
 
         GD_DPRINTF( ">>>Sugg: %s\n", suggestion.toLocal8Bit().data() );
 
-        if ( cutStem.indexIn( suggestion.trimmed() ) != -1 )
+        QRegularExpressionMatch match = cutStem.match( suggestion.trimmed() );
+        if ( match.hasMatch() )
         {
-          wstring alt = gd::toWString( cutStem.cap( 1 ) );
+          wstring alt = gd::toWString( match.captured( 1 ) );
 
           if ( Folding::applySimpleCaseOnly( alt ) != lowercasedWord ) // No point in providing same word
           {

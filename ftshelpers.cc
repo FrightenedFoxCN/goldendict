@@ -66,17 +66,17 @@ static QString makeHiliteRegExpString( QStringList const & words,
 
 bool parseSearchString( QString const & str, QStringList & indexWords,
                         QStringList & searchWords,
-                        QRegExp & searchRegExp, int searchMode,
+                        QRegularExpression & searchRegExp, int searchMode,
                         bool matchCase,
                         int distanceBetweenWords,
                         bool & hasCJK )
 {
   searchWords.clear();
   indexWords.clear();
-  QRegExp spacesRegExp( "\\W+" );
-  QRegExp wordRegExp( QString( "\\w{" ) + QString::number( FTS::MinimumWordSize ) + ",}" );
-  QRegExp setsRegExp( "\\[[^\\]]+\\]", Qt::CaseInsensitive, QRegExp::RegExp2 );
-  QRegExp regexRegExp( "\\\\[afnrtvdDwWsSbB]|\\\\x([0-9A-Fa-f]{4})|\\\\0([0-7]{3})", Qt::CaseSensitive, QRegExp::RegExp2 );
+  QRegularExpression spacesRegExp( "\\W+" );
+  QRegularExpression wordRegExp( QString( "\\w{" ) + QString::number( FTS::MinimumWordSize ) + ",}" );
+  QRegularExpression setsRegExp( "\\[[^\\]]+\\]", QRegularExpression::CaseInsensitiveOption );
+  QRegularExpression regexRegExp( "\\\\[afnrtvdDwWsSbB]|\\\\x([0-9A-Fa-f]{4})|\\\\0([0-7]{3})" );
 
   hasCJK = false;
   for( int x = 0; x < str.size(); x++ )
@@ -106,9 +106,12 @@ bool parseSearchString( QString const & str, QStringList & indexWords,
     QStringList allWords = str.split( spacesRegExp, Qt4x5::skipEmptyParts() );
     QString searchString = makeHiliteRegExpString( allWords, searchMode, distanceBetweenWords );
 
-    searchRegExp = QRegExp( searchString, matchCase ? Qt::CaseSensitive : Qt::CaseInsensitive,
-                            QRegExp::RegExp2 );
-    searchRegExp.setMinimal( true );
+    QRegularExpression::PatternOptions options = QRegularExpression::UseUnicodePropertiesOption
+                                                 | QRegularExpression::InvertedGreedinessOption;
+    if( !matchCase )
+      options |= QRegularExpression::CaseInsensitiveOption;
+    searchRegExp.setPattern( searchString );
+    searchRegExp.setPatternOptions( options );
 
     return !indexWords.isEmpty();
   }
@@ -169,9 +172,12 @@ bool parseSearchString( QString const & str, QStringList & indexWords,
       indexWords.removeDuplicates();
     }
 
-    searchRegExp = QRegExp( str, matchCase ? Qt::CaseSensitive : Qt::CaseInsensitive,
-                            searchMode == FTS::Wildcards ? QRegExp::WildcardUnix : QRegExp::RegExp2 );
-    searchRegExp.setMinimal( true );
+    QRegularExpression::PatternOptions options = QRegularExpression::UseUnicodePropertiesOption
+                                                 | QRegularExpression::InvertedGreedinessOption;
+    if( !matchCase )
+      options |= QRegularExpression::CaseInsensitiveOption;
+    searchRegExp.setPattern( searchMode == FTS::Wildcards ? wildcardsToRegexp( str ) : str );
+    searchRegExp.setPatternOptions( options );
   }
 
   return true;
@@ -454,7 +460,7 @@ void FTSResultsRequestRunnable::run()
 
 void FTSResultsRequest::checkArticles( QVector< uint32_t > const & offsets,
                                        QStringList const & words,
-                                       QRegExp const & searchRegexp )
+                                       QRegularExpression const & searchRegexp )
 {
   int results = 0;
   QString headword, articleText;
@@ -490,9 +496,8 @@ void FTSResultsRequest::checkArticles( QVector< uint32_t > const & offsets,
     QRegularExpression::PatternOptions patternOptions = QRegularExpression::DotMatchesEverythingOption
                                                         | QRegularExpression::UseUnicodePropertiesOption
                                                         | QRegularExpression::MultilineOption
-                                                        | QRegularExpression::InvertedGreedinessOption;
-    if( searchRegexp.caseSensitivity() == Qt::CaseInsensitive )
-      patternOptions |= QRegularExpression::CaseInsensitiveOption;
+                                                        | QRegularExpression::InvertedGreedinessOption
+                                                        | searchRegexp.patternOptions();
     searchRegularExpression.setPatternOptions( patternOptions );
     if( !searchRegularExpression.isValid() )
       searchRegularExpression.setPattern( "" );
@@ -900,7 +905,7 @@ void FTSResultsRequest::combinedIndexSearch( BtreeIndexing::BtreeIndex & ftsInde
                                              sptr< ChunkedStorage::Reader > chunks,
                                              QStringList & indexWords,
                                              QStringList & searchWords,
-                                             QRegExp & regexp )
+                                             QRegularExpression & regexp )
 {
   // Special case - combination of index search for hieroglyphs
   // and full index search for other words
@@ -1056,7 +1061,7 @@ void FTSResultsRequest::fullIndexSearch( BtreeIndexing::BtreeIndex & ftsIndex,
                                          sptr< ChunkedStorage::Reader > chunks,
                                          QStringList & indexWords,
                                          QStringList & searchWords,
-                                         QRegExp & regexp )
+                                         QRegularExpression & regexp )
 {
   QSet< uint32_t > setOfOffsets;
   uint32_t size;
@@ -1141,7 +1146,7 @@ void FTSResultsRequest::fullIndexSearch( BtreeIndexing::BtreeIndex & ftsIndex,
   checkArticles( offsets, searchWords, regexp );
 }
 
-void FTSResultsRequest::fullSearch( QStringList & searchWords, QRegExp & regexp )
+void FTSResultsRequest::fullSearch( QStringList & searchWords, QRegularExpression & regexp )
 {
   // Whole file survey
 
@@ -1197,7 +1202,7 @@ void FTSResultsRequest::run()
   try
   {
     QStringList indexWords, searchWords;
-    QRegExp searchRegExp;
+    QRegularExpression searchRegExp;
 
     if( !FtsHelpers::parseSearchString( searchString, indexWords, searchWords, searchRegExp,
                                         searchMode, matchCase, distanceBetweenWords, hasCJK ) )

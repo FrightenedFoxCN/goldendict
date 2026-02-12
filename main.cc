@@ -28,7 +28,11 @@
 #include "termination.hh"
 #include "atomic_rename.hh"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QWebSecurityOrigin>
+#else
+#include <QWebEngineUrlScheme>
+#endif
 #include <QMessageBox>
 #include <QDebug>
 #include <QFile>
@@ -38,6 +42,34 @@
 #include <QUrl>
 
 #include "gddebug.hh"
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+static void registerWebEngineSchemes()
+{
+  struct SchemeConfig
+  {
+    const char * name;
+    QWebEngineUrlScheme::Flags flags;
+  };
+
+  const SchemeConfig schemes[] = {
+    { "gdlookup", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed },
+    { "bres", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed },
+    { "gdpicture", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed },
+    { "gdau", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed },
+    { "gdvideo", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed },
+    { "gico", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed },
+    { "qrcx", QWebEngineUrlScheme::LocalScheme | QWebEngineUrlScheme::LocalAccessAllowed }
+  };
+
+  for ( size_t i = 0; i < sizeof( schemes ) / sizeof( schemes[ 0 ] ); ++i )
+  {
+    QWebEngineUrlScheme scheme( schemes[ i ].name );
+    scheme.setFlags( schemes[ i ].flags );
+    QWebEngineUrlScheme::registerScheme( scheme );
+  }
+}
+#endif
 
 #if defined( Q_OS_MAC ) && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include "lionsupport.h"
@@ -355,6 +387,10 @@ int main( int argc, char ** argv )
 
 #endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  registerWebEngineSchemes();
+#endif
+
   QHotkeyApplication app( "GoldenDict", argc, argv );
   LogFilePtrGuard logFilePtrGuard;
 
@@ -543,7 +579,7 @@ int main( int argc, char ** argv )
   // and with the main window closed.
   app.setQuitOnLastWindowClosed( false );
 
-#if QT_VERSION >= 0x040600
+#if QT_VERSION >= 0x040600 && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   // Add the dictionary scheme we use as local, so that the file:// links would
   // work in the articles. The function was introduced in Qt 4.6.
   QWebSecurityOrigin::addLocalScheme( "gdlookup" );

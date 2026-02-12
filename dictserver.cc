@@ -12,6 +12,8 @@
 
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
 #include <QRegularExpression>
+#else
+#include <QRegExp>
 #endif
 
 namespace DictServer {
@@ -105,7 +107,8 @@ bool connectToServer( QTcpSocket & socket, QString const & url,
       QString authCommand = QString( "AUTH " );
       QString authString = msgId;
 
-      int pos = serverUrl.userInfo().indexOf( QRegExp( "[:;]" ) );
+      QRegularExpression userInfoSeparator( "[:;]" );
+      int pos = serverUrl.userInfo().indexOf( userInfoSeparator );
       if( pos > 0 )
       {
         authCommand += serverUrl.userInfo().left( pos );
@@ -202,11 +205,11 @@ public:
     if( pos < 0 )
       url = "dict://" + url;
 
-    databases = database_.split( QRegExp( "[ ,;]" ), Qt4x5::skipEmptyParts() );
+    databases = database_.split( QRegularExpression( "[ ,;]" ), Qt4x5::skipEmptyParts() );
     if( databases.isEmpty() )
       databases.append( "*" );
 
-    strategies = strategies_.split( QRegExp( "[ ,;]" ), Qt4x5::skipEmptyParts() );
+    strategies = strategies_.split( QRegularExpression( "[ ,;]" ), Qt4x5::skipEmptyParts() );
     if( strategies.isEmpty() )
       strategies.append( "prefix" );
   }
@@ -848,7 +851,7 @@ void DictServerArticleRequest::run()
               while( it.hasNext() )
               {
                 QRegularExpressionMatch match = it.next();
-                articleNewText += articleText.midRef( pos, match.capturedStart() - pos );
+                articleNewText += articleText.mid( pos, match.capturedStart() - pos );
                 pos = match.capturedEnd();
 
                 QString phonetic_text = match.captured( 1 );
@@ -858,7 +861,7 @@ void DictServerArticleRequest::run()
               }
               if( pos )
               {
-                articleNewText += articleText.midRef( pos );
+                articleNewText += articleText.mid( pos );
                 articleText = articleNewText;
                 articleNewText.clear();
               }
@@ -870,7 +873,7 @@ void DictServerArticleRequest::run()
               while( it.hasNext() )
               {
                 QRegularExpressionMatch match = it.next();
-                articleNewText += articleText.midRef( pos, match.capturedStart() - pos );
+                articleNewText += articleText.mid( pos, match.capturedStart() - pos );
                 pos = match.capturedEnd();
 
                 QString link = match.captured( 1 );
@@ -884,7 +887,7 @@ void DictServerArticleRequest::run()
               }
               if( pos )
               {
-                articleNewText += articleText.midRef( pos );
+                articleNewText += articleText.mid( pos );
                 articleText = articleNewText;
                 articleNewText.clear();
               }

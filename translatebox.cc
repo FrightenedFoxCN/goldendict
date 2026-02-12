@@ -11,6 +11,7 @@
 #include <QModelIndex>
 #include <QScrollBar>
 #include <QStyle>
+#include <QStyleOption>
 
 #ifdef Q_OS_WIN32
 #include <QDesktopWidget>
@@ -55,7 +56,9 @@ bool CompletionList::eventFilter( QObject * obj, QEvent * ev )
 
 int CompletionList::preferredHeight() const
 {
-  const QSize itemSizeHint = itemDelegate()->sizeHint(viewOptions(), model()->index( 0, 0 ) );
+  QStyleOptionViewItem option;
+  option.initFrom( this );
+  const QSize itemSizeHint = itemDelegate()->sizeHint( option, model()->index( 0, 0 ) );
   int rows = qMin( count(), MAX_POPUP_ROWS );
 
   int scrollBarHeight = 0;
@@ -114,7 +117,7 @@ TranslateBox::TranslateBox(QWidget *parent) : QWidget(parent),
 
   QHBoxLayout *layout = new QHBoxLayout(this);
   setLayout(layout);
-  layout->setMargin(0);
+  layout->setContentsMargins( 0, 0, 0, 0 );
   layout->addWidget(translate_line);
 
   QPixmap image(":/icons/system-search.png");

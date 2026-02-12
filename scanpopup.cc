@@ -8,13 +8,10 @@
 #include <QBitmap>
 #include <QMenu>
 #include <QMouseEvent>
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 #include "gddebug.hh"
 #include "gestures.hh"
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 11, 0 )
-#include <QScreen>
-#endif
 
 #ifdef Q_OS_MAC
 #include "macmouseover.hh"
@@ -249,9 +246,9 @@ ScanPopup::ScanPopup( QWidget * parent,
   connect( focusArticleViewAction, SIGNAL( triggered() ), definition, SLOT( focus() ) );
 
   switchExpandModeAction.setShortcuts( QList< QKeySequence >() <<
-                                       QKeySequence( Qt::CTRL + Qt::Key_8 ) <<
-                                       QKeySequence( Qt::CTRL + Qt::Key_Asterisk ) <<
-                                       QKeySequence( Qt::CTRL + Qt::SHIFT + Qt::Key_8 ) );
+                                       QKeySequence( Qt::CTRL | Qt::Key_8 ) <<
+                                       QKeySequence( Qt::CTRL | Qt::Key_Asterisk ) <<
+                                       QKeySequence( Qt::CTRL | Qt::SHIFT | Qt::Key_8 ) );
 
   addAction( &switchExpandModeAction );
   connect( &switchExpandModeAction, SIGNAL( triggered() ),
@@ -638,11 +635,10 @@ void ScanPopup::engagePopup( bool forcePopup, bool giveFocus )
 
       QPoint currentPos = QCursor::pos();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 11, 0 )
-      QRect const desktop = QGuiApplication::screenAt( currentPos )->geometry();
-#else
-      QRect const desktop = QApplication::desktop()->screenGeometry();
-#endif
+  QScreen * screen = QGuiApplication::screenAt( currentPos );
+  if( !screen )
+    screen = QGuiApplication::primaryScreen();
+  QRect const desktop = screen ? screen->geometry() : QRect();
 
       QSize windowSize = geometry().size();
 
@@ -1028,7 +1024,7 @@ void ScanPopup::leaveEvent( QEvent * event )
   }
 }
 
-void ScanPopup::enterEvent( QEvent * event )
+void ScanPopup::enterEvent( QEnterEvent * event )
 {
   QMainWindow::enterEvent( event );
 

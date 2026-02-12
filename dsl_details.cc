@@ -144,8 +144,8 @@ string findCodeForDslId( int id )
 bool isAtSignFirst( wstring const & str )
 {
   // Test if '@' is first in string except spaces and dsl tags
-  QRegExp reg( "[ \\t]*(?:\\[[^\\]]+\\][ \\t]*)*@", Qt::CaseInsensitive, QRegExp::RegExp2 );
-  return reg.indexIn( gd::toQString( str ) ) == 0;
+  QRegularExpression reg( "[ \\t]*(?:\\[[^\\]]+\\][ \\t]*)*@", QRegularExpression::CaseInsensitiveOption );
+  return reg.matchView( gd::toQString( str ) ).capturedStart() == 0;
 }
 
 /////////////// ArticleDom

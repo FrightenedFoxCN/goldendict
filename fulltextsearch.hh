@@ -3,7 +3,7 @@
 
 #include <QSemaphore>
 #include <QStringList>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QAbstractListModel>
 #include <QList>
 #include <QAction>
@@ -184,7 +184,7 @@ class FullTextSearchDialog : public QDialog
 
   FtsIndexing & ftsIdx;
 
-  QRegExp searchRegExp;
+  QRegularExpression searchRegExp;
 
 #if ( QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 ) ) && defined( Q_OS_WIN32 )
   QStyle * oldBarStyle;
@@ -230,7 +230,7 @@ private slots:
 
 signals:
   void showTranslationFor( QString const &, QStringList const & dictIDs,
-                           QRegExp const & searchRegExp, bool ignoreDiacritics );
+                           QRegularExpression const & searchRegExp, bool ignoreDiacritics );
   void closeDialog();
 };
 

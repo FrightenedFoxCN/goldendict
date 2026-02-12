@@ -37,7 +37,6 @@ QT += core \
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets \
-          webkitwidgets \
           printsupport \
           help
 
@@ -49,6 +48,18 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 } else {
     QT += webkit
     CONFIG += help
+}
+
+greaterThan(QT_VERSION, 0x050600) {
+    QT += webenginewidgets
+} else {
+    QT += webkitwidgets
+}
+
+greaterThan(QT_MAJOR_VERSION, 5) {
+  QT += webenginecore \
+      webchannel \
+      core5compat
 }
 
 !CONFIG( no_ffmpeg_player ) {
@@ -210,27 +221,56 @@ freebsd {
 }
 mac {
     TARGET = GoldenDict
-    # Uncomment this line to make a universal binary.
-    # You will need to use Xcode 3 and Qt Carbon SDK
-    # if you want the support for PowerPC and/or Mac OS X 10.4
-    # CONFIG += x86 x86_64 ppc
-    LIBS = -lz \
-        -lbz2 \
-        -liconv \
-        -lvorbisfile \
-        -lvorbis \
-        -logg \
-        -lhunspell-1.6.1 \
-        -llzo2
-    !CONFIG( no_ffmpeg_player ) {
-        LIBS += -lao \
-            -lswresample-gd \
-            -lavutil-gd \
-            -lavformat-gd \
-            -lavcodec-gd
+    # Check if using Homebrew (arm64 doesn't have maclibs)
+    system(test -d /opt/homebrew) {
+        CONFIG += use_homebrew
+        CONFIG += link_pkgconfig
+        PKGCONFIG += vorbisfile \
+            vorbis \
+            ogg \
+            hunspell \
+            lzo2
+        !CONFIG( no_ffmpeg_player ) {
+            PKGCONFIG += libavutil \
+                libavformat \
+                libavcodec \
+                libswresample \
+                ao
+        }
+        !CONFIG( no_zim_support ) {
+            PKGCONFIG += liblzma libzstd
+        }
+        !CONFIG( no_chinese_conversion ) {
+            PKGCONFIG += opencc
+        }
+        !CONFIG( no_extra_tiff_handler ) {
+            PKGCONFIG += libtiff-4
+        }
+        LIBS = -lz \
+            -lbz2 \
+            -liconv \
+            -framework AppKit \
+            -framework Carbon
+    } else {
+        # For x86_64, use maclibs (old compiled libraries)
+        LIBS = -lz \
+            -lbz2 \
+            -liconv \
+            -lvorbisfile \
+            -lvorbis \
+            -logg \
+            -lhunspell-1.6.1 \
+            -llzo2
+        !CONFIG( no_ffmpeg_player ) {
+            LIBS += -lao \
+                -lswresample-gd \
+                -lavutil-gd \
+                -lavformat-gd \
+                -lavcodec-gd
+        }
+        INCLUDEPATH = $${PWD}/maclibs/include
+        LIBS += -L$${PWD}/maclibs/lib -framework AppKit -framework Carbon
     }
-    INCLUDEPATH = $${PWD}/maclibs/include
-    LIBS += -L$${PWD}/maclibs/lib -framework AppKit -framework Carbon
     OBJECTIVE_SOURCES += lionsupport.mm \
                          machotkeywrapper.mm \
                          macmouseover.mm \
@@ -245,7 +285,10 @@ mac {
                       cp -R $${PWD}/help/*.qch GoldenDict.app/Contents/MacOS/help/
 
     CONFIG += zim_support
-    !CONFIG( no_chinese_conversion_support ) {
+    CONFIG( use_homebrew ) {
+        # chinese_conversion_support will be set via config if needed
+    }
+    !CONFIG( use_homebrew ):!CONFIG( no_chinese_conversion_support ) {
         CONFIG += chinese_conversion_support
         CONFIG( x86 ) {
             QMAKE_POST_LINK += & mkdir -p GoldenDict.app/Contents/MacOS/opencc & \
@@ -276,6 +319,7 @@ HEADERS += folding.hh \
     bgl.hh \
     initializing.hh \
     article_netmgr.hh \
+    webengine_schemehandler.hh \
     dictzip.h \
     btreeidx.hh \
     stardict.hh \
@@ -413,6 +457,7 @@ SOURCES += folding.cc \
     bgl.cc \
     initializing.cc \
     article_netmgr.cc \
+    webengine_schemehandler.cc \
     dictzip.c \
     btreeidx.cc \
     stardict.cc \
@@ -557,12 +602,16 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 CONFIG( zim_support ) {
   DEFINES += MAKE_ZIM_SUPPORT
-  LIBS += -llzma -lzstd
+  !CONFIG( use_homebrew ) {
+    LIBS += -llzma -lzstd
+  }
 }
 
 !CONFIG( no_extra_tiff_handler ) {
   DEFINES += MAKE_EXTRA_TIFF_HANDLER
-  LIBS += -ltiff
+  !CONFIG( use_homebrew ) {
+    LIBS += -ltiff
+  }
 }
 
 CONFIG( no_epwing_support ) {
@@ -576,7 +625,9 @@ CONFIG( no_epwing_support ) {
   SOURCES += epwing.cc \
              epwing_book.cc \
              epwing_charmap.cc
-  LIBS += -leb
+  !CONFIG( use_homebrew ) {
+    LIBS += -leb
+  }
 }
 
 CONFIG( chinese_conversion_support ) {
@@ -589,12 +640,10 @@ CONFIG( chinese_conversion_support ) {
   win32-msvc* {
     Debug:   LIBS += -lopenccd
     Release: LIBS += -lopencc
-  } else {
-    mac {
-      LIBS += -lopencc.2
-    } else {
-      LIBS += -lopencc
-    }
+  }
+  !win32-msvc*:!CONFIG( use_homebrew ) {
+    mac: LIBS += -lopencc.2
+    !mac: LIBS += -lopencc
   }
 }
 

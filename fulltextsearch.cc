@@ -596,13 +596,15 @@ void FullTextSearchDialog::itemClicked( const QModelIndex & idx )
   if( idx.isValid() && idx.row() < results.size() )
   {
     QString headword = results[ idx.row() ].headword;
-    QRegExp reg;
+    QRegularExpression reg;
     if( !results[ idx.row() ].foundHiliteRegExps.isEmpty() )
     {
-      reg = QRegExp( results[ idx.row() ].foundHiliteRegExps.join( "|"),
-                     results[ idx.row() ].matchCase ? Qt::CaseSensitive : Qt::CaseInsensitive,
-                     QRegExp::RegExp2 );
-      reg.setMinimal( true );
+      QRegularExpression::PatternOptions options = QRegularExpression::UseUnicodePropertiesOption
+                                                   | QRegularExpression::InvertedGreedinessOption;
+      if( !results[ idx.row() ].matchCase )
+        options |= QRegularExpression::CaseInsensitiveOption;
+      reg.setPattern( results[ idx.row() ].foundHiliteRegExps.join( "|" ) );
+      reg.setPatternOptions( options );
     }
     else
       reg = searchRegExp;

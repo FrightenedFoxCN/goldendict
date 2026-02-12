@@ -19,9 +19,9 @@ QByteArray EpwingCharmap::mapToUtf8( QString const & code )
   return QByteArray();
 }
 
-void EpwingCharmap::addEntry( QString const & code, QChar ch )
+void EpwingCharmap::addEntry( QString const & code, uint codePoint )
 {
-  charMap[ code ] = ch;
+  charMap[ code ] = QChar::fromUcs2( static_cast<char16_t>( codePoint ) );
 }
 
 EpwingCharmap::EpwingCharmap()

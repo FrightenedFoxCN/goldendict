@@ -7,6 +7,7 @@
 #ifdef MAKE_QTMULTIMEDIA_PLAYER
 
 #include <QBuffer>
+#include <QAudioOutput>
 #include <QMediaPlayer>
 #include "audioplayerinterface.hh"
 
@@ -20,10 +21,11 @@ public:
   virtual void stop();
 
 private slots:
-  void onMediaPlayerError();
+  void onMediaPlayerError( QMediaPlayer::Error mediaError, const QString & errorString );
 
 private:
   QBuffer audioBuffer;
+  QAudioOutput audioOutput;
   QMediaPlayer player; ///< Depends on audioBuffer.
 };
 

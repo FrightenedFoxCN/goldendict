@@ -5,6 +5,8 @@
 
 #include <QDir>
 #include <QTextStream>
+#include <QStringConverter>
+#include <QRegularExpression>
 #include <QTextDocumentFragment>
 #include "gddebug.hh"
 #include "fsencoding.hh"
@@ -550,7 +552,7 @@ bool EpwingBook::setSubBook( int book_nom )
   if( f.open( QFile::ReadOnly | QFile::Text ) )
   {
     QTextStream ts( &f );
-    ts.setCodec( "UTF-8" );
+    ts.setEncoding( QStringConverter::Utf8 );
 
     QString line = ts.readLine();
     while( !line.isEmpty() )
@@ -853,7 +855,7 @@ bool EpwingBook::getNextHeadword( EpwingHeadword & head )
 {
   EB_Position pos;
 
-  QRegExp badLinks( "#(v|n)\\d" );
+  QRegularExpression badLinks( "#(v|n)\\d" );
 
   // At first we check references queue
   while( !LinksQueue.isEmpty() )
@@ -1055,7 +1057,7 @@ void EpwingBook::fixHeadword( QString & headword )
     return;
 
   QString fixed = headword;
-  fixed.remove( QRegExp( "/[^/]+/", Qt::CaseSensitive ) );
+  fixed.remove( QRegularExpression( "/[^/]+/" ) );
 
   if( isHeadwordCorrect( fixed ) )
   {
@@ -1229,8 +1231,8 @@ void EpwingBook::finalizeText( QString & text )
   // Replace references
 
   int pos = 0;
-  QRegExp reg1( "<R[^<]*>" );
-  QRegExp reg2( "</R[^<]*>" );
+  QRegularExpression reg1( "<R[^<]*>" );
+  QRegularExpression reg2( "</R[^<]*>" );
 
   EContainer cont( this, true );
 
@@ -1266,13 +1268,19 @@ void EpwingBook::finalizeText( QString & text )
 
     QString link = "<a href=\"" + url.toEncoded() + "\">";
 
-    text.replace( reg1.cap(), link );
-
-    pos = text.indexOf( reg2, pos );
-    if( pos < 0 )
+    QRegularExpressionMatch matchOpen = reg1.match( text, pos );
+    if( !matchOpen.hasMatch() )
       break;
 
-    text.replace( reg2.cap(), "</a>" );
+    text.replace( matchOpen.capturedStart(), matchOpen.capturedLength(), link );
+    pos = matchOpen.capturedStart() + link.size();
+
+    QRegularExpressionMatch matchClose = reg2.match( text, pos );
+    if( !matchClose.hasMatch() )
+      break;
+
+    text.replace( matchClose.capturedStart(), matchClose.capturedLength(), "</a>" );
+    pos = matchClose.capturedStart() + 4;
   }
 }
 

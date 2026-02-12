@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QUrl>
+#include <QUrlQuery>
 #include <QtXml>
 #include <algorithm>
 #include <list>
@@ -133,7 +134,9 @@ MediaWikiWordSearchRequest::MediaWikiWordSearchRequest( wstring const & str,
 #if IS_QT_5
   Qt4x5::Url::addQueryItem( reqUrl, "apfrom", gd::toQString( str ).replace( '+', "%2B" ) );
 #else
-  reqUrl.addEncodedQueryItem( "apfrom", QUrl::toPercentEncoding( gd::toQString( str ) ) );
+  QUrlQuery query( reqUrl );
+  query.addQueryItem( "apfrom", gd::toQString( str ) );
+  reqUrl.setQuery( query );
 #endif
 
   netReply = mgr.get( QNetworkRequest( reqUrl ) );
@@ -449,7 +452,9 @@ void MediaWikiArticleRequest::addQuery( QNetworkAccessManager & mgr,
 #if IS_QT_5
   Qt4x5::Url::addQueryItem( reqUrl, "page", gd::toQString( str ).replace( '+', "%2B" ) );
 #else
-  reqUrl.addEncodedQueryItem( "page", QUrl::toPercentEncoding( gd::toQString( str ) ) );
+  QUrlQuery query( reqUrl );
+  query.addQueryItem( "page", gd::toQString( str ) );
+  reqUrl.setQuery( query );
 #endif
 
   QNetworkReply * netReply = mgr.get( QNetworkRequest( reqUrl ) );
@@ -532,7 +537,7 @@ void MediaWikiArticleRequest::requestFinished( QNetworkReply * r )
             while( it.hasNext() )
             {
               QRegularExpressionMatch match = it.next();
-              articleNewString += articleString.midRef( pos, match.capturedStart() - pos );
+              articleNewString += articleString.mid( pos, match.capturedStart() - pos );
               pos = match.capturedEnd();
 
               QString link = match.captured( 1 );
@@ -573,7 +578,7 @@ void MediaWikiArticleRequest::requestFinished( QNetworkReply * r )
             }
             if( pos )
             {
-              articleNewString += articleString.midRef( pos );
+              articleNewString += articleString.mid( pos );
               articleString = articleNewString;
               articleNewString.clear();
             }
@@ -607,7 +612,7 @@ void MediaWikiArticleRequest::requestFinished( QNetworkReply * r )
             while( it.hasNext() )
             {
               QRegularExpressionMatch match = it.next();
-              articleNewString += articleString.midRef( pos, match.capturedStart() - pos );
+              articleNewString += articleString.mid( pos, match.capturedStart() - pos );
               pos = match.capturedEnd();
 
               QString tag = match.captured();
@@ -624,7 +629,7 @@ void MediaWikiArticleRequest::requestFinished( QNetworkReply * r )
             }
             if( pos )
             {
-              articleNewString += articleString.midRef( pos );
+              articleNewString += articleString.mid( pos );
               articleString = articleNewString;
               articleNewString.clear();
             }
@@ -710,7 +715,7 @@ void MediaWikiArticleRequest::requestFinished( QNetworkReply * r )
             while( it.hasNext() )
             {
               QRegularExpressionMatch match = it.next();
-              articleNewString += articleString.midRef( pos, match.capturedStart() - pos );
+              articleNewString += articleString.mid( pos, match.capturedStart() - pos );
               pos = match.capturedEnd();
 
               QString srcset = match.captured();
@@ -729,7 +734,7 @@ void MediaWikiArticleRequest::requestFinished( QNetworkReply * r )
             }
             if( pos )
             {
-              articleNewString += articleString.midRef( pos );
+              articleNewString += articleString.mid( pos );
               articleString = articleNewString;
               articleNewString.clear();
             }

@@ -12,6 +12,7 @@
 
 #include <cctype>
 #include <QLocale>
+#include <QRegularExpression>
 
 LangCoder langCoder;
 
@@ -325,17 +326,16 @@ quint32 LangCoder::guessId( const QString & lang )
 QPair<quint32,quint32> LangCoder::findIdsForName( QString const & name )
 {
   QString nameFolded = "|" + name.toCaseFolded() + "|";
-  QRegExp reg( "[^a-z]([a-z]{2,3})-([a-z]{2,3})[^a-z]" ); reg.setMinimal(true);
-  int off = 0;
-
-  while ( reg.indexIn( nameFolded, off ) >= 0 )
+  QRegularExpression reg( "[^a-z]([a-z]{2,3})-([a-z]{2,3})[^a-z]",
+                           QRegularExpression::InvertedGreedinessOption );
+  QRegularExpressionMatchIterator it = reg.globalMatch( nameFolded );
+  while ( it.hasNext() )
   {
-    quint32 from = guessId( reg.cap(1) );
-    quint32 to = guessId( reg.cap(2) );
+    QRegularExpressionMatch match = it.next();
+    quint32 from = guessId( match.captured( 1 ) );
+    quint32 to = guessId( match.captured( 2 ) );
     if (from && to)
       return QPair<quint32,quint32>(from, to);
-
-    off += reg.matchedLength();
   }
 
   return QPair<quint32,quint32>(0, 0);

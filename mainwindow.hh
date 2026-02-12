@@ -10,6 +10,7 @@
 #include <QSystemTrayIcon>
 #include <QNetworkAccessManager>
 #include <QProgressDialog>
+#include <QRegularExpression>
 #include "ui_mainwindow.h"
 #include "folding.hh"
 #include "config.hh"
@@ -427,7 +428,7 @@ private slots:
   void showTranslationFor( QString const & );
 
   void showTranslationFor( QString const &, QStringList const & dictIDs,
-                           QRegExp const & searchRegExp, bool ignoreDiacritics );
+                           QRegularExpression const & searchRegExp, bool ignoreDiacritics );
 
   void showHistoryItem( QString const & );
 

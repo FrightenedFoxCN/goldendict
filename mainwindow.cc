@@ -34,6 +34,7 @@
 #include <QRunnable>
 #include <QThreadPool>
 #include <QSslConfiguration>
+#include <QRegularExpression>
 
 #include <limits.h>
 #include <set>
@@ -44,8 +45,15 @@
 #include "fsencoding.hh"
 #include "historypanewidget.hh"
 #include "qt4x5.hh"
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 #include "ui_authentication.h"
+#if IS_QT_6
+#include <QWebEngineProfile>
+#include <QWebEngineSettings>
+#else
+#include <QWebSettings>
+#endif
 
 #ifdef Q_OS_MAC
 #include "lionsupport.h"
@@ -465,9 +473,9 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 
   switchExpandModeAction.setShortcutContext( Qt::WidgetWithChildrenShortcut );
   switchExpandModeAction.setShortcuts( QList< QKeySequence >() <<
-                                       QKeySequence( Qt::CTRL + Qt::Key_8 ) <<
-                                       QKeySequence( Qt::CTRL + Qt::Key_Asterisk ) <<
-                                       QKeySequence( Qt::CTRL + Qt::SHIFT + Qt::Key_8 ) );
+                                       QKeySequence( Qt::CTRL | Qt::Key_8 ) <<
+                                       QKeySequence( Qt::CTRL | Qt::Key_Asterisk ) <<
+                                       QKeySequence( Qt::CTRL | Qt::SHIFT | Qt::Key_8 ) );
 
   connect( &switchExpandModeAction, SIGNAL( triggered() ),
            this, SLOT(switchExpandOptionalPartsMode() ) );
@@ -756,7 +764,8 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 #ifdef Q_OS_WIN
   if( cfg.normalMainWindowGeometry.width() <= 0 )
   {
-    QRect r = QApplication::desktop()->availableGeometry();
+    QScreen * screen = QGuiApplication::primaryScreen();
+    QRect r = screen ? screen->availableGeometry() : QRect();
     cfg.normalMainWindowGeometry.setRect( r.width() / 4, r.height() / 4, r.width() / 2, r.height() / 2 );
   }
   if( cfg.maximizedMainWindowGeometry.width() > 0 )
@@ -1337,9 +1346,14 @@ void MainWindow::applyProxySettings()
 
 void MainWindow::applyWebSettings()
 {
+#if IS_QT_6
+  QWebEngineSettings *defaultSettings = QWebEngineProfile::defaultProfile()->settings();
+  defaultSettings->setAttribute( QWebEngineSettings::PluginsEnabled, cfg.preferences.enableWebPlugins );
+#else
   QWebSettings *defaultSettings = QWebSettings::globalSettings();
   defaultSettings->setAttribute(QWebSettings::PluginsEnabled, cfg.preferences.enableWebPlugins);
   defaultSettings->setAttribute( QWebSettings::DeveloperExtrasEnabled, true );
+#endif
 }
 
 void MainWindow::setupNetworkCache( int maxSize )
@@ -3001,7 +3015,7 @@ void MainWindow::showTranslationFor( QString const & word )
 
 void MainWindow::showTranslationFor( QString const & inWord,
                                      QStringList const & dictIDs,
-                                     QRegExp const & searchRegExp,
+                                     QRegularExpression const & searchRegExp,
                                      bool ignoreDiacritics )
 {
   ArticleView *view = getCurrentArticleView();
@@ -3599,16 +3613,22 @@ void MainWindow::printPreviewPaintRequested( QPrinter * printer )
   view->print( printer );
 }
 
-static void filterAndCollectResources( QString & html, QRegExp & rx, const QString & sep,
+static void filterAndCollectResources( QString & html, QRegularExpression & rx, const QString & sep,
                                        const QString & folder, set< QByteArray > & resourceIncluded,
                                        vector< pair< QUrl, QString > > & downloadResources )
 {
   int pos = 0;
   int queryNom = 1;
 
-  while ( ( pos = rx.indexIn( html, pos ) ) != -1 )
+  while ( true )
   {
-    QUrl url( rx.cap( 1 ) );
+    QRegularExpressionMatch match = rx.match( html, pos );
+    if ( !match.hasMatch() )
+      break;
+
+    int matchStart = match.capturedStart();
+    int matchLength = match.capturedLength();
+    QUrl url( match.captured( 1 ) );
     QString host = url.host();
     QString resourcePath = Qt4x5::Url::fullPath( url );
 
@@ -3627,7 +3647,7 @@ static void filterAndCollectResources( QString & html, QRegExp & rx, const QStri
     }
 
     QCryptographicHash hash( QCryptographicHash::Md5 );
-    hash.addData( rx.cap().toUtf8() );
+    hash.addData( match.captured().toUtf8() );
 
     if ( resourceIncluded.insert( hash.result() ).second )
     {
@@ -3638,8 +3658,8 @@ static void filterAndCollectResources( QString & html, QRegExp & rx, const QStri
     // Modify original url, set to the native one
     resourcePath = QString::fromLatin1( QUrl::toPercentEncoding( resourcePath, "/" ) );
     QString newUrl = sep + QDir( folder ).dirName() + host + resourcePath + sep;
-    html.replace( pos, rx.cap().length(), newUrl );
-    pos += newUrl.length();
+    html.replace( matchStart, matchLength, newUrl );
+    pos = matchStart + newUrl.length();
   }
 }
 
@@ -3650,7 +3670,7 @@ void MainWindow::on_saveArticle_triggered()
   QString fileName = view->getTitle().simplified();
 
   // Replace reserved filename characters
-  QRegExp rxName( "[/\\\\\\?\\*:\\|<>]" );
+  QRegularExpression rxName( "[/\\\\\\?\\*:\\|<>]" );
   fileName.replace( rxName, "_" );
 
   fileName += ".html";
@@ -3698,11 +3718,15 @@ void MainWindow::on_saveArticle_triggered()
 
       // Convert internal links
 
-      QRegExp rx3( "href=\"(bword:|gdlookup://localhost/)([^\"]+)\"" );
+      QRegularExpression rx3( "href=\"(bword:|gdlookup://localhost/)([^\"]+)\"" );
       int pos = 0;
-      while ( ( pos = rx3.indexIn( html, pos ) ) != -1 )
+      while ( true )
       {
-        QString name = QUrl::fromPercentEncoding( rx3.cap( 2 ).simplified().toLatin1() );
+        QRegularExpressionMatch match = rx3.match( html, pos );
+        if ( !match.hasMatch() )
+          break;
+
+        QString name = QUrl::fromPercentEncoding( match.captured( 2 ).simplified().toLatin1() );
         QString anchor;
         name.replace( "?gdanchor=", "#" );
         int n = name.indexOf( '#' );
@@ -3710,23 +3734,24 @@ void MainWindow::on_saveArticle_triggered()
         {
           anchor = name.mid( n );
           name.truncate( n );
-          anchor.replace( QRegExp( "(g[0-9a-f]{32}_)[0-9a-f]+_" ), "\\1" ); // MDict anchors
+          anchor.replace( QRegularExpression( "(g[0-9a-f]{32}_)[0-9a-f]+_" ), "\\1" ); // MDict anchors
         }
         name.replace( rxName, "_" );
         name = QString( "href=\"" ) + QUrl::toPercentEncoding( name ) + ".html" + anchor + "\"";
-        html.replace( pos, rx3.cap().length(), name );
-        pos += name.length();
+        html.replace( match.capturedStart(), match.capturedLength(), name );
+        pos = match.capturedStart() + name.length();
       }
 
       // MDict anchors
-      QRegExp anchorLinkRe( "(<\\s*a\\s+[^>]*\\b(?:name|id)\\b\\s*=\\s*[\"']*g[0-9a-f]{32}_)([0-9a-f]+_)(?=[^\"'])", Qt::CaseInsensitive );
+      QRegularExpression anchorLinkRe( "(<\\s*a\\s+[^>]*\\b(?:name|id)\\b\\s*=\\s*[\"']*g[0-9a-f]{32}_)([0-9a-f]+_)(?=[^\"'])",
+                   QRegularExpression::CaseInsensitiveOption );
       html.replace( anchorLinkRe, "\\1" );
 
       if ( complete )
       {
         QString folder = fi.absoluteDir().absolutePath() + "/" + fi.baseName() + "_files";
-        QRegExp rx1( "\"((?:bres|gico|gdau|qrcx|gdvideo)://[^\"]+)\"" );
-        QRegExp rx2( "'((?:bres|gico|gdau|qrcx|gdvideo)://[^']+)'" );
+        QRegularExpression rx1( "\"((?:bres|gico|gdau|qrcx|gdvideo)://[^\"]+)\"" );
+        QRegularExpression rx2( "'((?:bres|gico|gdau|qrcx|gdvideo)://[^']+)'" );
         set< QByteArray > resourceIncluded;
         vector< pair< QUrl, QString > > downloadResources;
 
@@ -4759,8 +4784,8 @@ void MainWindow::showFullTextSearchDialog()
     addGlobalActionsToDialog( ftsDlg );
     addGroupComboBoxActionsToDialog( ftsDlg, groupList );
 
-    connect( ftsDlg, SIGNAL( showTranslationFor( QString, QStringList, QRegExp, bool ) ),
-             this, SLOT( showTranslationFor( QString, QStringList, QRegExp, bool ) ) );
+    connect( ftsDlg, SIGNAL( showTranslationFor( QString, QStringList, QRegularExpression, bool ) ),
+         this, SLOT( showTranslationFor( QString, QStringList, QRegularExpression, bool ) ) );
     connect( ftsDlg, SIGNAL( closeDialog() ),
              this, SLOT( closeFullTextSearchDialog() ), Qt::QueuedConnection );
     connect( &configEvents, SIGNAL( mutedDictionariesChanged() ),
@@ -5048,5 +5073,4 @@ bool MainWindow::isGoldenDictWindow( HWND hwnd )
 #endif
 
 #ifdef X11_MAIN_WINDOW_FOCUS_WORKAROUNDS
-#include "mainwindow.moc"
 #endif

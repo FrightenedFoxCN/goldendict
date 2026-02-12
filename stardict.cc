@@ -40,7 +40,7 @@
 #include <QThreadPool>
 #include <QAtomicInt>
 #include <QDebug>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QDomDocument>
 #include <QDomNode>
@@ -500,7 +500,7 @@ string StardictDictionary::handleResource( char type, char const * resource, siz
       while( it.hasNext() )
       {
         QRegularExpressionMatch match = it.next();
-        articleNewText += articleText.midRef( pos, match.capturedStart() - pos );
+        articleNewText += articleText.mid( pos, match.capturedStart() - pos );
         pos = match.capturedEnd();
 
         QString link = match.captured( 3 );
@@ -557,7 +557,7 @@ string StardictDictionary::handleResource( char type, char const * resource, siz
       }
       if( pos )
       {
-        articleNewText += articleText.midRef( pos );
+        articleNewText += articleText.mid( pos );
         articleText = articleNewText;
         articleNewText.clear();
       }
@@ -585,7 +585,7 @@ string StardictDictionary::handleResource( char type, char const * resource, siz
       while( it.hasNext() )
       {
         QRegularExpressionMatch match = it.next();
-        articleNewText += articleText.midRef( pos, match.capturedStart() - pos );
+        articleNewText += articleText.mid( pos, match.capturedStart() - pos );
         pos = match.capturedEnd();
 
         QString src = match.captured( 2 );
@@ -629,7 +629,7 @@ string StardictDictionary::handleResource( char type, char const * resource, siz
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
       if( pos )
       {
-        articleNewText += articleText.midRef( pos );
+        articleNewText += articleText.mid( pos );
         articleText = articleNewText;
         articleNewText.clear();
       }
@@ -689,24 +689,25 @@ void StardictDictionary::pangoToHtml( QString & text )
  * Attributes "fallback", "lang", "gravity", "gravity_hint" just ignored
  */
 
-  QRegExp spanRegex( "<span\\s*([^>]*)>", Qt::CaseInsensitive );
-  QRegExp styleRegex( "(\\w+)=\"([^\"]*)\"" );
+  QRegularExpression spanRegex( "<span\\s*([^>]*)>", QRegularExpression::CaseInsensitiveOption );
+  QRegularExpression styleRegex( "(\\w+)=\"([^\"]*)\"" );
 
   text.replace( "\n", "<br>" );
 
-  int pos = 0;
+  qsizetype spanPos = 0;
   do
   {
-    pos = spanRegex.indexIn( text, pos );
-    if( pos >= 0 )
+    QRegularExpressionMatch spanMatch = spanRegex.matchView( QStringView(text), spanPos );
+    spanPos = spanMatch.capturedStart();
+    if( spanPos >= 0 )
     {
-      QString styles = spanRegex.cap( 1 );
+      QString styles = spanMatch.captured( 1 );
       QString newSpan( "<span style=\"" );
-      int stylePos = 0;
+      qsizetype stylePos = 0;
       do
       {
-        stylePos = styleRegex.indexIn( styles, stylePos );
-        QString style = styleRegex.cap( 1 );
+        QRegularExpressionMatch styleMatch = styleRegex.matchView( QStringView(styles), stylePos);
+        QString style = styleMatch.captured( 1 );
         if( stylePos >= 0 )
         {
           if( style.compare( "font_desc", Qt::CaseInsensitive ) == 0
@@ -714,7 +715,7 @@ void StardictDictionary::pangoToHtml( QString & text )
           {
             // Parse font description
 
-            QStringList list = styleRegex.cap( 2 ).split( " ", Qt4x5::skipEmptyParts() );
+            QStringList list = styleMatch.captured( 2 ).split( " ", Qt4x5::skipEmptyParts() );
             int n;
             QString sizeStr, stylesStr, familiesStr;
             for( n = list.size() - 1; n >= 0; n-- )
@@ -839,30 +840,30 @@ void StardictDictionary::pangoToHtml( QString & text )
           }
           else if( style.compare( "font_family", Qt::CaseInsensitive ) == 0
                    || style.compare( "face", Qt::CaseInsensitive ) == 0 )
-            newSpan += QString( "font-family:" ) + styleRegex.cap( 2 ) + ";";
+            newSpan += QString( "font-family:" ) + styleMatch.captured( 2 ) + ";";
           else if( style.compare( "font_size", Qt::CaseInsensitive ) == 0
                    || style.compare( "size", Qt::CaseInsensitive ) == 0 )
           {
-            if( styleRegex.cap( 2 )[ 0 ].isLetter()
-                || styleRegex.cap( 2 ).endsWith( "px", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "pt", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "em", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "%" ) )
-              newSpan += QString( "font-size:" ) + styleRegex.cap( 2 ) +";";
+            if( styleMatch.captured( 2 )[ 0 ].isLetter()
+                || styleMatch.captured( 2 ).endsWith( "px", Qt::CaseInsensitive )
+                || styleMatch.captured( 2 ).endsWith( "pt", Qt::CaseInsensitive )
+                || styleMatch.captured( 2 ).endsWith( "em", Qt::CaseInsensitive )
+                || styleMatch.captured( 2 ).endsWith( "%" ) )
+              newSpan += QString( "font-size:" ) + styleMatch.captured( 2 ) +";";
             else
             {
-              int size = styleRegex.cap( 2 ).toInt();
+              int size = styleMatch.captured( 2 ).toInt();
               if( size )
                 newSpan += QString( "font-size:%1pt;" ).arg( size / 1024.0, 0, 'f', 3 );
             }
           }
           else if( style.compare( "font_style", Qt::CaseInsensitive ) == 0
                    || style.compare( "style", Qt::CaseInsensitive ) == 0)
-            newSpan += QString( "font-style:" ) + styleRegex.cap( 2 ) + ";";
+            newSpan += QString( "font-style:" ) + styleMatch.captured( 2 ) + ";";
           else if( style.compare( "weight", Qt::CaseInsensitive ) == 0
                    || style.compare( "weight", Qt::CaseInsensitive ) == 0)
           {
-            QString str = styleRegex.cap( 2 );
+            QString str = styleMatch.captured( 2 );
             if( str.compare( "ultralight", Qt::CaseInsensitive ) == 0 )
               newSpan += QString( "font-weight:100;" );
             else if( str.compare( "light", Qt::CaseInsensitive ) == 0 )
@@ -877,15 +878,15 @@ void StardictDictionary::pangoToHtml( QString & text )
           else if( style.compare( "font_variant", Qt::CaseInsensitive ) == 0
                    || style.compare( "variant", Qt::CaseInsensitive ) == 0 )
           {
-            if( styleRegex.cap( 2 ).compare( "smallcaps", Qt::CaseInsensitive ) == 0 )
+            if( styleMatch.captured( 2 ).compare( "smallcaps", Qt::CaseInsensitive ) == 0 )
               newSpan += QString( "font-variant:small-caps" );
             else
-              newSpan += QString( "font-variant:" ) + styleRegex.cap( 2 ) + ";";
+              newSpan += QString( "font-variant:" ) + styleMatch.captured( 2 ) + ";";
           }
           else if( style.compare( "font_stretch", Qt::CaseInsensitive ) == 0
                    || style.compare( "stretch", Qt::CaseInsensitive ) == 0 )
           {
-            QString str = styleRegex.cap( 2 );
+            QString str = styleMatch.captured( 2 );
             if( str.compare( "ultracondensed", Qt::CaseInsensitive ) == 0 )
               newSpan += QString( "font-stretch:ultra-condensed;" );
             else if( str.compare( "extracondensed", Qt::CaseInsensitive ) == 0 )
@@ -904,77 +905,77 @@ void StardictDictionary::pangoToHtml( QString & text )
           else if( style.compare( "foreground", Qt::CaseInsensitive ) == 0
                    || style.compare( "fgcolor", Qt::CaseInsensitive ) == 0
                    || style.compare( "color", Qt::CaseInsensitive ) == 0 )
-            newSpan += QString( "color:" ) + styleRegex.cap( 2 ) + ";";
+            newSpan += QString( "color:" ) + styleMatch.captured( 2 ) + ";";
           else if( style.compare( "background", Qt::CaseInsensitive ) == 0
                    || style.compare( "bgcolor", Qt::CaseInsensitive ) == 0 )
-            newSpan += QString( "background-color:" ) + styleRegex.cap( 2 ) + ";";
+            newSpan += QString( "background-color:" ) + styleMatch.captured( 2 ) + ";";
           else if( style.compare( "underline_color", Qt::CaseInsensitive ) == 0
                    || style.compare( "strikethrough_color", Qt::CaseInsensitive ) == 0 )
-            newSpan += QString( "text-decoration-color:" ) + styleRegex.cap( 2 ) + ";";
+            newSpan += QString( "text-decoration-color:" ) + styleMatch.captured( 2 ) + ";";
           else if( style.compare( "underline", Qt::CaseInsensitive ) == 0 )
           {
-            if( styleRegex.cap( 2 ).compare( "none", Qt::CaseInsensitive ) )
+            if( styleMatch.captured( 2 ).compare( "none", Qt::CaseInsensitive ) )
               newSpan += QString( "text-decoration-line:none;" );
             else
             {
               newSpan += QString( "text-decoration-line:underline; " );
-              if( styleRegex.cap( 2 ).compare( "low", Qt::CaseInsensitive ) )
+              if( styleMatch.captured( 2 ).compare( "low", Qt::CaseInsensitive ) )
                 newSpan += QString( "text-decoration-style:dotted;" );
-              else if( styleRegex.cap( 2 ).compare( "single", Qt::CaseInsensitive ) )
+              else if( styleMatch.captured( 2 ).compare( "single", Qt::CaseInsensitive ) )
                 newSpan += QString( "text-decoration-style:solid;" );
-              else if( styleRegex.cap( 2 ).compare( "error", Qt::CaseInsensitive ) )
+              else if( styleMatch.captured( 2 ).compare( "error", Qt::CaseInsensitive ) )
                 newSpan += QString( "text-decoration-style:wavy;" );
               else
-                newSpan += QString( "text-decoration-style:" ) + styleRegex.cap( 2 ) + ";";
+                newSpan += QString( "text-decoration-style:" ) + styleMatch.captured( 2 ) + ";";
             }
           }
           else if( style.compare( "strikethrough", Qt::CaseInsensitive ) == 0 )
           {
-            if( styleRegex.cap( 2 ).compare( "true", Qt::CaseInsensitive ) )
+            if( styleMatch.captured( 2 ).compare( "true", Qt::CaseInsensitive ) )
               newSpan += QString( "text-decoration-line:line-through;" );
             else
               newSpan += QString( "text-decoration-line:none;" );
           }
           else if( style.compare( "rise", Qt::CaseInsensitive ) == 0 )
           {
-            if( styleRegex.cap( 2 ).endsWith( "px", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "pt", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "em", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "%" ) )
-              newSpan += QString( "vertical-align:" ) + styleRegex.cap( 2 ) +";";
+            if( styleMatch.captured( 2 ).endsWith( "px", Qt::CaseInsensitive )
+                  || styleMatch.captured( 2 ).endsWith( "pt", Qt::CaseInsensitive )
+                  || styleMatch.captured( 2 ).endsWith( "em", Qt::CaseInsensitive )
+                  || styleMatch.captured( 2 ).endsWith( "%" ) )
+              newSpan += QString( "vertical-align:" ) + styleMatch.captured( 2 ) +";";
             else
             {
-              int riseValue = styleRegex.cap( 2 ).toInt();
+              int riseValue = styleMatch.captured( 2 ).toInt();
               if( riseValue )
                 newSpan += QString( "vertical-align:%1pt;" ).arg( riseValue / 1024.0, 0, 'f', 3 );
             }
           }
           else if( style.compare( "letter_spacing", Qt::CaseInsensitive ) == 0 )
           {
-            if( styleRegex.cap( 2 ).endsWith( "px", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "pt", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "em", Qt::CaseInsensitive )
-                || styleRegex.cap( 2 ).endsWith( "%" ) )
-              newSpan += QString( "letter-spacing:" ) + styleRegex.cap( 2 ) +";";
+            if( styleMatch.captured( 2 ).endsWith( "px", Qt::CaseInsensitive )
+                  || styleMatch.captured( 2 ).endsWith( "pt", Qt::CaseInsensitive )
+                  || styleMatch.captured( 2 ).endsWith( "em", Qt::CaseInsensitive )
+                  || styleMatch.captured( 2 ).endsWith( "%" ) )
+              newSpan += QString( "letter-spacing:" ) + styleMatch.captured( 2 ) +";";
             else
             {
-              int spacing = styleRegex.cap( 2 ).toInt();
+              int spacing = styleMatch.captured( 2 ).toInt();
               if( spacing )
                 newSpan += QString( "letter-spacing:%1pt;" ).arg( spacing / 1024.0, 0, 'f', 3 );
             }
           }
 
-          stylePos += styleRegex.matchedLength();
+          stylePos = styleMatch.capturedEnd();
         }
       }
       while( stylePos >= 0 );
 
       newSpan += "\">";
-      text.replace( pos, spanRegex.matchedLength(), newSpan );
-      pos += newSpan.size();
+      text.replace( spanPos, spanMatch.capturedLength(), newSpan );
+      spanPos += newSpan.size();
     }
   }
-  while( pos >= 0 );
+  while( spanPos >= 0 );
 
   text.replace( "  ", "&nbsp;&nbsp;" );
 }
@@ -1857,7 +1858,7 @@ void StardictResourceRequest::run()
       while( it.hasNext() )
       {
         QRegularExpressionMatch match = it.next();
-        newCSS += css.midRef( pos, match.capturedStart() - pos );
+        newCSS += css.mid( pos, match.capturedStart() - pos );
         pos = match.capturedEnd();
 
         QString url = match.captured( 2 );
@@ -1875,7 +1876,7 @@ void StardictResourceRequest::run()
       }
       if( pos )
       {
-        newCSS += css.midRef( pos );
+        newCSS += css.mid( pos );
         css = newCSS;
         newCSS.clear();
       }

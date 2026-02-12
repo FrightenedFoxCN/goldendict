@@ -1,12 +1,20 @@
-/* Thin wrappers for retaining compatibility for both Qt4.x and Qt5.x */
+/* Thin wrappers for retaining compatibility for both Qt4.x, Qt5.x and Qt6.x */
 
 #ifndef QT4X5_HH
 #define QT4X5_HH
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+# define IS_QT_4    1
 # define IS_QT_5    0
-#else
+# define IS_QT_6    0
+#elif QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+# define IS_QT_4    0
 # define IS_QT_5    1
+# define IS_QT_6    0
+#else
+# define IS_QT_4    0
+# define IS_QT_5    0
+# define IS_QT_6    1
 #endif
 
 #include <QProcess>
@@ -15,14 +23,14 @@
 #include <QTextDocument>
 
 #include <QUrl>
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
 #include <QUrlQuery>
 #endif
 
 namespace Qt4x5
 {
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 14, 0 )
+#if IS_QT_5 || IS_QT_6
 inline Qt::SplitBehaviorFlags keepEmptyParts()
 { return Qt::KeepEmptyParts; }
 inline Qt::SplitBehaviorFlags skipEmptyParts()
@@ -45,7 +53,7 @@ inline Qt::MouseButton middleButton()
 
 inline QString escape( QString const & plain )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return plain.toHtmlEscaped();
 #else
   return Qt::escape( plain );
@@ -58,7 +66,7 @@ namespace AtomicInt
 
 inline int loadAcquire( QAtomicInt const & ref )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return ref.loadAcquire();
 #else
   return ( int )ref;
@@ -75,7 +83,7 @@ namespace Url
 //       https://codereview.qt-project.org/#change,38257
 inline QString ensureLeadingSlash( const QString & path )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   QLatin1Char slash( '/' );
   if ( path.startsWith( slash ) )
     return path;
@@ -87,7 +95,7 @@ inline QString ensureLeadingSlash( const QString & path )
 
 inline bool hasQueryItem( QUrl const & url, QString const & key )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return QUrlQuery( url ).hasQueryItem( key );
 #else
   return url.hasQueryItem( key );
@@ -96,7 +104,7 @@ inline bool hasQueryItem( QUrl const & url, QString const & key )
 
 inline QString queryItemValue( QUrl const & url, QString const & item )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return QUrlQuery( url ).queryItemValue( item, QUrl::FullyDecoded );
 #else
   return url.queryItemValue( item );
@@ -105,7 +113,7 @@ inline QString queryItemValue( QUrl const & url, QString const & item )
 
 inline QByteArray encodedQueryItemValue( QUrl const & url, QString const & item )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return QUrlQuery( url ).queryItemValue( item, QUrl::FullyEncoded ).toLatin1();
 #else
   return url.encodedQueryItemValue( item.toLatin1() );
@@ -114,7 +122,7 @@ inline QByteArray encodedQueryItemValue( QUrl const & url, QString const & item 
 
 inline void addQueryItem( QUrl & url, QString const & key, QString const & value )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   QUrlQuery urlQuery( url );
   urlQuery.addQueryItem( key, value );
   url.setQuery( urlQuery );
@@ -125,7 +133,7 @@ inline void addQueryItem( QUrl & url, QString const & key, QString const & value
 
 inline void removeQueryItem( QUrl & url, QString const & key )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   QUrlQuery urlQuery( url );
   urlQuery.removeQueryItem( key );
   url.setQuery( urlQuery );
@@ -136,7 +144,7 @@ inline void removeQueryItem( QUrl & url, QString const & key )
 
 inline QString fullPath( QUrl const & url )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   QString path = url.path( QUrl::FullyDecoded );
   if( url.hasQuery() )
   {
@@ -151,7 +159,7 @@ inline QString fullPath( QUrl const & url )
 
 inline void setQueryItems( QUrl & url, QList< QPair< QString, QString > > const & query )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   QUrlQuery urlQuery( url );
   urlQuery.setQueryItems( query );
   url.setQuery( urlQuery );
@@ -162,7 +170,7 @@ inline void setQueryItems( QUrl & url, QList< QPair< QString, QString > > const 
 
 inline QString path( QUrl const & url )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return url.path( QUrl::FullyDecoded );
 #else
   return url.path();
@@ -171,7 +179,7 @@ inline QString path( QUrl const & url )
 
 inline void setFragment( QUrl & url, const QString & fragment )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   url.setFragment( fragment, QUrl::DecodedMode );
 #else
   url.setFragment( fragment );
@@ -180,7 +188,7 @@ inline void setFragment( QUrl & url, const QString & fragment )
 
 inline QString fragment( const QUrl & url )
 {
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
   return url.fragment( QUrl::FullyDecoded );
 #else
   return url.fragment();
@@ -192,7 +200,7 @@ inline QString fragment( const QUrl & url )
 namespace Dom
 {
 
-#if IS_QT_5
+#if IS_QT_5 || IS_QT_6
 typedef int size_type;
 #else
 typedef uint size_type;
@@ -205,7 +213,8 @@ namespace Process
 
 inline bool startDetached( QString const & command )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
+#if IS_QT_5 || IS_QT_6
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
   auto args = QProcess::splitCommand( command );
   if( args.empty() )
     return false;
@@ -214,10 +223,12 @@ inline bool startDetached( QString const & command )
 #else
   return QProcess::startDetached( command );
 #endif
+#else
+  return QProcess::startDetached( command );
+#endif
 }
 
 }
 
 }
-
 #endif // QT4X5_HH

@@ -4,16 +4,19 @@
 #ifndef __ARTICLEVIEW_HH_INCLUDED__
 #define __ARTICLEVIEW_HH_INCLUDED__
 
-#include <QWebView>
+#include <QWebEnginePage>
+#include <QRegularExpression>
 #include <QMap>
 #include <QUrl>
 #include <QSet>
+#include <QVariant>
 #include <list>
 #include "article_netmgr.hh"
 #include "audioplayerinterface.hh"
 #include "instances.hh"
 #include "groupcombobox.hh"
 #include "ui_articleview.h"
+#include "qt4x5.hh"
 
 class ArticleViewJsProxy;
 class ResourceToSaveHandler;
@@ -63,7 +66,11 @@ class ArticleView: public QFrame
   int ftsPosition;
 
   void highlightFTSResults();
+#if IS_QT_6
+  void highlightAllFtsOccurences( QWebEnginePage::FindFlags flags );
+#else
   void highlightAllFtsOccurences( QWebPage::FindFlags flags );
+#endif
   void performFtsFindOperation( bool backwards );
 
 public:
@@ -110,7 +117,7 @@ public:
                        Contexts const & contexts = Contexts() );
 
   void showDefinition( QString const & word, QStringList const & dictIDs,
-                       QRegExp const & searchRegExp, unsigned group,
+                       QRegularExpression const & searchRegExp, unsigned group,
                        bool ignoreDiacritics );
 
   /// Clears the view and sets the application-global waiting cursor,
@@ -274,7 +281,11 @@ private slots:
   void handleUrlChanged( QUrl const & url );
   void attachToJavaScript();
   void linkClicked( QUrl const & );
+#if IS_QT_6
+  void linkHovered( const QString & link );
+#else
   void linkHovered( const QString & link, const QString & title, const QString & textContent );
+#endif
   void contextMenuRequested( QPoint const & );
 
   void resourceDownloadFinished();
@@ -342,11 +353,22 @@ private:
 
   /// Use the known information about the current frame to update the current
   /// article's value.
+#if IS_QT_6
+  void updateCurrentArticleFromCurrentFrame();
+#else
   void updateCurrentArticleFromCurrentFrame( QWebFrame * frame = 0 );
+#endif
 
   /// Saves current article and scroll position for the current history item.
   /// Should be used when leaving the page.
   void saveHistoryUserData();
+
+#if IS_QT_6
+  QString currentHistoryKey() const;
+  QVariantMap currentHistoryUserData() const;
+  void setCurrentHistoryUserData( const QVariantMap & userData );
+  QMap< QString, QVariantMap > historyUserDataByUrl;
+#endif
 
   /// Loads a page at @p url into view.
   void load( QUrl const & url );
@@ -376,7 +398,9 @@ protected:
 private:
   QString insertSpans( QString const & html );
   void readTag( QString const & from, QString & to, int & count );
+#if !IS_QT_6
   QString checkElement( QWebElement & elem, const QPoint & pt );
+#endif
 public:
   QString wordAtPoint( int x, int y );
 #endif

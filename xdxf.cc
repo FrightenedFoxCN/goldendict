@@ -38,6 +38,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QPainter>
+#include <QRegularExpression>
 #include <QDebug>
 #include <QRegExp>
 
@@ -912,7 +913,7 @@ void indexArticle( GzippedFile & gzFile,
 {
   ArticleFormat format( Default );
 
-  QStringRef formatValue = stream.attributes().value( "f" );
+  QString formatValue = stream.attributes().value( "f" ).toString();
 
   if ( formatValue == "v" )
     format = Visual;
@@ -1315,7 +1316,7 @@ vector< sptr< Dictionary::Class > > makeDictionaries(
                     if( isLogical )
                     {
                       desc = desc.simplified();
-                      desc.replace( QRegExp( "<br\\s*>\\s*</br>" ), QChar( '\n' ) );
+                      desc.replace( QRegularExpression( "<br\\s*>\\s*</br>" ), QChar( '\n' ) );
                     }
 
                     if ( dictionaryDescription.isEmpty() )

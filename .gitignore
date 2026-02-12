@@ -7,10 +7,12 @@ mouseover_win32/*.a
 locale/*.qm
 debug/
 build/
+build-*/
 release/
 tmp/
 goldendict
 winlibs/lib32-48/
+.vscode/
 
 Makefile
 Makefile.Debug

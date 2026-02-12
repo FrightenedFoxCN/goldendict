@@ -3,7 +3,6 @@
 
 #include "articlewebview.hh"
 #include <QMouseEvent>
-#include <QWebFrame>
 #include <QApplication>
 #include "articleinspector.hh"
 #include "qt4x5.hh"
@@ -12,23 +11,38 @@
 #include <qt_windows.h>
 #endif
 
+ArticleWebPage::ArticleWebPage( QObject * parent ):
+  QWebEnginePage( parent )
+{
+}
+
+bool ArticleWebPage::acceptNavigationRequest( QUrl const & url, NavigationType type, bool isMainFrame )
+{
+  if ( type == QWebEnginePage::NavigationTypeLinkClicked )
+  {
+    emit linkClicked( url );
+    return false;
+  }
+
+  return QWebEnginePage::acceptNavigationRequest( url, type, isMainFrame );
+}
+
 ArticleWebView::ArticleWebView( QWidget *parent ):
-  QWebView( parent ),
-#if QT_VERSION >= 0x040600
+  QWebEngineView( parent ),
   inspector( NULL ),
-#endif
+  webPage( new ArticleWebPage( this ) ),
   midButtonPressed( false ),
   selectionBySingleClick( false ),
   showInspectorDirectly( true )
 {
+  setPage( webPage );
+  connect( webPage, SIGNAL( linkClicked( QUrl const & ) ), this, SIGNAL( linkClicked( QUrl const & ) ) );
 }
 
 ArticleWebView::~ArticleWebView()
 {
-#if QT_VERSION >= 0x040600
   if ( inspector )
     inspector->deleteLater();
-#endif
 }
 
 void ArticleWebView::setUp( Config::Class * cfg )
@@ -36,16 +50,15 @@ void ArticleWebView::setUp( Config::Class * cfg )
   this->cfg = cfg;
 }
 
-void ArticleWebView::triggerPageAction( QWebPage::WebAction action, bool checked )
+void ArticleWebView::triggerPageAction( QWebEnginePage::WebAction action, bool checked )
 {
-#if QT_VERSION >= 0x040600
-  if ( action == QWebPage::InspectElement )
+  if ( action == QWebEnginePage::InspectElement )
   {
     // Get or create inspector instance for current view.
     if ( !inspector )
     {
       inspector = new ArticleInspector( cfg );
-      inspector->setPage( page() );
+      inspector->setInspectedPage( page() );
       connect( this, SIGNAL( destroyed() ), inspector, SLOT( beforeClosed() ) );
     }
 
@@ -59,9 +72,8 @@ void ArticleWebView::triggerPageAction( QWebPage::WebAction action, bool checked
       return;
     }
   }
-#endif
 
-  QWebView::triggerPageAction( action, checked );
+  page()->triggerAction( action, checked );
 }
 
 bool ArticleWebView::event( QEvent * event )
@@ -81,7 +93,7 @@ bool ArticleWebView::event( QEvent * event )
     break;
   }
 
-  return QWebView::event( event );
+  return QWebEngineView::event( event );
 }
 
 void ArticleWebView::mousePressEvent( QMouseEvent * event )
@@ -89,13 +101,13 @@ void ArticleWebView::mousePressEvent( QMouseEvent * event )
   if ( event->buttons() & Qt4x5::middleButton() )
     midButtonPressed = true;
 
-  QWebView::mousePressEvent( event );
+  QWebEngineView::mousePressEvent( event );
 
   if ( selectionBySingleClick && ( event->buttons() & Qt::LeftButton ) )
   {
-    findText(""); // clear the selection first, if any
+    findText( "" ); // clear the selection first, if any
     QMouseEvent ev( QEvent::MouseButtonDblClick, event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers() );
-    QApplication::sendEvent( page(), &ev );
+    QApplication::sendEvent( this, &ev );
   }
 }
 
@@ -103,7 +115,7 @@ void ArticleWebView::mouseReleaseEvent( QMouseEvent * event )
 {
   bool noMidButton = !( event->buttons() & Qt4x5::middleButton() );
 
-  QWebView::mouseReleaseEvent( event );
+  QWebEngineView::mouseReleaseEvent( event );
 
   if ( midButtonPressed & noMidButton )
     midButtonPressed = false;
@@ -111,14 +123,9 @@ void ArticleWebView::mouseReleaseEvent( QMouseEvent * event )
 
 void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
 {
-  QWebView::mouseDoubleClickEvent( event );
-#if QT_VERSION >= 0x040600
-  int scrollBarWidth = page()->mainFrame()->scrollBarGeometry( Qt::Vertical ).width();
-  int scrollBarHeight = page()->mainFrame()->scrollBarGeometry( Qt::Horizontal ).height();
-#else
+  QWebEngineView::mouseDoubleClickEvent( event );
   int scrollBarWidth = 0;
   int scrollBarHeight = 0;
-#endif
 
   // emit the signal only if we are not double-clicking on scrollbars
   if ( ( event->x() < width() - scrollBarWidth ) &&
@@ -131,14 +138,14 @@ void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
 
 void ArticleWebView::focusInEvent( QFocusEvent * event )
 {
-  QWebView::focusInEvent( event );
+  QWebEngineView::focusInEvent( event );
 
   switch( event->reason() )
   {
     case Qt::MouseFocusReason:
     case Qt::TabFocusReason:
     case Qt::BacktabFocusReason:
-      page()->mainFrame()->evaluateJavaScript("top.focus();");
+      page()->runJavaScript( "window.focus();" );
       break;
 
     default:
@@ -150,7 +157,7 @@ void ArticleWebView::wheelEvent( QWheelEvent *ev )
 {
 #ifdef Q_OS_WIN32
 
-  // Avoid wrong mouse wheel handling in QWebView
+  // Avoid wrong mouse wheel handling in QWebEngineView
   // if system preferences is set to "scroll by page"
 
   if( ev->modifiers() == Qt::NoModifier )
@@ -159,7 +166,8 @@ void ArticleWebView::wheelEvent( QWheelEvent *ev )
     SystemParametersInfo( SPI_GETWHEELSCROLLLINES, 0, &nLines, 0 );
     if( nLines == WHEEL_PAGESCROLL )
     {
-      QKeyEvent kev( QEvent::KeyPress, ev->delta() > 0 ? Qt::Key_PageUp : Qt::Key_PageDown,
+      const int wheelDelta = ev->angleDelta().y();
+      QKeyEvent kev( QEvent::KeyPress, wheelDelta > 0 ? Qt::Key_PageUp : Qt::Key_PageDown,
                      Qt::NoModifier );
       QApplication::sendEvent( this, &kev );
 
@@ -175,7 +183,7 @@ void ArticleWebView::wheelEvent( QWheelEvent *ev )
   }
   else
   {
-     QWebView::wheelEvent( ev );
+      QWebEngineView::wheelEvent( ev );
   }
 
 }

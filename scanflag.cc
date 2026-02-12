@@ -1,12 +1,10 @@
 #include <QCursor>
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 
 #include "scanflag.hh"
 #include "ui_scanflag.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 11, 0 )
-#include <QScreen>
-#endif
 
 static Qt::WindowFlags popupWindowFlags =
 
@@ -59,11 +57,10 @@ void ScanFlag::showScanFlag()
 
   QPoint currentPos = QCursor::pos();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 11, 0 )
-  QRect const desktop = QGuiApplication::screenAt( currentPos )->geometry();
-#else
-  QRect const desktop = QApplication::desktop()->screenGeometry();
-#endif
+  QScreen * screen = QGuiApplication::screenAt( currentPos );
+  if( !screen )
+    screen = QGuiApplication::primaryScreen();
+  QRect const desktop = screen ? screen->geometry() : QRect();
 
   QSize windowSize = geometry().size();
 

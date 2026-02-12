@@ -19,6 +19,8 @@
 #include "scanflag.hh"
 #endif
 
+class QEnterEvent;
+
 /// This is a popup dialog to show translations when clipboard scanning mode
 /// is enabled.
 class ScanPopup: public QMainWindow, KeyboardState
@@ -177,7 +179,7 @@ private:
   virtual void mouseMoveEvent( QMouseEvent * );
   virtual void mouseReleaseEvent( QMouseEvent * );
   virtual void leaveEvent( QEvent * event );
-  virtual void enterEvent( QEvent * event );
+  virtual void enterEvent( QEnterEvent * event );
   virtual void showEvent( QShowEvent * );
   virtual void closeEvent( QCloseEvent * );
   virtual void moveEvent( QMoveEvent * );

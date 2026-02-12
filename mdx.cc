@@ -19,6 +19,8 @@
 #include "ftshelpers.hh"
 #include "htmlescape.hh"
 
+#include <QRegularExpression>
+
 #include <algorithm>
 #include <map>
 #include <set>
@@ -895,7 +897,7 @@ void MddResourceRequest::run()
         while ( it.hasNext() )
         {
           QRegularExpressionMatch match = it.next();
-          newCSS += css.midRef( pos, match.capturedStart() - pos );
+          newCSS += css.mid( pos, match.capturedStart() - pos );
           pos = match.capturedEnd();
           QString url = match.captured( 2 );
 #else
@@ -932,7 +934,7 @@ void MddResourceRequest::run()
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
         if( pos )
         {
-          newCSS += css.midRef( pos );
+          newCSS += css.mid( pos );
           css = newCSS;
           newCSS.clear();
         }
@@ -1029,16 +1031,20 @@ void MdxDictionary::loadArticle( uint32_t offset, string & articleText, bool noF
 
   // Check for unclosed <span> and <div>
 
-  int openTags = article.count( QRegExp( "<\\s*span\\b", Qt::CaseInsensitive ) );
-  int closedTags = article.count( QRegExp( "<\\s*/span\\s*>", Qt::CaseInsensitive ) );
+  int openTags = article.count( QRegularExpression( "<\\s*span\\b",
+                                                     QRegularExpression::CaseInsensitiveOption ) );
+  int closedTags = article.count( QRegularExpression( "<\\s*/span\\s*>",
+                                                       QRegularExpression::CaseInsensitiveOption ) );
   while( openTags > closedTags )
   {
     article += "</span>";
     closedTags += 1;
   }
 
-  openTags = article.count( QRegExp( "<\\s*div\\b", Qt::CaseInsensitive ) );
-  closedTags = article.count( QRegExp( "<\\s*/div\\s*>", Qt::CaseInsensitive ) );
+  openTags = article.count( QRegularExpression( "<\\s*div\\b",
+                                                 QRegularExpression::CaseInsensitiveOption ) );
+  closedTags = article.count( QRegularExpression( "<\\s*/div\\s*>",
+                                                   QRegularExpression::CaseInsensitiveOption ) );
   while( openTags > closedTags )
   {
     article += "</div>";
@@ -1090,7 +1096,7 @@ QString & MdxDictionary::filterResource( QString const & articleId, QString & ar
     if( allLinksMatch.capturedEnd() < linkPos )
       continue;
 
-    articleNewText += article.midRef( linkPos, allLinksMatch.capturedStart() - linkPos );
+    articleNewText += article.mid( linkPos, allLinksMatch.capturedStart() - linkPos );
     linkPos = allLinksMatch.capturedEnd();
 
     QString linkTxt = allLinksMatch.captured();
@@ -1165,7 +1171,7 @@ QString & MdxDictionary::filterResource( QString const & articleId, QString & ar
         match = closeScriptTagRe.match( article, linkPos );
         if( match.hasMatch() )
         {
-          articleNewText += article.midRef( linkPos, match.capturedEnd() - linkPos );
+          articleNewText += article.mid( linkPos, match.capturedEnd() - linkPos );
           linkPos = match.capturedEnd();
         }
         continue;
@@ -1206,7 +1212,7 @@ QString & MdxDictionary::filterResource( QString const & articleId, QString & ar
   }
   if( linkPos )
   {
-    articleNewText += article.midRef( linkPos );
+    articleNewText += article.mid( linkPos );
     article = articleNewText;
   }
 

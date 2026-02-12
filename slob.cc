@@ -851,7 +851,7 @@ string SlobDictionary::convert( const string & in, RefEntry const & entry )
   {
     QRegularExpressionMatch match = it.next();
 
-    newText += text.midRef( pos, match.capturedStart() - pos );
+    newText += text.mid( pos, match.capturedStart() - pos );
     pos = match.capturedEnd();
 
     QStringList list = match.capturedTexts();
@@ -882,8 +882,9 @@ string SlobDictionary::convert( const string & in, RefEntry const & entry )
     else
       anchor.clear();
 
-    tag.remove( QRegExp(".*/") ).
-        remove( QRegExp( "\\.(s|)htm(l|)$", Qt::CaseInsensitive ) ).
+    tag.remove( QRegularExpression( ".*/" ) ).
+      remove( QRegularExpression( "\\.(s|)htm(l|)$",
+                    QRegularExpression::CaseInsensitiveOption ) ).
         replace( "_", "%20" ).
         prepend( "<a href=\"gdlookup://localhost/" ).
         append( anchor + "\" " + list[4] + ">" );
@@ -893,7 +894,7 @@ string SlobDictionary::convert( const string & in, RefEntry const & entry )
   }
   if( pos )
   {
-    newText += text.midRef( pos );
+    newText += text.mid( pos );
     text = newText;
   }
   newText.clear();
@@ -932,7 +933,7 @@ string SlobDictionary::convert( const string & in, RefEntry const & entry )
     {
       QRegularExpressionMatch match = it.next();
 
-      newText += text.midRef( pos, match.capturedStart() - pos );
+      newText += text.mid( pos, match.capturedStart() - pos );
       pos = match.capturedEnd();
 
       QStringList list = match.capturedTexts();
@@ -1063,7 +1064,7 @@ string SlobDictionary::convert( const string & in, RefEntry const & entry )
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     if( pos )
     {
-      newText += text.midRef( pos );
+      newText += text.mid( pos );
       text = newText;
     }
     newText.clear();

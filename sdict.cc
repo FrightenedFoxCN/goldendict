@@ -336,22 +336,28 @@ string SdictDictionary::convert( string const & in )
     int n = 0;
     for( ; ; )
     {
-      QRegExp start_link_tag( "<\\s*r\\s*>", Qt::CaseInsensitive );
-      QRegExp end_link_tag( "<\\s*/r\\s*>", Qt::CaseInsensitive );
+      QRegularExpression start_link_tag( "<\\s*r\\s*>",
+                                         QRegularExpression::CaseInsensitiveOption );
+      QRegularExpression end_link_tag( "<\\s*/r\\s*>",
+                                       QRegularExpression::CaseInsensitiveOption );
 
-      n = result.indexOf( start_link_tag, n );
-      if( n < 0 )
+      QRegularExpressionMatch start_match = start_link_tag.match( result, n );
+      if( !start_match.hasMatch() )
         break;
 
-      int end = result.indexOf( end_link_tag, n );
-      if( end < 0 )
+      n = start_match.capturedStart();
+      int tag_len = start_match.capturedLength();
+
+      QRegularExpressionMatch end_match = end_link_tag.match( result, n + tag_len );
+      if( !end_match.hasMatch() )
         break;
 
-      int tag_len = start_link_tag.cap().length();
+      int end = end_match.capturedStart();
+      int end_len = end_match.capturedLength();
       QString link_text = result.mid( n + tag_len, end - n - tag_len );
 
-      result.replace( end, end_link_tag.cap().length(), "</a>" );
-      result.replace( n, tag_len, QString( "<a class=\"sdict_wordref\" href=\"bword:" ) + link_text + "\">");
+      result.replace( end, end_len, "</a>" );
+      result.replace( n, tag_len, QString( "<a class=\"sdict_wordref\" href=\"bword:" ) + link_text + "\">" );
     }
 
     // Adjust text direction for lines

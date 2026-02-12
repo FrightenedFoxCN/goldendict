@@ -4,13 +4,13 @@
 #include "articleview.hh"
 #include <map>
 #include <QMessageBox>
-#include <QWebHitTestResult>
 #include <QMenu>
 #include <QDesktopServices>
-#include <QWebHistory>
 #include <QClipboard>
 #include <QKeyEvent>
 #include <QFileDialog>
+#include <QEventLoop>
+#include <QTimer>
 #include "folding.hh"
 #include "wstring_qt.hh"
 #include "webmultimediadownload.hh"
@@ -21,14 +21,30 @@
 #include "gestures.hh"
 #include "fulltextsearch.hh"
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
+#include <QRegularExpression>
+#include "wildcard.hh"
+#endif
+
+#if IS_QT_6
+#include <QtWebEngineCore/QWebEngineContextMenuRequest>
+#include <QWebEnginePage>
+#include <QWebEngineProfile>
+#include <QWebEngineScript>
+#include <QtWebEngineCore/QWebEngineScriptCollection>
+#include <QWebEngineSettings>
+#include <QWebEngineView>
+#include <QWebChannel>
+#include <QtWebEngineCore/QWebEngineHistory>
+#include <QtWebEngineCore/QWebEngineFindTextResult>
+#include "webengine_schemehandler.hh"
+#else
+#include <QWebHitTestResult>
+#include <QWebHistory>
 #if QT_VERSION >= 0x040600
 #include <QWebElement>
 #include <QWebElementCollection>
 #endif
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
-#include <QRegularExpression>
-#include "wildcard.hh"
 #endif
 
 #include "qt4x5.hh"
@@ -194,12 +210,69 @@ public:
 
 /// End of DiacriticsHandler class
 
+#if IS_QT_6
+static QVariant runJavaScriptSync( QWebEnginePage * page, QString const & script )
+{
+  QVariant result;
+  QEventLoop loop;
+  page->runJavaScript( script, [&]( const QVariant & value ) {
+    result = value;
+    loop.quit();
+  } );
+  loop.exec();
+  return result;
+}
+
+static QString toHtmlSync( QWebEnginePage * page )
+{
+  QString html;
+  QEventLoop loop;
+  page->toHtml( [&]( const QString & value ) {
+    html = value;
+    loop.quit();
+  } );
+  loop.exec();
+  return html;
+}
+
+static QString toPlainTextSync( QWebEnginePage * page )
+{
+  QString text;
+  QEventLoop loop;
+  page->toPlainText( [&]( const QString & value ) {
+    text = value;
+    loop.quit();
+  } );
+  loop.exec();
+  return text;
+}
+
+static QVariant evaluateJavaScriptVariableSafe( QWebEnginePage * page, const QString & variable )
+{
+  return runJavaScriptSync( page,
+                            QString( "( typeof( %1 ) !== 'undefined' && %1 !== undefined ) ? %1 : null;" )
+                            .arg( variable ) );
+}
+
+static bool findTextSync( QWebEngineView * view, QString const & text, QWebEnginePage::FindFlags flags )
+{
+  bool found = false;
+  QEventLoop loop;
+  view->findText( text, flags, [&]( const QWebEngineFindTextResult & result ) {
+    found = result.numberOfMatches() > 0;
+    loop.quit();
+  } );
+  loop.exec();
+  return found;
+}
+#else
 static QVariant evaluateJavaScriptVariableSafe( QWebFrame * frame, const QString & variable )
 {
   return frame->evaluateJavaScript(
         QString( "( typeof( %1 ) !== 'undefined' && %1 !== undefined ) ? %1 : null;" )
         .arg( variable ) );
 }
+#endif
 
 namespace {
 
@@ -274,6 +347,25 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
 
   ui.definition->setUp( const_cast< Config::Class * >( &cfg ) );
 
+#if IS_QT_6
+  {
+    static ArticleUrlSchemeHandler * schemeHandler = 0;
+    static bool schemeHandlerInstalled = false;
+    if ( !schemeHandler )
+      schemeHandler = new ArticleUrlSchemeHandler( articleNetMgr, ui.definition );
+
+    if ( !schemeHandlerInstalled )
+    {
+      QWebEngineProfile * profile = ui.definition->page()->profile();
+      const QByteArray schemes[] = { "gdlookup", "bres", "gdpicture", "gdau", "gdvideo", "gico", "qrcx" };
+      for ( size_t i = 0; i < sizeof( schemes ) / sizeof( schemes[ 0 ] ); ++i )
+        profile->installUrlSchemeHandler( schemes[ i ], schemeHandler );
+
+      schemeHandlerInstalled = true;
+    }
+  }
+#endif
+
   goBackAction.setShortcut( QKeySequence( "Alt+Left" ) );
   ui.definition->addAction( &goBackAction );
   connect( &goBackAction, SIGNAL( triggered() ),
@@ -284,26 +376,47 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
   connect( &goForwardAction, SIGNAL( triggered() ),
            this, SLOT( forward() ) );
 
-  ui.definition->pageAction( QWebPage::Copy )->setShortcut( QKeySequence::Copy );
-  ui.definition->addAction( ui.definition->pageAction( QWebPage::Copy ) );
+  ui.definition->page()->action( QWebEnginePage::Copy )->setShortcut( QKeySequence::Copy );
+  ui.definition->addAction( ui.definition->page()->action( QWebEnginePage::Copy ) );
 
-  QAction * selectAll = ui.definition->pageAction( QWebPage::SelectAll );
+  QAction * selectAll = ui.definition->page()->action( QWebEnginePage::SelectAll );
   selectAll->setShortcut( QKeySequence::SelectAll );
   selectAll->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   ui.definition->addAction( selectAll );
 
   ui.definition->setContextMenuPolicy( Qt::CustomContextMenu );
 
-  ui.definition->page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
-
-  ui.definition->page()->setNetworkAccessManager( &articleNetMgr );
+  ui.definition->page()->settings()->setAttribute( QWebEngineSettings::LocalContentCanAccessRemoteUrls, true );
+  ui.definition->page()->settings()->setAttribute( QWebEngineSettings::LocalContentCanAccessFileUrls, true );
 
   connect( ui.definition, SIGNAL( loadFinished( bool ) ),
            this, SLOT( loadFinished( bool ) ) );
 
+#if IS_QT_6
+  {
+    QWebChannel * channel = new QWebChannel( ui.definition->page() );
+    channel->registerObject( "articleview", jsProxy );
+    ui.definition->page()->setWebChannel( channel );
+
+    QWebEngineScript channelLib;
+    channelLib.setName( "gd-webchannel-lib" );
+    channelLib.setSourceUrl( QUrl( "qrc:/qtwebchannel/qwebchannel.js" ) );
+    channelLib.setInjectionPoint( QWebEngineScript::DocumentCreation );
+    channelLib.setRunsOnSubFrames( true );
+    ui.definition->page()->scripts().insert( channelLib );
+
+    QWebEngineScript channelInit;
+    channelInit.setName( "gd-webchannel-init" );
+    channelInit.setSourceCode( "new QWebChannel(qt.webChannelTransport, function(channel) { window.articleview = channel.objects.articleview; });" );
+    channelInit.setInjectionPoint( QWebEngineScript::DocumentReady );
+    channelInit.setRunsOnSubFrames( true );
+    ui.definition->page()->scripts().insert( channelInit );
+  }
+#else
   attachToJavaScript();
   connect( ui.definition->page()->mainFrame(), SIGNAL( javaScriptWindowObjectCleared() ),
            this, SLOT( attachToJavaScript() ) );
+#endif
 
   connect( ui.definition, SIGNAL( titleChanged( QString const & ) ),
            this, SLOT( handleTitleChanged( QString const & ) ) );
@@ -317,8 +430,13 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
   connect( ui.definition, SIGNAL( linkClicked( QUrl const & ) ),
            this, SLOT( linkClicked( QUrl const & ) ) );
 
+#if IS_QT_6
+  connect( ui.definition->page(), SIGNAL( linkHovered( const QString & ) ),
+           this, SLOT( linkHovered( const QString & ) ) );
+#else
   connect( ui.definition->page(), SIGNAL( linkHovered ( const QString &, const QString &, const QString & ) ),
            this, SLOT( linkHovered ( const QString &, const QString &, const QString & ) ) );
+#endif
 
   connect( ui.definition, SIGNAL( doubleClicked( QPoint ) ),this,SLOT( doubleClicked( QPoint ) ) );
 
@@ -357,10 +475,6 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
   ui.definition->installEventFilter( this );
   ui.searchFrame->installEventFilter( this );
   ui.ftsSearchFrame->installEventFilter( this );
-
-  QWebSettings * settings = ui.definition->page()->settings();
-  settings->setAttribute( QWebSettings::LocalContentCanAccessRemoteUrls, true );
-  settings->setAttribute( QWebSettings::LocalContentCanAccessFileUrls, true );
 
   // Load the default blank page instantly, so there would be no flicker.
 
@@ -482,7 +596,7 @@ void ArticleView::showDefinition( QString const & word, unsigned group,
 }
 
 void ArticleView::showDefinition( QString const & word, QStringList const & dictIDs,
-                                  QRegExp const & searchRegExp, unsigned group,
+                                  QRegularExpression const & searchRegExp, unsigned group,
                                   bool ignoreDiacritics )
 {
   if( dictIDs.isEmpty() )
@@ -498,10 +612,8 @@ void ArticleView::showDefinition( QString const & word, QStringList const & dict
   Qt4x5::Url::addQueryItem( req, "word", word );
   Qt4x5::Url::addQueryItem( req, "dictionaries", dictIDs.join( ",") );
   Qt4x5::Url::addQueryItem( req, "regexp", searchRegExp.pattern() );
-  if( searchRegExp.caseSensitivity() == Qt::CaseSensitive )
+  if( !searchRegExp.patternOptions().testFlag( QRegularExpression::CaseInsensitiveOption ) )
     Qt4x5::Url::addQueryItem( req, "matchcase", "1" );
-  if( searchRegExp.patternSyntax() == QRegExp::WildcardUnix )
-    Qt4x5::Url::addQueryItem( req, "wildcards", "1" );
   Qt4x5::Url::addQueryItem( req, "group", QString::number( group ) );
   if( ignoreDiacritics )
     Qt4x5::Url::addQueryItem( req, "ignore_diacritics", "1" );
@@ -533,6 +645,103 @@ void ArticleView::showAnticipation()
 void ArticleView::loadFinished( bool )
 {
   QUrl url = ui.definition->url();
+
+#if IS_QT_6
+  QWebEnginePage * page = ui.definition->page();
+
+  const QString expandScript =
+    "var frames=document.getElementsByTagName('iframe');"
+    "var were=false;"
+    "for(var i=0;i<frames.length;i++){"
+    " var f=frames[i];"
+    " if(f.name && f.name.indexOf('gdexpandframe-')===0){"
+    "  try{"
+    "   var doc=f.contentDocument || (f.contentWindow?f.contentWindow.document:null);"
+    "   var h=(doc && doc.body)?doc.body.scrollHeight:0;"
+    "   f.style.display='block';"
+    "   if(h){f.height=h;}"
+    "   if(f.contentWindow && f.contentWindow.document){"
+    "    f.contentWindow.document.addEventListener('click',function(ev){window.top.gdLastUrlText=ev.target.textContent;},true);"
+    "    f.contentWindow.document.addEventListener('contextmenu',function(ev){window.top.gdLastUrlText=ev.target.textContent;},true);"
+    "   }"
+    "  }catch(e){}"
+    "  were=true;"
+    " }"
+    "}"
+    "were;";
+
+  runJavaScriptSync( page, expandScript );
+
+  page->runJavaScript( "gdCheckArticlesNumber();" );
+
+  QVariantMap userData = currentHistoryUserData();
+  if ( !userData.isEmpty() )
+  {
+
+    double sx = 0, sy = 0;
+    bool moveToCurrentArticle = true;
+
+    const QVariant sxValue = userData.value( "sx" );
+    if ( sxValue.isValid() && sxValue.canConvert< double >() )
+    {
+      sx = sxValue.toDouble();
+      moveToCurrentArticle = false;
+    }
+
+    const QVariant syValue = userData.value( "sy" );
+    if ( syValue.isValid() && syValue.canConvert< double >() )
+    {
+      sy = syValue.toDouble();
+      moveToCurrentArticle = false;
+    }
+
+    const QString currentArticle = userData.value( "currentArticle" ).toString();
+    if( !currentArticle.isEmpty() )
+    {
+      setCurrentArticle( currentArticle, moveToCurrentArticle );
+    }
+
+    if ( sx != 0 || sy != 0 )
+    {
+      page->runJavaScript( QString( "window.scroll( %1, %2 );" ).arg( sx ).arg( sy ) );
+    }
+  }
+  else
+  {
+    QString const scrollTo = Qt4x5::Url::queryItemValue( url, "scrollto" );
+    if( isScrollTo( scrollTo ) )
+      setCurrentArticle( scrollTo, true );
+  }
+
+  if( !Qt4x5::Url::queryItemValue( url, "gdanchor" ).isEmpty() )
+  {
+    QString anchor = QUrl::fromPercentEncoding( Qt4x5::Url::encodedQueryItemValue( url, "gdanchor" ) );
+    QString escapedAnchor = anchor;
+    escapedAnchor.replace( "\\", "\\\\" );
+    escapedAnchor.replace( "\"", "\\\"" );
+
+    QString script =
+      QString( "var anchor=\"%1\";" ).arg( escapedAnchor ) +
+      "var n=anchor.indexOf('_');"
+      "if(n===33) n=anchor.indexOf('_', n+1); else n=0;"
+      "if(n>0){"
+      " var prefix=anchor.substring(0,34);"
+      " var original=anchor.substring(n+1);"
+      " var rx=new RegExp(prefix+'[0-9a-f]*_'+original);"
+      " var els=document.querySelectorAll('a[name],a[id]');"
+      " for(var i=0;i<els.length;i++){"
+      "  var name=els[i].getAttribute('name')||'';"
+      "  var id=els[i].getAttribute('id')||'';"
+      "  var match=name.match(rx)||id.match(rx);"
+      "  if(match){window.location.hash=match[0];return;}"
+      " }"
+      "}"
+      "window.location.hash=anchor;";
+
+    page->runJavaScript( script );
+  }
+
+#else
 
   // See if we have any iframes in need of expansion
 
@@ -628,7 +837,6 @@ void ArticleView::loadFinished( bool )
   ui.definition->unsetCursor();
   //QApplication::restoreOverrideCursor();
 
-#if QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)
   if( !Qt4x5::Url::queryItemValue( url, "gdanchor" ).isEmpty() )
   {
     QString anchor = QUrl::fromPercentEncoding( Qt4x5::Url::encodedQueryItemValue( url, "gdanchor" ) );
@@ -725,8 +933,13 @@ unsigned ArticleView::getGroup( QUrl const & url )
 
 QStringList ArticleView::getArticlesList()
 {
+#if IS_QT_6
+  return evaluateJavaScriptVariableSafe( ui.definition->page(), "gdArticleContents" )
+      .toString().trimmed().split( ' ', Qt4x5::skipEmptyParts() );
+#else
   return evaluateJavaScriptVariableSafe( ui.definition->page()->mainFrame(), "gdArticleContents" )
       .toString().trimmed().split( ' ', Qt4x5::skipEmptyParts() );
+#endif
 }
 
 QString ArticleView::getActiveArticleId()
@@ -740,7 +953,11 @@ QString ArticleView::getActiveArticleId()
 
 QString ArticleView::getCurrentArticle()
 {
+#if IS_QT_6
+  QVariant v = evaluateJavaScriptVariableSafe( ui.definition->page(), "gdCurrentArticle" );
+#else
   QVariant v = evaluateJavaScriptVariableSafe( ui.definition->page()->mainFrame(), "gdCurrentArticle" );
+#endif
 
   if ( v.type() == QVariant::String )
     return v.toString();
@@ -772,18 +989,30 @@ bool ArticleView::setCurrentArticle( QString const & id, bool moveToIt )
     return false;
 
   if ( moveToIt )
+#if IS_QT_6
+    ui.definition->page()->runJavaScript( QString( "document.getElementById('%1').scrollIntoView(true);" ).arg( id ) );
+
+  ui.definition->page()->runJavaScript(
+    QString( "gdMakeArticleActive( '%1' );" ).arg( dictionaryId ) );
+#else
     ui.definition->page()->mainFrame()->evaluateJavaScript( QString( "document.getElementById('%1').scrollIntoView(true);" ).arg( id ) );
 
   ui.definition->page()->mainFrame()->evaluateJavaScript(
     QString( "gdMakeArticleActive( '%1' );" ).arg( dictionaryId ) );
+#endif
 
   return true;
 }
 
 void ArticleView::selectCurrentArticle()
 {
+#if IS_QT_6
+  ui.definition->page()->runJavaScript(
+        QString( "gdSelectArticle( '%1' );" ).arg( getActiveArticleId() ) );
+#else
   ui.definition->page()->mainFrame()->evaluateJavaScript(
         QString( "gdSelectArticle( '%1' );" ).arg( getActiveArticleId() ) );
+#endif
 }
 
 bool ArticleView::isFramedArticle( QString const & ca )
@@ -791,9 +1020,15 @@ bool ArticleView::isFramedArticle( QString const & ca )
   if ( ca.isEmpty() )
     return false;
 
+#if IS_QT_6
+  return runJavaScriptSync( ui.definition->page(),
+               QString( "!!document.getElementById('gdexpandframe-%1');" )
+                                          .arg( dictionaryIdFromScrollTo( ca ) ) ).toBool();
+#else
   return ui.definition->page()->mainFrame()->
                evaluateJavaScript( QString( "!!document.getElementById('gdexpandframe-%1');" )
                                           .arg( dictionaryIdFromScrollTo( ca ) ) ).toBool();
+#endif
 }
 
 bool ArticleView::isExternalLink( QUrl const & url )
@@ -816,7 +1051,11 @@ void ArticleView::tryMangleWebsiteClickedUrl( QUrl & url, Contexts & contexts )
 
     if ( isFramedArticle( ca ) )
     {
+    #if IS_QT_6
+      QVariant result = evaluateJavaScriptVariableSafe( ui.definition->page(), "gdLastUrlText" );
+    #else
       QVariant result = evaluateJavaScriptVariableSafe( ui.definition->page()->currentFrame(), "gdLastUrlText" );
+    #endif
 
       if ( result.type() == QVariant::String )
       {
@@ -842,6 +1081,39 @@ void ArticleView::tryMangleWebsiteClickedUrl( QUrl & url, Contexts & contexts )
   }
 }
 
+#if IS_QT_6
+void ArticleView::updateCurrentArticleFromCurrentFrame()
+{
+  // QWebEngine does not expose frames; the active article is updated via JS.
+}
+
+QString ArticleView::currentHistoryKey() const
+{
+  QWebEngineHistoryItem item = ui.definition->history()->currentItem();
+  if ( !item.isValid() )
+    return QString();
+
+  return item.url().toString( QUrl::FullyEncoded );
+}
+
+QVariantMap ArticleView::currentHistoryUserData() const
+{
+  const QString key = currentHistoryKey();
+  if ( key.isEmpty() )
+    return QVariantMap();
+
+  return historyUserDataByUrl.value( key );
+}
+
+void ArticleView::setCurrentHistoryUserData( const QVariantMap & userData )
+{
+  const QString key = currentHistoryKey();
+  if ( key.isEmpty() )
+    return;
+
+  historyUserDataByUrl.insert( key, userData );
+}
+#else
 void ArticleView::updateCurrentArticleFromCurrentFrame( QWebFrame * frame )
 {
   if ( !frame )
@@ -862,11 +1134,16 @@ void ArticleView::updateCurrentArticleFromCurrentFrame( QWebFrame * frame )
     }
   }
 }
+#endif
 
 void ArticleView::saveHistoryUserData()
 {
+#if IS_QT_6
+  QVariantMap userData = currentHistoryUserData();
+#else
   QMap< QString, QVariant > userData = ui.definition->history()->
                                        currentItem().userData().toMap();
+#endif
 
   // Save current article, which can be empty
 
@@ -875,10 +1152,19 @@ void ArticleView::saveHistoryUserData()
   // We also save window position. We restore it when the page is fully loaded,
   // when any hidden frames are expanded.
 
+#if IS_QT_6
+  userData[ "sx" ] = runJavaScriptSync( ui.definition->page(), "window.scrollX;" ).toDouble();
+  userData[ "sy" ] = runJavaScriptSync( ui.definition->page(), "window.scrollY;" ).toDouble();
+#else
   userData[ "sx" ] = ui.definition->page()->mainFrame()->evaluateJavaScript( "window.scrollX;" ).toDouble();
   userData[ "sy" ] = ui.definition->page()->mainFrame()->evaluateJavaScript( "window.scrollY;" ).toDouble();
+#endif
 
+#if IS_QT_6
+  setCurrentHistoryUserData( userData );
+#else
   ui.definition->history()->currentItem().setUserData( userData );
+#endif
 }
 
 void ArticleView::load( QUrl const & url )
@@ -1096,7 +1382,11 @@ QString ArticleView::getMutedForGroup( unsigned group )
   return QString();
 }
 
+#if IS_QT_6
+void ArticleView::linkHovered( const QString & link )
+#else
 void ArticleView::linkHovered ( const QString & link, const QString & , const QString & )
+#endif
 {
   QString msg;
   QUrl url(link);
@@ -1172,7 +1462,9 @@ void ArticleView::linkHovered ( const QString & link, const QString & , const QS
 
 void ArticleView::attachToJavaScript()
 {
+#if !IS_QT_6
   ui.definition->page()->mainFrame()->addToJavaScriptWindowObject( "articleview", jsProxy );
+#endif
 }
 
 void ArticleView::linkClicked( QUrl const & url_ )
@@ -1219,7 +1511,7 @@ void ArticleView::openLink( QUrl const & url, QUrl const & ref,
       QStringList dictsList = Qt4x5::Url::queryItemValue( ref, "dictionaries" )
                                           .split( ",", Qt4x5::skipEmptyParts() );
 
-      showDefinition( url.path(), dictsList, QRegExp(), getGroup( ref ), false );
+      showDefinition( url.path(), dictsList, QRegularExpression(), getGroup( ref ), false );
     }
     else
       showDefinition( url.path(),
@@ -1230,7 +1522,7 @@ void ArticleView::openLink( QUrl const & url, QUrl const & ref,
   {
     if ( url.hasFragment() )
     {
-      ui.definition->page()->mainFrame()->evaluateJavaScript(
+      ui.definition->page()->runJavaScript(
         QString( "window.location = \"%1\"" ).arg( QString::fromUtf8( url.toEncoded() ) ) );
     }
     else
@@ -1241,7 +1533,7 @@ void ArticleView::openLink( QUrl const & url, QUrl const & ref,
         QStringList dictsList = Qt4x5::Url::queryItemValue( ref, "dictionaries" )
                                             .split( ",", Qt4x5::skipEmptyParts() );
 
-        showDefinition( url.path().mid( 1 ), dictsList, QRegExp(), getGroup( ref ), false );
+        showDefinition( url.path().mid( 1 ), dictsList, QRegularExpression(), getGroup( ref ), false );
         return;
       }
 
@@ -1701,7 +1993,11 @@ void ArticleView::forward()
 
 void ArticleView::reload()
 {
+#if IS_QT_6
+  QVariantMap userData = currentHistoryUserData();
+#else
   QMap< QString, QVariant > userData = ui.definition->history()->currentItem().userData().toMap();
+#endif
 
   // Save current article, which can be empty
   userData[ "currentArticle" ] = getCurrentArticle();
@@ -1713,14 +2009,22 @@ void ArticleView::reload()
   userData[ "sx" ].clear();
   userData[ "sy" ].clear();
 
+#if IS_QT_6
+  setCurrentHistoryUserData( userData );
+#else
   ui.definition->history()->currentItem().setUserData( userData );
+#endif
 
   ui.definition->reload();
 }
 
 bool ArticleView::hasSound()
 {
+#if IS_QT_6
+  QVariant v = runJavaScriptSync( ui.definition->page(), "gdAudioLinks.first" );
+#else
   QVariant v = ui.definition->page()->mainFrame()->evaluateJavaScript( "gdAudioLinks.first" );
+#endif
   if ( v.type() == QVariant::String )
     return !v.toString().isEmpty();
   return false;
@@ -1731,7 +2035,11 @@ void ArticleView::playSound()
   QVariant v;
   QString soundScript;
 
+#if IS_QT_6
+  v = runJavaScriptSync( ui.definition->page(), "gdAudioLinks[gdAudioLinks.current]" );
+#else
   v = ui.definition->page()->mainFrame()->evaluateJavaScript( "gdAudioLinks[gdAudioLinks.current]" );
+#endif
 
   if ( v.type() == QVariant::String )
     soundScript = v.toString();
@@ -1739,7 +2047,11 @@ void ArticleView::playSound()
   // fallback to the first one
   if ( soundScript.isEmpty() )
   {
+  #if IS_QT_6
+    v = runJavaScriptSync( ui.definition->page(), "gdAudioLinks.first" );
+  #else
     v = ui.definition->page()->mainFrame()->evaluateJavaScript( "gdAudioLinks.first" );
+  #endif
     if ( v.type() == QVariant::String )
       soundScript = v.toString();
   }
@@ -1750,12 +2062,20 @@ void ArticleView::playSound()
 
 QString ArticleView::toHtml()
 {
+#if IS_QT_6
+  return toHtmlSync( ui.definition->page() );
+#else
   return ui.definition->page()->mainFrame()->toHtml();
+#endif
 }
 
 QString ArticleView::getTitle()
 {
+#if IS_QT_6
+  return ui.definition->page()->title();
+#else
   return ui.definition->page()->mainFrame()->title();
+#endif
 }
 
 Config::InputPhrase ArticleView::getPhrase() const
@@ -1772,6 +2092,304 @@ void ArticleView::print( QPrinter * printer ) const
 
 void ArticleView::contextMenuRequested( QPoint const & pos )
 {
+#if IS_QT_6
+  QWebEngineContextMenuRequest * request = ui.definition->lastContextMenuRequest();
+  if ( !request )
+    return;
+
+  updateCurrentArticleFromCurrentFrame();
+
+  QMenu menu( this );
+
+  QAction * followLink = 0;
+  QAction * followLinkExternal = 0;
+  QAction * followLinkNewTab = 0;
+  QAction * lookupSelection = 0;
+  QAction * lookupSelectionGr = 0;
+  QAction * lookupSelectionNewTab = 0;
+  QAction * lookupSelectionNewTabGr = 0;
+  QAction * maxDictionaryRefsAction = 0;
+  QAction * addWordToHistoryAction = 0;
+  QAction * addHeaderToHistoryAction = 0;
+  QAction * sendWordToInputLineAction = 0;
+  QAction * saveImageAction = 0;
+  QAction * saveSoundAction = 0;
+
+  QUrl targetUrl( request->linkUrl() );
+  Contexts contexts;
+
+  tryMangleWebsiteClickedUrl( targetUrl, contexts );
+
+  if ( !request->linkUrl().isEmpty() )
+  {
+    if ( !isExternalLink( targetUrl ) )
+    {
+      followLink = new QAction( tr( "&Open Link" ), &menu );
+      menu.addAction( followLink );
+
+      if ( !popupView )
+      {
+        followLinkNewTab = new QAction( QIcon( ":/icons/addtab.png" ),
+                                        tr( "Open Link in New &Tab" ), &menu );
+        menu.addAction( followLinkNewTab );
+      }
+    }
+
+    if ( isExternalLink( request->linkUrl() ) )
+    {
+      followLinkExternal = new QAction( tr( "Open Link in &External Browser" ), &menu );
+      menu.addAction( followLinkExternal );
+      menu.addAction( ui.definition->page()->action( QWebEnginePage::CopyLinkToClipboard ) );
+    }
+  }
+
+  QUrl imageUrl;
+  if( !popupView && request->mediaType() == QWebEngineContextMenuRequest::MediaTypeImage )
+  {
+    imageUrl = request->mediaUrl();
+    if( !imageUrl.isEmpty() )
+    {
+      menu.addAction( ui.definition->page()->action( QWebEnginePage::CopyImageToClipboard ) );
+      saveImageAction = new QAction( tr( "Save &image..." ), &menu );
+      menu.addAction( saveImageAction );
+    }
+  }
+
+  if( !popupView && ( targetUrl.scheme() == "gdau"
+                      || Dictionary::WebMultimediaDownload::isAudioUrl( targetUrl ) ) )
+  {
+    saveSoundAction = new QAction( tr( "Save s&ound..." ), &menu );
+    menu.addAction( saveSoundAction );
+  }
+
+  QString selectedText = request->selectedText();
+  QString text = selectedText.trimmed();
+
+  if ( text.size() && text.size() < 60 )
+  {
+    if( text.isRightToLeft() )
+    {
+      text.insert( 0, (ushort)0x202E );
+      text.append( (ushort)0x202C );
+    }
+
+    lookupSelection = new QAction( tr( "&Look up \"%1\"" ).
+                                   arg( text ),
+                                   &menu );
+    menu.addAction( lookupSelection );
+
+    if ( !popupView )
+    {
+      lookupSelectionNewTab = new QAction( QIcon( ":/icons/addtab.png" ),
+                                           tr( "Look up \"%1\" in &New Tab" ).
+                                           arg( text ),
+                                           &menu );
+      menu.addAction( lookupSelectionNewTab );
+
+      sendWordToInputLineAction = new QAction( tr( "Send \"%1\" to input line" ).
+                                               arg( text ),
+                                               &menu );
+      menu.addAction( sendWordToInputLineAction );
+    }
+
+    addWordToHistoryAction = new QAction( tr( "&Add \"%1\" to history" ).
+                                          arg( text ),
+                                          &menu );
+    menu.addAction( addWordToHistoryAction );
+
+    Instances::Group const * altGroup =
+      ( groupComboBox && groupComboBox->getCurrentGroup() !=  getGroup( ui.definition->url() )  ) ?
+        groups.findGroup( groupComboBox->getCurrentGroup() ) : 0;
+
+    if ( altGroup )
+    {
+      QIcon icon = altGroup->icon.size() ? QIcon( ":/flags/" + altGroup->icon ) :
+                   QIcon();
+
+      lookupSelectionGr = new QAction( icon, tr( "Look up \"%1\" in %2" ).
+                                       arg( text ).
+                                       arg( altGroup->name ), &menu );
+      menu.addAction( lookupSelectionGr );
+
+      if ( !popupView )
+      {
+        lookupSelectionNewTabGr = new QAction( QIcon( ":/icons/addtab.png" ),
+                                               tr( "Look up \"%1\" in %2 in &New Tab" ).
+                                               arg( text ).
+                                               arg( altGroup->name ), &menu );
+        menu.addAction( lookupSelectionNewTabGr );
+      }
+    }
+  }
+
+  if( text.isEmpty() && !cfg.preferences.storeHistory)
+  {
+    QString txt = ui.definition->title();
+    if( txt.size() > 60 )
+      txt = txt.left( 60 ) + "...";
+
+    addHeaderToHistoryAction = new QAction( tr( "&Add \"%1\" to history" ).
+                                            arg( txt ),
+                                            &menu );
+    menu.addAction( addHeaderToHistoryAction );
+  }
+
+  if ( selectedText.size() )
+  {
+    menu.addAction( ui.definition->page()->action( QWebEnginePage::Copy ) );
+    menu.addAction( &copyAsTextAction );
+  }
+  else
+  {
+    menu.addAction( &selectCurrentArticleAction );
+    menu.addAction( ui.definition->page()->action( QWebEnginePage::SelectAll ) );
+  }
+
+  map< QAction *, QString > tableOfContents;
+
+  QStringList ids = getArticlesList();
+
+  if ( !menu.isEmpty() && ids.size() )
+    menu.addSeparator();
+
+  unsigned refsAdded = 0;
+  bool maxDictionaryRefsReached = false;
+
+  for( QStringList::const_iterator i = ids.constBegin(); i != ids.constEnd();
+       ++i, ++refsAdded )
+  {
+    for( unsigned x = allDictionaries.size(); x--; )
+    {
+      if ( allDictionaries[ x ]->getId() == i->toUtf8().data() )
+      {
+        QAction * action = 0;
+        if ( refsAdded == cfg.preferences.maxDictionaryRefsInContextMenu )
+        {
+          maxDictionaryRefsAction = new QAction( ".........", &menu );
+          action = maxDictionaryRefsAction;
+          maxDictionaryRefsReached = true;
+        }
+        else
+        {
+          action = new QAction(
+                  allDictionaries[ x ]->getIcon(),
+                  QString::fromUtf8( allDictionaries[ x ]->getName().c_str() ),
+                  &menu );
+          action->setIconVisibleInMenu( true );
+        }
+        menu.addAction( action );
+
+        tableOfContents[ action ] = *i;
+
+        break;
+      }
+    }
+    if( maxDictionaryRefsReached )
+      break;
+  }
+
+  menu.addSeparator();
+  menu.addAction( &inspectAction );
+
+  if ( !menu.isEmpty() )
+  {
+    connect( this, SIGNAL( closePopupMenu() ), &menu, SLOT( close() ) );
+    QAction * result = menu.exec( ui.definition->mapToGlobal( pos ) );
+
+    if ( !result )
+      return;
+
+    if ( result == followLink )
+      openLink( targetUrl, ui.definition->url(), getCurrentArticle(), contexts );
+    else
+    if ( result == followLinkExternal )
+      QDesktopServices::openUrl( request->linkUrl() );
+    else
+    if ( result == lookupSelection )
+      showDefinition( selectedText, getGroup( ui.definition->url() ), getCurrentArticle() );
+    else
+    if ( result == lookupSelectionGr && groupComboBox )
+      showDefinition( selectedText, groupComboBox->getCurrentGroup(), QString() );
+    else
+    if ( result == addWordToHistoryAction )
+      emit forceAddWordToHistory( selectedText );
+    if ( result == addHeaderToHistoryAction )
+      emit forceAddWordToHistory( ui.definition->title() );
+    else
+    if( result == sendWordToInputLineAction )
+      emit sendWordToInputLine( selectedText );
+    else
+    if ( !popupView && result == followLinkNewTab )
+      emit openLinkInNewTab( targetUrl, ui.definition->url(), getCurrentArticle(), contexts );
+    else
+    if ( !popupView && result == lookupSelectionNewTab )
+      emit showDefinitionInNewTab( selectedText, getGroup( ui.definition->url() ),
+                                   getCurrentArticle(), Contexts() );
+    else
+    if ( !popupView && result == lookupSelectionNewTabGr && groupComboBox )
+      emit showDefinitionInNewTab( selectedText, groupComboBox->getCurrentGroup(),
+                                   QString(), Contexts() );
+    else
+    if( result == saveImageAction || result == saveSoundAction )
+    {
+      QUrl url = ( result == saveImageAction ) ? imageUrl : targetUrl;
+      QString savePath;
+      QString fileName;
+
+      if ( cfg.resourceSavePath.isEmpty() )
+        savePath = QDir::homePath();
+      else
+      {
+        savePath = QDir::fromNativeSeparators( cfg.resourceSavePath );
+        if ( !QDir( savePath ).exists() )
+          savePath = QDir::homePath();
+      }
+
+      QString name = Qt4x5::Url::path( url ).section( '/', -1 );
+
+      if ( result == saveSoundAction )
+      {
+        if ( name.indexOf( '.' ) < 0 )
+          name += ".wav";
+
+        fileName = savePath + "/" + name;
+        fileName = QFileDialog::getSaveFileName( parentWidget(), tr( "Save sound" ),
+                                                 fileName,
+                                                 tr( "Sound files (*.wav *.ogg *.oga *.mp3 *.mp4 *.aac *.flac *.mid *.wv *.ape);;All files (*.*)" ) );
+      }
+      else
+      {
+        if ( name[ 0 ] == '\x1E' )
+          name.remove( 0, 1 );
+        if ( name.length() && name[ name.length() - 1 ] == '\x1F' )
+          name.chop( 1 );
+
+        fileName = savePath + "/" + name;
+        fileName = QFileDialog::getSaveFileName( parentWidget(), tr( "Save image" ),
+                                                 fileName,
+                                                 tr( "Image files (*.bmp *.jpg *.png *.tif);;All files (*.*)" ) );
+      }
+
+      if ( !fileName.isEmpty() )
+      {
+        QFileInfo fileInfo( fileName );
+        emit storeResourceSavePath( QDir::toNativeSeparators( fileInfo.absoluteDir().absolutePath() ) );
+        saveResource( url, ui.definition->url(), fileName );
+      }
+    }
+    else
+    {
+      if ( !popupView && result == maxDictionaryRefsAction )
+        emit showDictsPane();
+
+      QString id = tableOfContents[ result ];
+
+      if ( id.size() )
+        setCurrentArticle( scrollToFromDictionaryId( id ), true );
+    }
+  }
+
+#else
   // Is that a link? Is there a selection?
 
   QWebHitTestResult r = ui.definition->page()->mainFrame()->
@@ -2094,6 +2712,7 @@ void ArticleView::contextMenuRequested( QPoint const & pos )
   DPRINTF( "url = %s\n", r.linkUrl().toString().toLocal8Bit().data() );
   DPRINTF( "title = %s\n", r.title().toLocal8Bit().data() );
 #endif
+#endif
 }
 
 void ArticleView::resourceDownloadFinished()
@@ -2259,8 +2878,12 @@ void ArticleView::openSearch()
   // Clear any current selection
   if ( ui.definition->selectedText().size() )
   {
+#if IS_QT_6
+    ui.definition->page()->runJavaScript( "window.getSelection().removeAllRanges();" );
+#else
     ui.definition->page()->currentFrame()->
            evaluateJavaScript( "window.getSelection().removeAllRanges();_=0;" );
+#endif
   }
 
   if ( ui.searchText->property( "noResults" ).toBool() )
@@ -2319,76 +2942,80 @@ void ArticleView::onJsActiveArticleChanged(QString const & id)
 
 void ArticleView::doubleClicked( QPoint pos )
 {
-#if QT_VERSION >= 0x040600
+  QUrl imageUrl;
+#if IS_QT_6
+  const QString script =
+    QString( "var el=document.elementFromPoint(%1,%2);"
+             "if(el && el.tagName && el.tagName.toLowerCase()==='img'){el.src;}else{'';}" )
+      .arg( pos.x() ).arg( pos.y() );
+  imageUrl = QUrl::fromUserInput( runJavaScriptSync( ui.definition->page(), script ).toString() );
+#else
   QWebHitTestResult r = ui.definition->page()->mainFrame()->hitTestContent( pos );
   QWebElement el = r.element();
-  QUrl imageUrl;
   if( el.tagName().compare( "img", Qt::CaseInsensitive ) == 0 )
+    imageUrl = QUrl::fromPercentEncoding( el.attribute( "src" ).toLatin1() );
+#endif
+
+  if( imageUrl.isValid() && !imageUrl.isEmpty() )
   {
     // Double click on image; download it and transfer to external program
 
-    imageUrl = QUrl::fromPercentEncoding( el.attribute( "src" ).toLatin1() );
-    if( !imageUrl.isEmpty() )
+    // Clear any pending ones
+    resourceDownloadRequests.clear();
+
+    resourceDownloadUrl = imageUrl;
+    sptr< Dictionary::DataRequest > req;
+
+    if ( imageUrl.scheme() == "http" || imageUrl.scheme() == "https" || imageUrl.scheme() == "ftp" )
     {
-      // Download it
-
-      // Clear any pending ones
-      resourceDownloadRequests.clear();
-
-      resourceDownloadUrl = imageUrl;
-      sptr< Dictionary::DataRequest > req;
-
-      if ( imageUrl.scheme() == "http" || imageUrl.scheme() == "https" || imageUrl.scheme() == "ftp" )
-      {
-        // Web resource
-        req = new Dictionary::WebMultimediaDownload( imageUrl, articleNetMgr );
-      }
-      else
-      if ( imageUrl.scheme() == "bres" || imageUrl.scheme() == "gdpicture" )
-      {
-        // Local resource
-        QString contentType;
-        req = articleNetMgr.getResource( imageUrl, contentType );
-      }
-      else
-      {
-        // Unsupported scheme
-        gdWarning( "Unsupported url scheme \"%s\" to download image\n", imageUrl.scheme().toUtf8().data() );
-        return;
-      }
-
-      if ( !req.get() )
-      {
-        // Request failed, fail
-        gdWarning( "Can't create request to download image \"%s\"\n", imageUrl.toString().toUtf8().data() );
-        return;
-      }
-
-      if ( req->isFinished() && req->dataSize() >= 0 )
-      {
-        // Have data ready, handle it
-        resourceDownloadRequests.push_back( req );
-        resourceDownloadFinished();
-        return;
-      }
-      else
-      if ( !req->isFinished() )
-      {
-        // Queue to be handled when done
-        resourceDownloadRequests.push_back( req );
-        connect( req.get(), SIGNAL( finished() ), this, SLOT( resourceDownloadFinished() ) );
-      }
-      if ( resourceDownloadRequests.empty() ) // No requests were queued
-      {
-        gdWarning( "The referenced resource \"%s\" doesn't exist\n", imageUrl.toString().toUtf8().data() ) ;
-        return;
-      }
-      else
-        resourceDownloadFinished(); // Check any requests finished already
+      // Web resource
+      req = new Dictionary::WebMultimediaDownload( imageUrl, articleNetMgr );
     }
+    else
+    if ( imageUrl.scheme() == "bres" || imageUrl.scheme() == "gdpicture" )
+    {
+      // Local resource
+      QString contentType;
+      req = articleNetMgr.getResource( imageUrl, contentType );
+    }
+    else
+    {
+      // Unsupported scheme
+      gdWarning( "Unsupported url scheme \"%s\" to download image\n", imageUrl.scheme().toUtf8().data() );
+      return;
+    }
+
+    if ( !req.get() )
+    {
+      // Request failed, fail
+      gdWarning( "Can't create request to download image \"%s\"\n", imageUrl.toString().toUtf8().data() );
+      return;
+    }
+
+    if ( req->isFinished() && req->dataSize() >= 0 )
+    {
+      // Have data ready, handle it
+      resourceDownloadRequests.push_back( req );
+      resourceDownloadFinished();
+      return;
+    }
+    else
+    if ( !req->isFinished() )
+    {
+      // Queue to be handled when done
+      resourceDownloadRequests.push_back( req );
+      connect( req.get(), SIGNAL( finished() ), this, SLOT( resourceDownloadFinished() ) );
+    }
+    if ( resourceDownloadRequests.empty() ) // No requests were queued
+    {
+      gdWarning( "The referenced resource \"%s\" doesn't exist\n", imageUrl.toString().toUtf8().data() ) ;
+      return;
+    }
+    else
+      resourceDownloadFinished(); // Check any requests finished already
+
     return;
   }
-#endif
 
   // We might want to initiate translation of the selected word
 
@@ -2415,7 +3042,7 @@ void ArticleView::doubleClicked( QPoint pos )
         {
           QStringList dictsList = Qt4x5::Url::queryItemValue(ref, "dictionaries" )
                                               .split( ",", Qt4x5::skipEmptyParts() );
-          showDefinition( selectedText, dictsList, QRegExp(), getGroup( ref ), false );
+          showDefinition( selectedText, dictsList, QRegularExpression(), getGroup( ref ), false );
         }
         else
           showDefinition( selectedText, getGroup( ref ), getCurrentArticle() );
@@ -2436,37 +3063,41 @@ void ArticleView::performFindOperation( bool restart, bool backwards, bool check
       // For now we resort to this hack:
       if ( ui.definition->selectedText().size() )
       {
+#if IS_QT_6
+        ui.definition->page()->runJavaScript( "window.getSelection().removeAllRanges();" );
+#else
         ui.definition->page()->currentFrame()->
                evaluateJavaScript( "window.getSelection().removeAllRanges();_=0;" );
+#endif
       }
     }
 
-    QWebPage::FindFlags f;
+    QWebEnginePage::FindFlags f;
 
     if ( ui.searchCaseSensitive->isChecked() )
-      f |= QWebPage::FindCaseSensitively;
-#if QT_VERSION >= 0x040600
-    f |= QWebPage::HighlightAllOccurrences;
+      f |= QWebEnginePage::FindCaseSensitively;
+#if !IS_QT_6
+    f |= QWebEnginePage::HighlightAllOccurrences;
 #endif
 
-    ui.definition->findText( "", f );
+    findTextSync( ui.definition, "", f );
 
     if( ui.highlightAllButton->isChecked() )
-      ui.definition->findText( text, f );
+      findTextSync( ui.definition, text, f );
 
     if( checkHighlight )
       return;
   }
 
-  QWebPage::FindFlags f;
+  QWebEnginePage::FindFlags f;
 
   if ( ui.searchCaseSensitive->isChecked() )
-    f |= QWebPage::FindCaseSensitively;
+    f |= QWebEnginePage::FindCaseSensitively;
 
   if ( backwards )
-    f |= QWebPage::FindBackward;
+    f |= QWebEnginePage::FindBackward;
 
-  bool setMark = text.size() && !ui.definition->findText( text, f );
+  bool setMark = text.size() && !findTextSync( ui.definition, text, f );
 
   if ( ui.searchText->property( "noResults" ).toBool() != setMark )
   {
@@ -2511,13 +3142,14 @@ bool ArticleView::closeSearch()
     ui.ftsSearchFrame->hide();
     ui.definition->setFocus();
 
-    QWebPage::FindFlags flags;
+  #if !IS_QT_6
+    QWebEnginePage::FindFlags flags;
+    flags |= QWebEnginePage::HighlightAllOccurrences;
 
-  #if QT_VERSION >= 0x040600
-    flags |= QWebPage::HighlightAllOccurrences;
+    findTextSync( ui.definition, "", flags );
+  #else
+    findTextSync( ui.definition, "", QWebEnginePage::FindFlags() );
   #endif
-
-    ui.definition->findText( "", flags );
 
     return true;
   }
@@ -2563,7 +3195,7 @@ void ArticleView::copyAsText()
 
 void ArticleView::inspect()
 {
-  ui.definition->triggerPageAction( QWebPage::InspectElement );
+  ui.definition->triggerPageAction( QWebEnginePage::InspectElement );
 }
 
 void ArticleView::highlightFTSResults()
@@ -2616,11 +3248,10 @@ void ArticleView::highlightFTSResults()
   // Clear any current selection
   if ( ui.definition->selectedText().size() )
   {
-    ui.definition->page()->currentFrame()->
-           evaluateJavaScript( "window.getSelection().removeAllRanges();_=0;" );
+    ui.definition->page()->runJavaScript( "window.getSelection().removeAllRanges();" );
   }
 
-  QString pageText = ui.definition->page()->currentFrame()->toPlainText();
+  QString pageText = toPlainTextSync( ui.definition->page() );
   marksHandler->setText( pageText );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
@@ -2679,20 +3310,19 @@ void ArticleView::highlightFTSResults()
 
   ftsSearchMatchCase = Qt4x5::Url::hasQueryItem( url, "matchcase" );
 
-  QWebPage::FindFlags flags;
+  QWebEnginePage::FindFlags flags;
 
   if( ftsSearchMatchCase )
-    flags |= QWebPage::FindCaseSensitively;
+    flags |= QWebEnginePage::FindCaseSensitively;
 
   if( allMatches.isEmpty() )
     ui.ftsSearchStatusLabel->setText( searchStatusMessageNoMatches() );
   else
   {
     highlightAllFtsOccurences( flags );
-    if( ui.definition->findText( allMatches.at( 0 ), flags ) )
+    if( findTextSync( ui.definition, allMatches.at( 0 ), flags ) )
     {
-        ui.definition->page()->currentFrame()->
-               evaluateJavaScript( QString( "%1=window.getSelection().getRangeAt(0);_=0;" )
+        ui.definition->page()->runJavaScript( QString( "%1=window.getSelection().getRangeAt(0);" )
                                    .arg( rangeVarName ) );
     }
     Q_ASSERT( ftsPosition == 0 );
@@ -2706,9 +3336,15 @@ void ArticleView::highlightFTSResults()
   ftsSearchIsOpened = true;
 }
 
+#if IS_QT_6
+void ArticleView::highlightAllFtsOccurences( QWebEnginePage::FindFlags flags )
+#else
 void ArticleView::highlightAllFtsOccurences( QWebPage::FindFlags flags )
+#endif
 {
+#if !IS_QT_6
   flags |= QWebPage::HighlightAllOccurrences;
+#endif
 
   // Usually allMatches contains mostly duplicates. Thus searching for each element of
   // allMatches to highlight them takes a long time => collect unique elements into a
@@ -2724,7 +3360,11 @@ void ArticleView::highlightAllFtsOccurences( QWebPage::FindFlags flags )
   }
 
   for( QSet< QString >::const_iterator it = uniqueMatches.constBegin(); it != uniqueMatches.constEnd(); ++it )
+#if IS_QT_6
+    findTextSync( ui.definition, *it, flags );
+#else
     ui.definition->findText( *it, flags );
+#endif
 }
 
 void ArticleView::performFtsFindOperation( bool backwards )
@@ -2740,29 +3380,29 @@ void ArticleView::performFtsFindOperation( bool backwards )
     return;
   }
 
-  QWebPage::FindFlags flags;
+  QWebEnginePage::FindFlags flags;
 
   if( ftsSearchMatchCase )
-    flags |= QWebPage::FindCaseSensitively;
+    flags |= QWebEnginePage::FindCaseSensitively;
 
 
   // Restore saved highlighted selection
-  ui.definition->page()->currentFrame()->
-         evaluateJavaScript( QString( "var sel=window.getSelection();sel.removeAllRanges();sel.addRange(%1);_=0;" )
-                             .arg( rangeVarName ) );
+    ui.definition->page()->runJavaScript(
+      QString( "var sel=window.getSelection();sel.removeAllRanges();sel.addRange(%1);" )
+           .arg( rangeVarName ) );
 
   bool res;
   if( backwards )
   {
     if( ftsPosition > 0 )
     {
-      res = ui.definition->findText( allMatches.at( ftsPosition - 1 ),
-                                     flags | QWebPage::FindBackward );
+      res = findTextSync( ui.definition, allMatches.at( ftsPosition - 1 ),
+              flags | QWebEnginePage::FindBackward );
       ftsPosition -= 1;
     }
     else
-      res = ui.definition->findText( allMatches.at( ftsPosition ),
-                                     flags | QWebPage::FindBackward );
+      res = findTextSync( ui.definition, allMatches.at( ftsPosition ),
+              flags | QWebEnginePage::FindBackward );
 
     ui.ftsSearchPrevious->setEnabled( res );
     if( !ui.ftsSearchNext->isEnabled() )
@@ -2772,11 +3412,11 @@ void ArticleView::performFtsFindOperation( bool backwards )
   {
     if( ftsPosition < allMatches.size() - 1 )
     {
-      res = ui.definition->findText( allMatches.at( ftsPosition + 1 ), flags );
+      res = findTextSync( ui.definition, allMatches.at( ftsPosition + 1 ), flags );
       ftsPosition += 1;
     }
     else
-      res = ui.definition->findText( allMatches.at( ftsPosition ), flags );
+      res = findTextSync( ui.definition, allMatches.at( ftsPosition ), flags );
 
     ui.ftsSearchNext->setEnabled( res );
     if( !ui.ftsSearchPrevious->isEnabled() )
@@ -2786,9 +3426,9 @@ void ArticleView::performFtsFindOperation( bool backwards )
   ui.ftsSearchStatusLabel->setText( searchStatusMessage( ftsPosition + 1, allMatches.size() ) );
 
   // Store new highlighted selection
-  ui.definition->page()->currentFrame()->
-         evaluateJavaScript( QString( "%1=window.getSelection().getRangeAt(0);_=0;" )
-                             .arg( rangeVarName ) );
+    ui.definition->page()->runJavaScript(
+      QString( "%1=window.getSelection().getRangeAt(0);" )
+           .arg( rangeVarName ) );
 }
 
 void ArticleView::on_ftsSearchPrevious_clicked()
@@ -2896,6 +3536,39 @@ QString ArticleView::insertSpans( QString const & html )
     return newContent;
 }
 
+#if IS_QT_6
+QString ArticleView::wordAtPoint( int x, int y )
+{
+  if( popupView )
+    return QString();
+
+  QPoint pos = mapFromGlobal( QPoint( x, y ) );
+  QString script = QString(
+    "var x=%1,y=%2;"
+    "var range=null;"
+    "if(document.caretRangeFromPoint){range=document.caretRangeFromPoint(x,y);}"
+    "else if(document.caretPositionFromPoint){"
+    " var p=document.caretPositionFromPoint(x,y);"
+    " if(p){range=document.createRange();range.setStart(p.offsetNode,p.offset);range.setEnd(p.offsetNode,p.offset);}" 
+    "}"
+    "if(!range || !range.startContainer) return '';"
+    "var node=range.startContainer;"
+    "if(node.nodeType!==3){"
+    " if(node.childNodes && node.childNodes.length>range.startOffset){node=node.childNodes[range.startOffset];}"
+    "}"
+    "if(!node || node.nodeType!==3) return '';"
+    "var text=node.textContent;"
+    "var offset=range.startOffset;"
+    "var left=offset;"
+    "var right=offset;"
+    "while(left>0 && /\\w/.test(text[left-1])) left--;"
+    "while(right<text.length && /\\w/.test(text[right])) right++;"
+    "return text.substring(left,right);" )
+    .arg( pos.x() ).arg( pos.y() );
+
+  return runJavaScriptSync( ui.definition->page(), script ).toString();
+}
+#else
 QString ArticleView::checkElement( QWebElement & elem, QPoint const & pt )
 {
     /// Search for lower-level matching element
@@ -3044,6 +3717,7 @@ QString ArticleView::wordAtPoint( int x, int y )
 
   return word;
 }
+#endif
 
 #endif
 

@@ -1,0 +1,1603 @@
+uic dictgroupwidget.ui
+uic mainwindow.ui
+uic scanpopup.ui
+uic articleview.ui
+uic preferences.ui
+uic sources.ui
+uic initializing.ui
+uic editdictionaries.ui
+uic dictinfo.ui
+uic about.ui
+uic dictheadwords.ui
+uic texttospeechsource.ui
+uic authentication.ui
+uic fulltextsearch.ui
+compiling folding.cc
+compiling dictionary.cc
+compiling utf8.cc
+compiling config.cc
+compiling bgl_babylon.cc
+compiling file.cc
+compiling article_netmgr.cc
+compiling initializing.cc
+compiling webengine_schemehandler.cc
+compiling dictzip.c
+dictzip.c:267:31: warning: variable 'subLength' set but not used [-Wunused-but-set-variable]
+  267 |    int           extraLength, subLength;
+      |                               ^
+1 warning generated.
+compiling btreeidx.cc
+compiling stardict.cc
+compiling chunkedstorage.cc
+compiling xdxf2html.cc
+compiling iconv.cc
+config.cc:110:14: warning: 'operator int' is deprecated: Use QKeyCombination instead of int [-Wdeprecated-declarations]
+  110 |   modifiers( seq[ 0 ] & ~keyMask ),
+      |              ^
+/opt/homebrew/lib/QtCore.framework/Headers/qnamespace.h:1940:5: note: 'operator int' has been explicitly marked deprecated here
+ 1940 |     QT_DEPRECATED_VERSION_X(6, 0, "Use QKeyCombination instead of int")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:261:53: note: expanded from macro 'QT_DEPRECATED_VERSION_X'
+  261 | #define QT_DEPRECATED_VERSION_X(major, minor, text) QT_DEPRECATED_VERSION_X_##major##_##minor(text)
+      |                                                     ^
+<scratch space>:15:1: note: expanded from here
+   15 | QT_DEPRECATED_VERSION_X_6_0
+      | ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+config.cc:111:9: warning: 'operator int' is deprecated: Use QKeyCombination instead of int [-Wdeprecated-declarations]
+  111 |   key1( seq[ 0 ] & keyMask ),
+      |         ^
+/opt/homebrew/lib/QtCore.framework/Headers/qnamespace.h:1940:5: note: 'operator int' has been explicitly marked deprecated here
+ 1940 |     QT_DEPRECATED_VERSION_X(6, 0, "Use QKeyCombination instead of int")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:261:53: note: expanded from macro 'QT_DEPRECATED_VERSION_X'
+  261 | #define QT_DEPRECATED_VERSION_X(major, minor, text) QT_DEPRECATED_VERSION_X_##major##_##minor(text)
+      |                                                     ^
+<scratch space>:15:1: note: expanded from here
+   15 | QT_DEPRECATED_VERSION_X_6_0
+      | ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+config.cc:112:9: warning: 'operator int' is deprecated: Use QKeyCombination instead of int [-Wdeprecated-declarations]
+  112 |   key2( seq[ 1 ] & keyMask )
+      |         ^
+/opt/homebrew/lib/QtCore.framework/Headers/qnamespace.h:1940:5: note: 'operator int' has been explicitly marked deprecated here
+ 1940 |     QT_DEPRECATED_VERSION_X(6, 0, "Use QKeyCombination instead of int")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:261:53: note: expanded from macro 'QT_DEPRECATED_VERSION_X'
+  261 | #define QT_DEPRECATED_VERSION_X(major, minor, text) QT_DEPRECATED_VERSION_X_##major##_##minor(text)
+      |                                                     ^
+<scratch space>:15:1: note: expanded from here
+   15 | QT_DEPRECATED_VERSION_X_6_0
+      | ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+config.cc:192:14: warning: format specifies type 'int' but the argument has type 'qsizetype' (aka 'long long') [-Wformat]
+  191 |     gdDebug( "Ignoring an input phrase %d symbols long. The configured maximum input phrase length is %d symbols.",
+      |                                        ~~
+      |                                        %lld
+  192 |              inputPhrase.size(), inputPhraseLengthLimit );
+      |              ^~~~~~~~~~~~~~~~~~
+config.cc:564:14: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  564 |     if ( !dd.setContent( &configFile, false, &errorStr, &errorLine, &errorColumn  ) )
+      |              ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:399:5: note: 'setContent' has been explicitly marked deprecated here
+  399 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+config.cc:579:14: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  579 |     if ( !dd.setContent( &bufferedData, false, &errorStr, &errorLine, &errorColumn  ) )
+      |              ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:399:5: note: 'setContent' has been explicitly marked deprecated here
+  399 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling lsa.cc
+dictionary.cc:471:10: warning: 'addData' is deprecated: Use the QByteArrayView overload instead [-Wdeprecated-declarations]
+  471 |     hash.addData( i->c_str(), i->size() + 1 );
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcryptographichash.h:75:5: note: 'addData' has been explicitly marked deprecated here
+   75 |     QT_DEPRECATED_VERSION_X_6_4("Use the QByteArrayView overload instead")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+dictionary.cc:518:54: warning: comparison of integers of different signs: 'qint64' (aka 'long long') and 'unsigned long' [-Wsign-compare]
+  518 |   return fileInfo.lastModified().toMSecsSinceEpoch() < lastModified;
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~
+compiling htmlescape.cc
+2 warnings generated.
+compiling dsl.cc
+compiling dsl_details.cc
+compiling filetype.cc
+compiling fsencoding.cc
+compiling groups_widgets.cc
+compiling instances.cc
+xdxf2html.cc:137:11: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  137 |   if( !dd.setContent( QByteArray( in_data.c_str() ), false, &errorStr, &errorLine, &errorColumn  ) )
+      |           ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:395:5: note: 'setContent' has been explicitly marked deprecated here
+  395 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling article_maker.cc
+1 warning generated.
+compiling scanpopup.cc
+generating build/moc_predefs.h
+compiling audioplayerfactory.cc
+compiling multimediaaudioplayer.cc
+compiling externalaudioplayer.cc
+6 warnings generated.
+compiling externalviewer.cc
+dsl.cc:135:3: warning: definition of implicit copy assignment operator for 'InsidedCard' is deprecated because it has a user-provided copy constructor [-Wdeprecated-copy-with-user-provided-copy]
+  135 |   InsidedCard( InsidedCard const & e ) :
+      |   ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcontainertools_impl.h:213:18: note: in implicit copy assignment operator for 'Dsl::(anonymous namespace)::InsidedCard' first required here
+  213 |         *d_first = std::move_if_noexcept(*first);
+      |                  ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcontainertools_impl.h:248:13: note: in instantiation of function template specialization 'QtPrivate::q_relocate_overlap_n_left_move<Dsl::(anonymous namespace)::InsidedCard *, long long>' requested here
+  248 |             q_relocate_overlap_n_left_move(first, n, d_first);
+      |             ^
+/opt/homebrew/lib/QtCore.framework/Headers/qarraydatapointer.h:316:20: note: in instantiation of function template specialization 'QtPrivate::q_relocate_overlap_n<Dsl::(anonymous namespace)::InsidedCard, long long>' requested here
+  316 |         QtPrivate::q_relocate_overlap_n(this->ptr, this->size, res);
+      |                    ^
+/opt/homebrew/lib/QtCore.framework/Headers/qarraydatapointer.h:301:9: note: in instantiation of member function 'QArrayDataPointer<Dsl::(anonymous namespace)::InsidedCard>::relocate' requested here
+  301 |         relocate(dataStartOffset - freeAtBegin, data);
+      |         ^
+/opt/homebrew/lib/QtCore.framework/Headers/qarraydatapointer.h:202:26: note: in instantiation of member function 'QArrayDataPointer<Dsl::(anonymous namespace)::InsidedCard>::tryReadjustFreeSpace' requested here
+  202 |             readjusted = tryReadjustFreeSpace(where, n, data);
+      |                          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qarraydataops.h:549:15: note: in instantiation of member function 'QArrayDataPointer<Dsl::(anonymous namespace)::InsidedCard>::detachAndGrow' requested here
+  549 |         this->detachAndGrow(pos, 1, nullptr, nullptr);
+      |               ^
+/opt/homebrew/lib/QtCore.framework/Headers/qlist.h:944:8: note: in instantiation of function template specialization 'QtPrivate::QGenericArrayOps<Dsl::(anonymous namespace)::InsidedCard>::emplace<Dsl::(anonymous namespace)::InsidedCard>' requested here
+  944 |     d->emplace(d->size, std::forward<Args>(args)...);
+      |        ^
+/opt/homebrew/lib/QtCore.framework/Headers/qlist.h:520:13: note: in instantiation of function template specialization 'QList<Dsl::(anonymous namespace)::InsidedCard>::emplaceBack<Dsl::(anonymous namespace)::InsidedCard>' requested here
+  520 |             emplaceBack(std::move(t));
+      |             ^
+dsl.cc:2422:30: note: in instantiation of member function 'QList<Dsl::(anonymous namespace)::InsidedCard>::append' requested here
+ 2422 |                 insidedCards.append( InsidedCard( offset, curOffset - offset, insidedHeadwords ) );
+      |                              ^
+compiling wordfinder.cc
+audioplayerfactory.cc:78:35: warning: 'take' is deprecated: Use std::unique_ptr instead, and call release(). [-Wdeprecated-declarations]
+   78 |   playerPtr.reset( externalPlayer.take() );
+      |                                   ^
+/opt/homebrew/lib/QtCore.framework/Headers/qscopedpointer.h:129:5: note: 'take' has been explicitly marked deprecated here
+  129 |     QT_DEPRECATED_VERSION_X_6_1("Use std::unique_ptr instead, and call release().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:149:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_1'
+  149 | # define QT_DEPRECATED_VERSION_X_6_1(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+article_maker.cc:57:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   57 |     builtInCssFile.open( QFile::ReadOnly );
+      |     ^~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~
+article_maker.cc:72:7: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+   72 |       builtInCssFile.open( QFile::ReadOnly );
+      |       ^~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~
+article_maker.cc:130:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  130 |     builtInCssFile.open( QFile::ReadOnly );
+      |     ^~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~
+1 warning generated.
+compiling groupcombobox.cc
+compiling keyboardstate.cc
+externalaudioplayer.cc:18:39: warning: 'take' is deprecated: Use std::unique_ptr instead, and call release(). [-Wdeprecated-declarations]
+   18 |   stopAndDestroySynchronously( viewer.take() );
+      |                                       ^
+/opt/homebrew/lib/QtCore.framework/Headers/qscopedpointer.h:129:5: note: 'take' has been explicitly marked deprecated here
+  129 |     QT_DEPRECATED_VERSION_X_6_1("Use std::unique_ptr instead, and call release().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:149:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_1'
+  149 | # define QT_DEPRECATED_VERSION_X_6_1(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+externalaudioplayer.cc:61:28: warning: 'take' is deprecated: Use std::unique_ptr instead, and call release(). [-Wdeprecated-declarations]
+   61 |     exitingViewer = viewer.take();
+      |                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qscopedpointer.h:129:5: note: 'take' has been explicitly marked deprecated here
+  129 |     QT_DEPRECATED_VERSION_X_6_1("Use std::unique_ptr instead, and call release().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:149:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_1'
+  149 | # define QT_DEPRECATED_VERSION_X_6_1(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+externalaudioplayer.cc:81:12: warning: 'take' is deprecated: Use std::unique_ptr instead, and call release(). [-Wdeprecated-declarations]
+   81 |     viewer.take(); // viewer finished and died -> release ownership.
+      |            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qscopedpointer.h:129:5: note: 'take' has been explicitly marked deprecated here
+  129 |     QT_DEPRECATED_VERSION_X_6_1("Use std::unique_ptr instead, and call release().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:149:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_1'
+  149 | # define QT_DEPRECATED_VERSION_X_6_1(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+3 warnings generated.
+compiling mouseover.cc
+compiling preferences.cc
+compiling mutex.cc
+3 warnings generated.
+compiling mediawiki.cc
+compiling sounddir.cc
+1 warning generated.
+compiling hunspell.cc
+compiling dictdfiles.cc
+compiling audiolink.cc
+compiling wstring.cc
+compiling wstring_qt.cc
+scanpopup.cc:917:37: warning: 'globalPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  917 |       reactOnMouseMove( mouseEvent->globalPos() );
+      |                                     ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:224:5: note: 'globalPos' has been explicitly marked deprecated here
+  224 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+scanpopup.cc:969:39: warning: 'globalPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  969 |   if ( !frameGeometry().contains( ev->globalPos() ) )
+      |                                       ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:224:5: note: 'globalPos' has been explicitly marked deprecated here
+  224 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+scanpopup.cc:978:20: warning: 'globalPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  978 |     startPos = ev->globalPos();
+      |                    ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:224:5: note: 'globalPos' has been explicitly marked deprecated here
+  224 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+scanpopup.cc:989:28: warning: 'globalPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  989 |     QPoint newPos = event->globalPos();
+      |                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:224:5: note: 'globalPos' has been explicitly marked deprecated here
+  224 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling processwrapper.cc
+4 warnings generated.
+compiling hotkeywrapper.cc
+compiling hotkeyedit.cc
+compiling langcoder.cc
+compiling loaddictionaries.cc
+mediawiki.cc:203:14: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  203 |     if ( !dd.setContent( netReply.get(), false, &errorStr, &errorLine, &errorColumn  ) )
+      |              ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:399:5: note: 'setContent' has been explicitly marked deprecated here
+  399 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+mediawiki.cc:512:16: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  512 |       if ( !dd.setContent( netReply, false, &errorStr, &errorLine, &errorColumn  ) )
+      |                ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:399:5: note: 'setContent' has been explicitly marked deprecated here
+  399 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling romaji.cc
+compiling transliteration.cc
+2 warnings generated.
+compiling belarusiantranslit.cc
+compiling russiantranslit.cc
+compiling german.cc
+compiling website.cc
+compiling language.cc
+compiling dictionarybar.cc
+compiling broken_xrecord.cc
+compiling history.cc
+compiling atomic_rename.cc
+compiling articlewebview.cc
+compiling zipfile.cc
+compiling indexedzip.cc
+compiling termination.cc
+compiling greektranslit.cc
+compiling webmultimediadownload.cc
+compiling forvo.cc
+articlewebview.cc:109:17: warning: 'QMouseEvent' is deprecated: Use another constructor [-Wdeprecated-declarations]
+  109 |     QMouseEvent ev( QEvent::MouseButtonDblClick, event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers() );
+      |                 ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:201:5: note: 'QMouseEvent' has been explicitly marked deprecated here
+  201 |     QT_DEPRECATED_VERSION_X_6_4("Use another constructor")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articlewebview.cc:131:17: warning: 'x' is deprecated: Use position() [-Wdeprecated-declarations]
+  131 |   if ( ( event->x() < width() - scrollBarWidth ) &&
+      |                 ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:226:5: note: 'x' has been explicitly marked deprecated here
+  226 |     QT_DEPRECATED_VERSION_X_6_0("Use position()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articlewebview.cc:132:17: warning: 'y' is deprecated: Use position() [-Wdeprecated-declarations]
+  132 |        ( event->y() < height() - scrollBarHeight ) )
+      |                 ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:228:5: note: 'y' has been explicitly marked deprecated here
+  228 |     QT_DEPRECATED_VERSION_X_6_0("Use position()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling country.cc
+compiling about.cc
+3 warnings generated.
+compiling programs.cc
+compiling parsecmdline.cc
+compiling maintabwidget.cc
+compiling mainstatusbar.cc
+compiling gdappstyle.cc
+compiling ufile.cc
+compiling xdxf.cc
+compiling sdict.cc
+forvo.cc:227:16: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  227 |       if ( !dd.setContent( netReply.get(), false, &errorStr, &errorLine, &errorColumn  ) )
+      |                ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:399:5: note: 'setContent' has been explicitly marked deprecated here
+  399 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+maintabwidget.cc:59:14: warning: 'y' is deprecated: Use position() [-Wdeprecated-declarations]
+   59 |     if( mev->y() >= tabBar()->rect().y()
+      |              ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:228:5: note: 'y' has been explicitly marked deprecated here
+  228 |     QT_DEPRECATED_VERSION_X_6_0("Use position()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+maintabwidget.cc:60:17: warning: 'y' is deprecated: Use position() [-Wdeprecated-declarations]
+   60 |         && mev->y() <= tabBar()->rect().y() + tabBar()->rect().height()
+      |                 ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:228:5: note: 'y' has been explicitly marked deprecated here
+  228 |     QT_DEPRECATED_VERSION_X_6_0("Use position()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+2 warnings generated.
+compiling decompress.cc
+compiling aard.cc
+compiling mruqmenu.cc
+compiling dictinfo.cc
+1 warning generated.
+compiling zipsounds.cc
+compiling stylescombobox.cc
+compiling extlineedit.cc
+compiling translatebox.cc
+compiling historypanewidget.cc
+compiling wordlist.cc
+compiling mdictparser.cc
+compiling mdx.cc
+compiling voiceengines.cc
+compiling ffmpegaudio.cc
+mdictparser.cc:219:19: warning: 'fromUtf16' is deprecated: Use char16_t* overload. [-Wdeprecated-declarations]
+  219 |   return QString::fromUtf16( ( const ushort * )&result.front() );
+      |                   ^
+/opt/homebrew/lib/QtCore.framework/Headers/qstring.h:774:5: note: 'fromUtf16' has been explicitly marked deprecated here
+  774 |     QT_DEPRECATED_VERSION_X_6_0("Use char16_t* overload.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling articleinspector.cc
+compiling delegate.cc
+compiling zim.cc
+compiling gddebug.cc
+1 warning generated.
+compiling gestures.cc
+compiling tiff.cc
+ffmpegaudio.cc:452:3: warning: 'av_init_packet' is deprecated [-Wdeprecated-declarations]
+  452 |   av_init_packet( &packet );
+      |   ^
+/opt/homebrew/Cellar/ffmpeg/8.0.1_3/include/libavcodec/packet.h:682:1: note: 'av_init_packet' has been explicitly marked deprecated here
+  682 | attribute_deprecated
+      | ^
+/opt/homebrew/Cellar/ffmpeg/8.0.1_3/include/libavutil/attributes.h:100:49: note: expanded from macro 'attribute_deprecated'
+  100 | #    define attribute_deprecated __attribute__((deprecated))
+      |                                                 ^
+ffmpegaudio.cc:512:3: warning: 'av_init_packet' is deprecated [-Wdeprecated-declarations]
+  512 |   av_init_packet( &packet );
+      |   ^
+/opt/homebrew/Cellar/ffmpeg/8.0.1_3/include/libavcodec/packet.h:682:1: note: 'av_init_packet' has been explicitly marked deprecated here
+  682 | attribute_deprecated
+      | ^
+/opt/homebrew/Cellar/ffmpeg/8.0.1_3/include/libavutil/attributes.h:100:49: note: expanded from macro 'attribute_deprecated'
+  100 | #    define attribute_deprecated __attribute__((deprecated))
+      |                                                 ^
+ffmpegaudio.cc:536:23: warning: unused function 'toInt32' [-Wunused-function]
+  536 | static inline int32_t toInt32( double v )
+      |                       ^~~~~~~
+3 warnings generated.
+compiling dictheadwords.cc
+compiling fulltextsearch.cc
+compiling ftshelpers.cc
+mdx.cc:331:3: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  331 |   dictFile.open( QIODevice::ReadOnly );
+      |   ^~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~
+mdx.cc:694:10: warning: 'addData' is deprecated: Use the QByteArrayView overload instead [-Wdeprecated-declarations]
+  694 |     hash.addData( articleBody.data(), articleBody.size() );
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcryptographichash.h:75:5: note: 'addData' has been explicitly marked deprecated here
+   75 |     QT_DEPRECATED_VERSION_X_6_4("Use the QByteArrayView overload instead")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling dictserver.cc
+mdx.cc:825:10: warning: 'addData' is deprecated: Use the QByteArrayView overload instead [-Wdeprecated-declarations]
+  825 |     hash.addData( u8ResourceName.data(), u8ResourceName.size() );
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcryptographichash.h:75:5: note: 'addData' has been explicitly marked deprecated here
+   75 |     QT_DEPRECATED_VERSION_X_6_4("Use the QByteArrayView overload instead")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling helpwindow.cc
+compiling slob.cc
+mdx.cc:1425:14: warning: 'addData' is deprecated: Use the QByteArrayView overload instead [-Wdeprecated-declarations]
+ 1425 |         hash.addData( u8ResourceName.data(), u8ResourceName.size() );
+      |              ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcryptographichash.h:75:5: note: 'addData' has been explicitly marked deprecated here
+   75 |     QT_DEPRECATED_VERSION_X_6_4("Use the QByteArrayView overload instead")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling ripemd.cc
+4 warnings generated.
+gestures.cc:96:41: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+   96 |         fewTouchPointsPresented = ( ev->touchPoints().size() > 1 );
+      |                                         ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:97:18: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+   97 |         if ( ev->touchPoints().size() == 2 )
+      |                  ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:99:44: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+   99 |           QTouchEvent::TouchPoint p1 = ev->touchPoints().at( 0 );
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:100:44: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+  100 |           QTouchEvent::TouchPoint p2 = ev->touchPoints().at( 1 );
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:102:38: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  102 |           QPointF centerPoint = ( p1.screenPos() + p2.screenPos() ) / 2.0;
+      |                                      ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:102:55: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  102 |           QPointF centerPoint = ( p1.screenPos() + p2.screenPos() ) / 2.0;
+      |                                                       ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:106:43: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  106 |             gest->startPosition[ 0 ] = p1.screenPos();
+      |                                           ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:107:43: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  107 |             gest->startPosition[ 1 ] = p2.screenPos();
+      |                                           ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:125:29: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  125 |             QLineF line( p1.screenPos(), p2.screenPos() );
+      |                             ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:125:45: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  125 |             QLineF line( p1.screenPos(), p2.screenPos() );
+      |                                             ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:126:33: warning: 'lastScreenPos' is deprecated: Use globalLastPosition() [-Wdeprecated-declarations]
+  126 |             QLineF lastLine( p1.lastScreenPos(),  p2.lastScreenPos() );
+      |                                 ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:106:5: note: 'lastScreenPos' has been explicitly marked deprecated here
+  106 |     QT_DEPRECATED_VERSION_X_6_0("Use globalLastPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:126:54: warning: 'lastScreenPos' is deprecated: Use globalLastPosition() [-Wdeprecated-declarations]
+  126 |             QLineF lastLine( p1.lastScreenPos(),  p2.lastScreenPos() );
+      |                                                      ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:106:5: note: 'lastScreenPos' has been explicitly marked deprecated here
+  106 |     QT_DEPRECATED_VERSION_X_6_0("Use globalLastPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:240:41: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+  240 |         fewTouchPointsPresented = ( ev->touchPoints().size() > 1 );
+      |                                         ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:244:17: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+  244 |         if( ev->touchPoints().size() == 2 )
+      |                 ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:248:44: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+  248 |           QTouchEvent::TouchPoint p1 = ev->touchPoints().at( 0 );
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:249:44: warning: 'touchPoints' is deprecated: Use points() [-Wdeprecated-declarations]
+  249 |           QTouchEvent::TouchPoint p2 = ev->touchPoints().at( 1 );
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qevent.h:943:5: note: 'touchPoints' has been explicitly marked deprecated here
+  943 |     QT_DEPRECATED_VERSION_X_6_0("Use points()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:252:44: warning: 'startScreenPos' is deprecated: Use globalPressPosition() [-Wdeprecated-declarations]
+  252 |             swipe->lastPositions[ 0 ] = p1.startScreenPos().toPoint();
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:96:5: note: 'startScreenPos' has been explicitly marked deprecated here
+   96 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPressPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:253:44: warning: 'startScreenPos' is deprecated: Use globalPressPosition() [-Wdeprecated-declarations]
+  253 |             swipe->lastPositions[ 1 ] = p2.startScreenPos().toPoint();
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:96:5: note: 'startScreenPos' has been explicitly marked deprecated here
+   96 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPressPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:258:37: warning: 'startScreenPos' is deprecated: Use globalPressPosition() [-Wdeprecated-declarations]
+  258 |             swipe->setHotSpot( ( p1.startScreenPos() + p2.startScreenPos() ) / 2 );
+      |                                     ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:96:5: note: 'startScreenPos' has been explicitly marked deprecated here
+   96 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPressPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:258:59: warning: 'startScreenPos' is deprecated: Use globalPressPosition() [-Wdeprecated-declarations]
+  258 |             swipe->setHotSpot( ( p1.startScreenPos() + p2.startScreenPos() ) / 2 );
+      |                                                           ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:96:5: note: 'startScreenPos' has been explicitly marked deprecated here
+   96 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPressPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:261:24: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  261 |           int dx1 = p1.screenPos().toPoint().x() - swipe->lastPositions[ 0 ].x();
+      |                        ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:262:24: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  262 |           int dx2 = p2.screenPos().toPoint().x() - swipe->lastPositions[ 1 ].x();
+      |                        ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:263:24: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  263 |           int dy1 = p1.screenPos().toPoint().y() - swipe->lastPositions[ 0 ].y();
+      |                        ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:264:24: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  264 |           int dy2 = p2.screenPos().toPoint().y() - swipe->lastPositions[ 1 ].y();
+      |                        ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling gls.cc
+gestures.cc:293:44: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  293 |             swipe->lastPositions[ 0 ] = p1.screenPos().toPoint();
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+gestures.cc:294:44: warning: 'screenPos' is deprecated: Use globalPosition() [-Wdeprecated-declarations]
+  294 |             swipe->lastPositions[ 1 ] = p2.screenPos().toPoint();
+      |                                            ^
+/opt/homebrew/lib/QtGui.framework/Headers/qeventpoint.h:94:5: note: 'screenPos' has been explicitly marked deprecated here
+   94 |     QT_DEPRECATED_VERSION_X_6_0("Use globalPosition()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling splitfile.cc
+compiling favoritespanewidget.cc
+26 warnings generated.
+compiling treeview.cc
+compiling texttospeechsource.cc
+compiling wildcard.cc
+compiling qtsingleapplication/src/qtsingleapplication.cpp
+compiling qtsingleapplication/src/qtlocalpeer.cpp
+favoritespanewidget.cc:640:13: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+  640 |   if ( !dom.setContent( &favoritesFile, false, &errorStr, &errorLine, &errorColumn  ) )
+      |             ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:399:5: note: 'setContent' has been explicitly marked deprecated here
+  399 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+favoritespanewidget.cc:1147:13: warning: 'setContent' is deprecated: Use the overload taking ParseOptions instead. [-Wdeprecated-declarations]
+ 1147 |   if ( !dom.setContent( dataStr, false, &errorStr, &errorLine, &errorColumn  ) )
+      |             ^
+/opt/homebrew/lib/QtXml.framework/Headers/qdom.h:397:5: note: 'setContent' has been explicitly marked deprecated here
+  397 |     QT_DEPRECATED_VERSION_X_6_8("Use the overload taking ParseOptions instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:205:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_8'
+  205 | # define QT_DEPRECATED_VERSION_X_6_8(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling lionsupport.mm
+compiling machotkeywrapper.mm
+compiling macmouseover.mm
+compiling speechclient_mac.mm
+2 warnings generated.
+rcc resources.qrc
+rcc flags.qrc
+moc mainwindow.hh
+qtsingleapplication/src/qtlocalpeer.cpp:86:21: warning: 'qChecksum' is deprecated: Use the QByteArrayView overload. [-Wdeprecated-declarations]
+   86 |     quint16 idNum = qChecksum(idc.constData(), idc.size());
+      |                     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qbytearrayview.h:401:1: note: 'qChecksum' has been explicitly marked deprecated here
+  401 | QT_DEPRECATED_VERSION_X_6_0("Use the QByteArrayView overload.")
+      | ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+moc dictionary.hh
+moc config.hh
+1 warning generated.
+moc sources.hh
+moc initializing.hh
+moc article_netmgr.hh
+moc webengine_schemehandler.hh
+moc groups_widgets.hh
+moc article_maker.hh
+moc scanpopup.hh
+macmouseover.mm:86:29: warning: 'fromUtf16' is deprecated: Use char16_t* overload. [-Wdeprecated-declarations]
+   86 |   QString result = QString::fromUtf16( chars, length );
+      |                             ^
+/opt/homebrew/lib/QtCore.framework/Headers/qstring.h:774:5: note: 'fromUtf16' has been explicitly marked deprecated here
+  774 |     QT_DEPRECATED_VERSION_X_6_0("Use char16_t* overload.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+macmouseover.mm:336:10: warning: 'AXAPIEnabled' is deprecated: first deprecated in macOS 10.9 [-Wdeprecated-declarations]
+  336 |   return AXAPIEnabled();
+      |          ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Headers/AXUIElement.h:52:16: note: 'AXAPIEnabled' has been explicitly marked deprecated here
+   52 | extern Boolean AXAPIEnabled (void) CF_DEPRECATED_MAC(10_0, 10_9);
+      |                ^
+moc articleview.hh
+2 warnings generated.
+moc audioplayerinterface.hh
+moc ffmpegaudioplayer.hh
+moc multimediaaudioplayer.hh
+moc externalaudioplayer.hh
+moc externalviewer.hh
+speechclient_mac.mm:43:3: warning: 'NSSpeechSynthesizer' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   43 |   NSSpeechSynthesizer * sp;
+      |   ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:81:12: note: 'NSSpeechSynthesizer' has been explicitly marked deprecated here
+   81 | @interface NSSpeechSynthesizer : NSObject
+      |            ^
+speechclient_mac.mm:32:14: warning: 'NSSpeechSynthesizer' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   32 |     sp = [ [ NSSpeechSynthesizer alloc ] initWithVoice : QStringToNSString( e.id ) ];
+      |              ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:81:12: note: 'NSSpeechSynthesizer' has been explicitly marked deprecated here
+   81 | @interface NSSpeechSynthesizer : NSObject
+      |            ^
+speechclient_mac.mm:32:42: warning: 'initWithVoice:' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   32 |     sp = [ [ NSSpeechSynthesizer alloc ] initWithVoice : QStringToNSString( e.id ) ];
+      |                                          ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:83:1: note: 'initWithVoice:' has been explicitly marked deprecated here
+   83 | - (nullable instancetype)initWithVoice:(nullable NSSpeechSynthesizerVoiceName)voice;
+      | ^
+speechclient_mac.mm:68:24: warning: 'NSSpeechSynthesizer' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   68 |   NSArray * voices = [ NSSpeechSynthesizer availableVoices ];
+      |                        ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:81:12: note: 'NSSpeechSynthesizer' has been explicitly marked deprecated here
+   81 | @interface NSSpeechSynthesizer : NSObject
+      |            ^
+speechclient_mac.mm:68:44: warning: 'availableVoices' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   68 |   NSArray * voices = [ NSSpeechSynthesizer availableVoices ];
+      |                                            ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:109:74: note: property 'availableVoices' is declared deprecated here
+  109 | @property (class, readonly, copy) NSArray<NSSpeechSynthesizerVoiceName> *availableVoices;
+      |                                                                          ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:109:74: note: 'availableVoices' has been explicitly marked deprecated here
+speechclient_mac.mm:94:30: warning: 'NSSpeechSynthesizer' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   94 |   if( !internalData->sp || [ NSSpeechSynthesizer isAnyApplicationSpeaking ] )
+      |                              ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:81:12: note: 'NSSpeechSynthesizer' has been explicitly marked deprecated here
+   81 | @interface NSSpeechSynthesizer : NSObject
+      |            ^
+speechclient_mac.mm:94:50: warning: 'isAnyApplicationSpeaking' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+   94 |   if( !internalData->sp || [ NSSpeechSynthesizer isAnyApplicationSpeaking ] )
+      |                                                  ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:107:67: note: property 'anyApplicationSpeaking' is declared deprecated here
+  107 | @property (class, readonly, getter=isAnyApplicationSpeaking) BOOL anyApplicationSpeaking;
+      |                                                                   ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:107:67: note: 'isAnyApplicationSpeaking' has been explicitly marked deprecated here
+speechclient_mac.mm:125:32: warning: 'startSpeakingString:' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+  125 |   bool ok = [ internalData->sp startSpeakingString : internalData->stringToPlay ];
+      |                                ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:85:1: note: 'startSpeakingString:' has been explicitly marked deprecated here
+   85 | - (BOOL)startSpeakingString:(NSString *)string;
+      | ^
+speechclient_mac.mm:162:28: warning: 'isSpeaking' is deprecated: first deprecated in macOS 14.0 - Use AVSpeechSynthesizer in AVFoundation instead [-Wdeprecated-declarations]
+  162 |   if ( ![ internalData->sp isSpeaking ] )
+      |                            ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:88:46: note: property 'speaking' is declared deprecated here
+   88 | @property (getter=isSpeaking, readonly) BOOL speaking;
+      |                                              ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSSpeechSynthesizer.h:88:46: note: 'isSpeaking' has been explicitly marked deprecated here
+moc wordfinder.hh
+moc groupcombobox.hh
+9 warnings generated.
+moc mouseover.hh
+moc preferences.hh
+moc hotkeywrapper.hh
+moc mediawiki.hh
+moc hotkeyedit.hh
+moc loaddictionaries.hh
+moc website.hh
+moc dictionarybar.hh
+moc history.hh
+moc articlewebview.hh
+moc webmultimediadownload.hh
+moc forvo.hh
+moc about.hh
+moc programs.hh
+moc dictspanewidget.hh
+moc maintabwidget.hh
+moc mainstatusbar.hh
+moc gdappstyle.hh
+moc mruqmenu.hh
+moc dictinfo.hh
+moc stylescombobox.hh
+moc extlineedit.hh
+moc translatebox.hh
+moc historypanewidget.hh
+moc wordlist.hh
+moc ffmpegaudio.hh
+moc dictheadwords.hh
+moc articleinspector.hh
+moc fulltextsearch.hh
+moc helpwindow.hh
+moc favoritespanewidget.hh
+moc macmouseover.hh
+moc texttospeechsource.hh
+moc speechclient.hh
+moc qtsingleapplication/src/qtlocalpeer.h
+moc qtsingleapplication/src/qtsingleapplication.h
+uic groups.ui
+uic orderandprops.ui
+compiling main.cc
+compiling sources.cc
+compiling mainwindow.cc
+compiling bgl.cc
+compiling groups.cc
+moc articleview.cc
+compiling editdictionaries.cc
+compiling orderandprops.cc
+compiling build/qrc_resources.cpp
+compiling build/qrc_flags.cpp
+compiling build/moc_mainwindow.cpp
+compiling build/moc_dictionary.cpp
+compiling build/moc_config.cpp
+compiling build/moc_sources.cpp
+sources.cc:44:48: warning: 'Int' is deprecated: Use QMetaType::Type instead. [-Wdeprecated-declarations]
+   44 |   itemEditorFactory->registerEditor( QVariant::Int, programTypeEditorCreator );
+      |                                                ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:156:10: note: 'Type' has been explicitly marked deprecated here
+  156 |     enum QT_DEPRECATED_VERSION_X_6_0("Use QMetaType::Type instead.") Type
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+bgl.cc:830:10: warning: 'addData' is deprecated: Use the QByteArrayView overload instead [-Wdeprecated-declarations]
+  830 |     hash.addData( targetHeadword.data(), targetHeadword.size() + 1 ); // with 0
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcryptographichash.h:75:5: note: 'addData' has been explicitly marked deprecated here
+   75 |     QT_DEPRECATED_VERSION_X_6_4("Use the QByteArrayView overload instead")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+bgl.cc:831:10: warning: 'addData' is deprecated: Use the QByteArrayView overload instead [-Wdeprecated-declarations]
+  831 |     hash.addData( articleText.data(), articleText.size() );
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcryptographichash.h:75:5: note: 'addData' has been explicitly marked deprecated here
+   75 |     QT_DEPRECATED_VERSION_X_6_4("Use the QByteArrayView overload instead")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:173:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_4'
+  173 | # define QT_DEPRECATED_VERSION_X_6_4(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+compiling build/moc_initializing.cpp
+compiling build/moc_article_netmgr.cpp
+compiling build/moc_webengine_schemehandler.cpp
+main.cc:462:38: warning: 'location' is deprecated: Use path() [-Wdeprecated-declarations]
+  462 |                        QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+      |                                      ^
+/opt/homebrew/lib/QtCore.framework/Headers/qlibraryinfo.h:48:5: note: 'location' has been explicitly marked deprecated here
+   48 |     QT_DEPRECATED_VERSION_X_6_0("Use path()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+main.cc:461:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  461 |     qtTranslator.load( "qt_" + localeName,
+      |     ^~~~~~~~~~~~~~~~~
+main.cc:468:3: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  468 |   translator.load( Config::getLocDir() + "/" + localeName );
+      |   ^~~~~~~~~~~~~~~
+main.cc:540:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  540 |     logFilePtr->open( QFile::ReadWrite );
+      |     ^~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~
+main.cc:573:48: warning: 'location' is deprecated: Use path() [-Wdeprecated-declarations]
+  573 |                                  QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+      |                                                ^
+/opt/homebrew/lib/QtCore.framework/Headers/qlibraryinfo.h:48:5: note: 'location' has been explicitly marked deprecated here
+   48 |     QT_DEPRECATED_VERSION_X_6_0("Use path()")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+main.cc:572:7: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  572 |       qtTranslator.load( "qt_" + localeName,
+      |       ^~~~~~~~~~~~~~~~~
+main.cc:575:5: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+  575 |     translator.load( Config::getLocDir() + "/" + localeName );
+      |     ^~~~~~~~~~~~~~~
+mainwindow.cc:1167:3: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+ 1167 |   builtInCssFile.open( QFile::ReadOnly );
+      |   ^~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~
+mainwindow.cc:1172:3: warning: ignoring return value of function declared with 'nodiscard' attribute [-Wunused-result]
+ 1172 |   macCssFile.open( QFile::ReadOnly );
+      |   ^~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~
+2 warnings generated.
+mainwindow.cc:3062:11: warning: 'setActiveWindow' is deprecated: Use QWidget::activateWindow() instead. [-Wdeprecated-declarations]
+ 3062 |     qApp->setActiveWindow( this );
+      |           ^
+/opt/homebrew/lib/QtWidgets.framework/Headers/qapplication.h:84:5: note: 'setActiveWindow' has been explicitly marked deprecated here
+   84 |     QT_DEPRECATED_VERSION_X_6_5("Use QWidget::activateWindow() instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:181:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_5'
+  181 | # define QT_DEPRECATED_VERSION_X_6_5(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+mainwindow.cc:3081:11: warning: 'setActiveWindow' is deprecated: Use QWidget::activateWindow() instead. [-Wdeprecated-declarations]
+ 3081 |     qApp->setActiveWindow( this );
+      |           ^
+/opt/homebrew/lib/QtWidgets.framework/Headers/qapplication.h:84:5: note: 'setActiveWindow' has been explicitly marked deprecated here
+   84 |     QT_DEPRECATED_VERSION_X_6_5("Use QWidget::activateWindow() instead.")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:181:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_5'
+  181 | # define QT_DEPRECATED_VERSION_X_6_5(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+moc groups.hh
+mainwindow.cc:3536:36: warning: unused parameter 'autostart' [-Wunused-parameter]
+ 3536 | void MainWindow::setAutostart(bool autostart)
+      |                                    ^
+1 warning generated.
+compiling build/moc_groups_widgets.cpp
+7 warnings generated.
+compiling build/moc_article_maker.cpp
+compiling build/moc_scanpopup.cpp
+compiling build/moc_articleview.cpp
+compiling build/moc_audioplayerinterface.cpp
+compiling build/moc_ffmpegaudioplayer.cpp
+compiling build/moc_multimediaaudioplayer.cpp
+compiling build/moc_externalaudioplayer.cpp
+compiling build/moc_externalviewer.cpp
+compiling build/moc_wordfinder.cpp
+compiling build/moc_groupcombobox.cpp
+compiling build/moc_mouseover.cpp
+5 warnings generated.
+compiling build/moc_preferences.cpp
+compiling build/moc_mediawiki.cpp
+compiling build/moc_hotkeywrapper.cpp
+compiling build/moc_hotkeyedit.cpp
+moc editdictionaries.hh
+compiling build/moc_loaddictionaries.cpp
+compiling build/moc_website.cpp
+moc orderandprops.hh
+compiling build/moc_dictionarybar.cpp
+compiling build/moc_history.cpp
+compiling build/moc_articlewebview.cpp
+compiling build/moc_webmultimediadownload.cpp
+compiling build/moc_forvo.cpp
+compiling build/moc_about.cpp
+compiling build/moc_programs.cpp
+compiling build/moc_dictspanewidget.cpp
+compiling build/moc_maintabwidget.cpp
+compiling build/moc_mainstatusbar.cpp
+compiling build/moc_gdappstyle.cpp
+compiling build/moc_mruqmenu.cpp
+compiling build/moc_dictinfo.cpp
+compiling build/moc_stylescombobox.cpp
+compiling build/moc_extlineedit.cpp
+compiling build/moc_translatebox.cpp
+compiling build/moc_historypanewidget.cpp
+compiling build/moc_wordlist.cpp
+compiling build/moc_ffmpegaudio.cpp
+compiling build/moc_articleinspector.cpp
+compiling build/moc_dictheadwords.cpp
+compiling build/moc_fulltextsearch.cpp
+compiling build/moc_helpwindow.cpp
+compiling build/moc_favoritespanewidget.cpp
+compiling build/moc_macmouseover.cpp
+compiling build/moc_texttospeechsource.cpp
+compiling build/moc_speechclient.cpp
+compiling build/moc_qtsingleapplication.cpp
+compiling build/moc_qtlocalpeer.cpp
+compiling articleview.cc
+compiling build/moc_groups.cpp
+compiling build/moc_editdictionaries.cpp
+compiling build/moc_orderandprops.cpp
+articleview.cc:962:10: warning: 'type' is deprecated: Use typeId() or metaType(). [-Wdeprecated-declarations]
+  962 |   if ( v.type() == QVariant::String )
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:563:5: note: 'type' has been explicitly marked deprecated here
+  563 |     QT_DEPRECATED_VERSION_X_6_0("Use typeId() or metaType().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:962:30: warning: 'String' is deprecated: Use QMetaType::Type instead. [-Wdeprecated-declarations]
+  962 |   if ( v.type() == QVariant::String )
+      |                              ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:156:10: note: 'Type' has been explicitly marked deprecated here
+  156 |     enum QT_DEPRECATED_VERSION_X_6_0("Use QMetaType::Type instead.") Type
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:1060:19: warning: 'type' is deprecated: Use typeId() or metaType(). [-Wdeprecated-declarations]
+ 1060 |       if ( result.type() == QVariant::String )
+      |                   ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:563:5: note: 'type' has been explicitly marked deprecated here
+  563 |     QT_DEPRECATED_VERSION_X_6_0("Use typeId() or metaType().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:1060:39: warning: 'String' is deprecated: Use QMetaType::Type instead. [-Wdeprecated-declarations]
+ 1060 |       if ( result.type() == QVariant::String )
+      |                                       ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:156:10: note: 'Type' has been explicitly marked deprecated here
+  156 |     enum QT_DEPRECATED_VERSION_X_6_0("Use QMetaType::Type instead.") Type
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:2028:10: warning: 'type' is deprecated: Use typeId() or metaType(). [-Wdeprecated-declarations]
+ 2028 |   if ( v.type() == QVariant::String )
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:563:5: note: 'type' has been explicitly marked deprecated here
+  563 |     QT_DEPRECATED_VERSION_X_6_0("Use typeId() or metaType().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:2028:30: warning: 'String' is deprecated: Use QMetaType::Type instead. [-Wdeprecated-declarations]
+ 2028 |   if ( v.type() == QVariant::String )
+      |                              ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:156:10: note: 'Type' has been explicitly marked deprecated here
+  156 |     enum QT_DEPRECATED_VERSION_X_6_0("Use QMetaType::Type instead.") Type
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:2044:10: warning: 'type' is deprecated: Use typeId() or metaType(). [-Wdeprecated-declarations]
+ 2044 |   if ( v.type() == QVariant::String )
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:563:5: note: 'type' has been explicitly marked deprecated here
+  563 |     QT_DEPRECATED_VERSION_X_6_0("Use typeId() or metaType().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:2044:30: warning: 'String' is deprecated: Use QMetaType::Type instead. [-Wdeprecated-declarations]
+ 2044 |   if ( v.type() == QVariant::String )
+      |                              ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:156:10: note: 'Type' has been explicitly marked deprecated here
+  156 |     enum QT_DEPRECATED_VERSION_X_6_0("Use QMetaType::Type instead.") Type
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:2055:12: warning: 'type' is deprecated: Use typeId() or metaType(). [-Wdeprecated-declarations]
+ 2055 |     if ( v.type() == QVariant::String )
+      |            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:563:5: note: 'type' has been explicitly marked deprecated here
+  563 |     QT_DEPRECATED_VERSION_X_6_0("Use typeId() or metaType().")
+      |     ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:2055:32: warning: 'String' is deprecated: Use QMetaType::Type instead. [-Wdeprecated-declarations]
+ 2055 |     if ( v.type() == QVariant::String )
+      |                                ^
+/opt/homebrew/lib/QtCore.framework/Headers/qvariant.h:156:10: note: 'Type' has been explicitly marked deprecated here
+  156 |     enum QT_DEPRECATED_VERSION_X_6_0("Use QMetaType::Type instead.") Type
+      |          ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:141:44: note: expanded from macro 'QT_DEPRECATED_VERSION_X_6_0'
+  141 | # define QT_DEPRECATED_VERSION_X_6_0(text) QT_DEPRECATED_X(text)
+      |                                            ^
+/opt/homebrew/lib/QtCore.framework/Headers/qtdeprecationmarkers.h:29:33: note: expanded from macro 'QT_DEPRECATED_X'
+   29 | #  define QT_DEPRECATED_X(text) Q_DECL_DEPRECATED_X(text)
+      |                                 ^
+/opt/homebrew/lib/QtCore.framework/Headers/qcompilerdetection.h:1011:36: note: expanded from macro 'Q_DECL_DEPRECATED_X'
+ 1011 | #  define Q_DECL_DEPRECATED_X(x) [[deprecated(x)]]
+      |                                    ^
+articleview.cc:3276:18: warning: format specifies type 'int' but the argument has type 'qsizetype' (aka 'long long') [-Wformat]
+ 3275 |       gdWarning( "ArticleView::highlightFTSResults(): Too long match - skipped (matched length %i, allowed %i)",
+      |                                                                                                ~~
+      |                                                                                                %lli
+ 3276 |                  match.capturedLength(), FTS::MaxMatchLengthForHighlightResults );
+      |                  ^~~~~~~~~~~~~~~~~~~~~~
+11 warnings generated.
+linking GoldenDict.app/Contents/MacOS/GoldenDict
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/libvorbis/lib/libvorbisfile.3.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/libvorbis/lib/libvorbis.0.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/libogg/lib/libogg.0.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/hunspell/lib/libhunspell-1.7.0.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/lzo/lib/liblzo2.2.dylib' which was built for newer version 15.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/ffmpeg/lib/libavutil.60.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/ffmpeg/lib/libavformat.62.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/ffmpeg/lib/libavcodec.62.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/ffmpeg/lib/libswresample.6.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/libao/lib/libao.4.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/xz/lib/liblzma.5.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/zstd/lib/libzstd.1.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/libtiff/lib/libtiff.6.dylib' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qtsvg/lib/QtSvg.framework/Versions/A/QtSvg' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qttools/lib/QtHelp.framework/Versions/A/QtHelp' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qtmultimedia/lib/QtMultimedia.framework/Versions/A/QtMultimedia' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qtdeclarative/lib/QtQuick.framework/Versions/A/QtQuick' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qtwebchannel/lib/QtWebChannel.framework/Versions/A/QtWebChannel' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qtdeclarative/lib/QtQml.framework/Versions/A/QtQml' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qtpositioning/lib/QtPositioning.framework/Versions/A/QtPositioning' which was built for newer version 26.0
+ld: warning: building for macOS-14.0, but linking with dylib '/opt/homebrew/opt/qt5compat/lib/QtCore5Compat.framework/Versions/A/QtCore5Compat' which was built for newer version 26.0
+mkdir -p GoldenDict.app/Contents/Frameworks & cp -nR /Users/ffox/goldendict/maclibs/lib/ GoldenDict.app/Contents/Frameworks/ & mkdir -p GoldenDict.app/Contents/MacOS/locale & cp -R locale/*.qm GoldenDict.app/Contents/MacOS/locale/ & mkdir -p GoldenDict.app/Contents/MacOS/help & cp -R /Users/ffox/goldendict/help/*.qch GoldenDict.app/Contents/MacOS/help/

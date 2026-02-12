@@ -662,7 +662,7 @@ QString & MdictParser::substituteStylesheet( QString & article, MdictParser::Sty
   {
     QRegularExpressionMatch match = it.next();
     int styleId = match.captured( 1 ).toInt();
-    articleNewText += article.midRef( pos, match.capturedStart() - pos );
+    articleNewText += article.mid( pos, match.capturedStart() - pos );
     pos = match.capturedEnd();
 #else
   while ( ( pos = rx.indexIn( article, pos ) ) != -1 )
@@ -696,7 +696,7 @@ QString & MdictParser::substituteStylesheet( QString & article, MdictParser::Sty
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
   if( pos )
   {
-    articleNewText += article.midRef( pos );
+    articleNewText += article.mid( pos );
     article = articleNewText;
     articleNewText.clear();
   }

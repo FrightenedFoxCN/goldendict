@@ -497,13 +497,13 @@ bool needToRebuildIndex( vector< string > const & dictionaryFiles,
       ZipFile::SplitZipFile zf( name );
       if( !zf.exists() )
         return true;
-      ts = zf.lastModified().toTime_t();
+      ts = zf.lastModified().toMSecsSinceEpoch();
     }
     else
     {
       if ( !fileInfo.exists() )
         return true;
-      ts = fileInfo.lastModified().toTime_t();
+      ts = fileInfo.lastModified().toMSecsSinceEpoch();
     }
 
     if ( ts > lastModified )
@@ -515,7 +515,7 @@ bool needToRebuildIndex( vector< string > const & dictionaryFiles,
   if ( !fileInfo.exists() )
     return true;
 
-  return fileInfo.lastModified().toTime_t() < lastModified;
+  return fileInfo.lastModified().toMSecsSinceEpoch() < lastModified;
 }
 
 QString generateRandomDictionaryId()

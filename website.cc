@@ -4,17 +4,10 @@
 #include "website.hh"
 #include "wstring_qt.hh"
 #include "utf8.hh"
+#include "gddebug.hh"
 #include <QUrl>
 #include <QTextCodec>
-#include <QDir>
-#include <QFileInfo>
-#include "gddebug.hh"
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
 #include <QRegularExpression>
-#else
-#include <QRegExp>
-#endif
 
 namespace WebSite {
 
@@ -240,7 +233,7 @@ void WebSiteArticleRequest::requestFinished( QNetworkReply * r )
     while( it.hasNext() )
     {
       QRegularExpressionMatch match = it.next();
-      articleNewString += articleString.midRef( pos, match.capturedStart() - pos );
+      articleNewString += articleString.mid( pos, match.capturedStart() - pos );
       pos = match.capturedEnd();
 
       QString tag = match.captured();
@@ -278,7 +271,7 @@ void WebSiteArticleRequest::requestFinished( QNetworkReply * r )
     }
     if( pos )
     {
-      articleNewString += articleString.midRef( pos );
+      articleNewString += articleString.mid( pos );
       articleString = articleNewString;
       articleNewString.clear();
     }
@@ -293,7 +286,7 @@ void WebSiteArticleRequest::requestFinished( QNetworkReply * r )
     while( it.hasNext() )
     {
       QRegularExpressionMatch match = it.next();
-      articleNewString += articleString.midRef( pos, match.capturedStart() - pos );
+      articleNewString += articleString.mid( pos, match.capturedStart() - pos );
       pos = match.capturedEnd();
 
       QString newTag = match.captured( 1 ) + prefix + match.captured( 2 )
@@ -302,7 +295,7 @@ void WebSiteArticleRequest::requestFinished( QNetworkReply * r )
     }
     if( pos )
     {
-      articleNewString += articleString.midRef( pos );
+      articleNewString += articleString.mid( pos );
       articleString = articleNewString;
       articleNewString.clear();
     }
@@ -374,16 +367,20 @@ void WebSiteArticleRequest::requestFinished( QNetworkReply * r )
 #endif
     // Check for unclosed <span> and <div>
 
-    int openTags = articleString.count( QRegExp( "<\\s*span\\b", Qt::CaseInsensitive ) );
-    int closedTags = articleString.count( QRegExp( "<\\s*/span\\s*>", Qt::CaseInsensitive ) );
+    int openTags = articleString.count( QRegularExpression( "<\\s*span\\b",
+                                 QRegularExpression::CaseInsensitiveOption ) );
+    int closedTags = articleString.count( QRegularExpression( "<\\s*/span\\s*>",
+                                 QRegularExpression::CaseInsensitiveOption ) );
     while( openTags > closedTags )
     {
       articleString += "</span>";
       closedTags += 1;
     }
 
-    openTags = articleString.count( QRegExp( "<\\s*div\\b", Qt::CaseInsensitive ) );
-    closedTags = articleString.count( QRegExp( "<\\s*/div\\s*>", Qt::CaseInsensitive ) );
+    openTags = articleString.count( QRegularExpression( "<\\s*div\\b",
+                               QRegularExpression::CaseInsensitiveOption ) );
+    closedTags = articleString.count( QRegularExpression( "<\\s*/div\\s*>",
+                               QRegularExpression::CaseInsensitiveOption ) );
     while( openTags > closedTags )
     {
       articleString += "</div>";
