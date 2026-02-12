@@ -33,33 +33,18 @@ QT += core \
       gui \
       xml \
       network \
-      svg
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets \
-          printsupport \
-          help
-
-    # QMediaPlayer is not available in Qt4.
-    !CONFIG( no_qtmultimedia_player ) {
-      QT += multimedia
-      DEFINES += MAKE_QTMULTIMEDIA_PLAYER
-    }
-} else {
-    QT += webkit
-    CONFIG += help
-}
-
-greaterThan(QT_VERSION, 0x050600) {
-    QT += webenginewidgets
-} else {
-    QT += webkitwidgets
-}
-
-greaterThan(QT_MAJOR_VERSION, 5) {
-  QT += webenginecore \
+      svg \
+      widgets \
+      printsupport \
+      help \
+      webenginewidgets \
+      webenginecore \
       webchannel \
       core5compat
+
+!CONFIG( no_qtmultimedia_player ) {
+  QT += multimedia
+  DEFINES += MAKE_QTMULTIMEDIA_PLAYER
 }
 
 !CONFIG( no_ffmpeg_player ) {
@@ -640,6 +625,9 @@ CONFIG( chinese_conversion_support ) {
   win32-msvc* {
     Debug:   LIBS += -lopenccd
     Release: LIBS += -lopencc
+  }
+  !win32-msvc*:CONFIG( use_homebrew ) {
+    LIBS += -L/opt/homebrew/lib -lopencc
   }
   !win32-msvc*:!CONFIG( use_homebrew ) {
     mac: LIBS += -lopencc.2

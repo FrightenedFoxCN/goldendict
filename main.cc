@@ -27,12 +27,7 @@
 
 #include "termination.hh"
 #include "atomic_rename.hh"
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QWebSecurityOrigin>
-#else
 #include <QWebEngineUrlScheme>
-#endif
 #include <QMessageBox>
 #include <QDebug>
 #include <QFile>
@@ -43,7 +38,6 @@
 
 #include "gddebug.hh"
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 static void registerWebEngineSchemes()
 {
   struct SchemeConfig
@@ -69,28 +63,12 @@ static void registerWebEngineSchemes()
     QWebEngineUrlScheme::registerScheme( scheme );
   }
 }
-#endif
-
-#if defined( Q_OS_MAC ) && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include "lionsupport.h"
-#endif
-
-#if ( QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 ) )
 
 void gdMessageHandler( QtMsgType type, const QMessageLogContext &context, const QString &mess )
 {
   Q_UNUSED( context );
   QString message( mess );
   QByteArray msg = message.toUtf8().constData();
-
-#else
-
-void gdMessageHandler( QtMsgType type, const char *msg_ )
-{
-  QString message = QString::fromUtf8( msg_ );
-  QByteArray msg = QByteArray::fromRawData( msg_, strlen( msg_ ) );
-
-#endif
 
   switch (type) {
 
@@ -126,14 +104,12 @@ void gdMessageHandler( QtMsgType type, const char *msg_ )
         fprintf(stderr, "Fatal: %s\n", msg.constData());
       abort();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
     case QtInfoMsg:
       if( logFilePtr && logFilePtr->isOpen() )
         message.insert( 0, "Info: " );
       else
         fprintf(stderr, "Info: %s\n", msg.constData());
       break;
-#endif
   }
 
   if( logFilePtr && logFilePtr->isOpen() )
@@ -257,11 +233,7 @@ void GDCommandLine::handleUriSchemes()
     if( !word.startsWith( scheme ) )
       continue;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     int schemeSize = scheme.size();
-#else
-    int schemeSize = strlen( scheme.latin1() );
-#endif
     if( word.size() > schemeSize && word.at( schemeSize ) == QLatin1Char( '/' ) )
       ++schemeSize; // support dict:///word as well
 
@@ -302,14 +274,6 @@ int main( int argc, char ** argv )
 #endif
   #ifdef Q_OS_MAC
     setenv("LANG", "en_US.UTF-8", 1);
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-   // Check for retina display
-   if( LionSupport::isRetinaDisplay() )
-     QApplication::setGraphicsSystem( "native" );
-   else
-     QApplication::setGraphicsSystem( "raster" );
-#endif
   #endif
 
   // The following clause fixes a race in the MinGW runtime where throwing
@@ -387,9 +351,7 @@ int main( int argc, char ** argv )
 
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   registerWebEngineSchemes();
-#endif
 
   QHotkeyApplication app( "GoldenDict", argc, argv );
   LogFilePtrGuard logFilePtrGuard;
@@ -434,13 +396,13 @@ int main( int argc, char ** argv )
 
   app.setApplicationName( "GoldenDict" );
   app.setOrganizationDomain( "http://goldendict.org/" );
-#if QT_VERSION >= 0x040600
+  
+  // Quit application when last window is closed
+  app.setQuitOnLastWindowClosed( true );
+  
   app.setStyle(new GdAppStyle);
-#endif
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
   app.setDesktopFileName( QStringLiteral( "org.goldendict.GoldenDict" ) );
-#endif
 
   #ifndef Q_OS_MAC
     app.setWindowIcon( QIcon( ":/icons/programicon.png" ) );
@@ -545,11 +507,7 @@ int main( int argc, char ** argv )
     logFilePtr->write( line );
 
     // Install message handler
-#if ( QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 ) )
     qInstallMessageHandler( gdMessageHandler );
-#else
-    qInstallMsgHandler( gdMessageHandler );
-#endif
   }
 
   if ( Config::isPortableVersion() )
@@ -578,12 +536,6 @@ int main( int argc, char ** argv )
   // Prevent app from quitting spontaneously when it works with scan popup
   // and with the main window closed.
   app.setQuitOnLastWindowClosed( false );
-
-#if QT_VERSION >= 0x040600 && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  // Add the dictionary scheme we use as local, so that the file:// links would
-  // work in the articles. The function was introduced in Qt 4.6.
-  QWebSecurityOrigin::addLocalScheme( "gdlookup" );
-#endif
 
   MainWindow m( cfg );
 

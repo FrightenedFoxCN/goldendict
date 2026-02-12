@@ -48,12 +48,8 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include "ui_authentication.h"
-#if IS_QT_6
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
-#else
-#include <QWebSettings>
-#endif
 
 #ifdef Q_OS_MAC
 #include "lionsupport.h"
@@ -180,10 +176,8 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 
   articleMaker.setCollapseParameters( cfg.preferences.collapseBigArticles, cfg.preferences.articleSizeLimit );
 
-#if QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)
   // Set own gesture recognizers
   Gestures::registerRecognizers();
-#endif
 
   // use our own, custom statusbar
   setStatusBar(0);
@@ -615,7 +609,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   connect( ui.menuHistory, SIGNAL( aboutToShow() ),
            this, SLOT( updateHistoryMenu() ) );
 
-#if !defined( HAVE_X11 ) || QT_VERSION < QT_VERSION_CHECK( 5, 0, 0 )
+#if !defined( HAVE_X11 )
   // Show tray icon early so the user would be happy. It won't be functional
   // though until the program inits fully.
   // Do not create dummy tray icon in X. Cause QT5 failed to upgrade systemtray context menu.
@@ -645,9 +639,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   ui.tabWidget->setCornerWidget( &addTab, Qt::TopLeftCorner );
   //ui.tabWidget->setCornerWidget( &closeTab, Qt::TopRightCorner );
 
-#if QT_VERSION >= 0x040500
   ui.tabWidget->setMovable( true );
-#endif
 
 #ifndef Q_OS_WIN32
   ui.tabWidget->setDocumentMode( true );
@@ -670,9 +662,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   connect( ui.tabWidget, SIGNAL( customContextMenuRequested(QPoint)) ,
            this, SLOT( tabMenuRequested(QPoint)) );
 
-#if QT_VERSION >= 0x040500
   ui.tabWidget->setTabsClosable( true );
-#endif
 
   connect( ui.quit, SIGNAL( triggered() ),
            this, SLOT( quitApp() ) );
@@ -924,10 +914,8 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   ( static_cast< QHotkeyApplication * >( qApp ) )->setMainWindow( this );
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)
   ui.centralWidget->grabGesture( Gestures::GDPinchGestureType );
   ui.centralWidget->grabGesture( Gestures::GDSwipeGestureType );
-#endif
 
   if( layoutDirection() == Qt::RightToLeft )
   {
@@ -1051,11 +1039,9 @@ MainWindow::~MainWindow()
 
   ftsIndexing.stopIndexing();
 
-#if QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)
   ui.centralWidget->ungrabGesture( Gestures::GDPinchGestureType );
   ui.centralWidget->ungrabGesture( Gestures::GDSwipeGestureType );
 //  Gestures::unregisterRecognizers();
-#endif
 
   // Close all tabs -- they should be destroyed before network managers
   // do.
@@ -1238,11 +1224,7 @@ void MainWindow::wheelEvent( QWheelEvent *ev )
 {
   if ( ev->modifiers().testFlag( Qt::ControlModifier ) )
   {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
     int const delta = ev->angleDelta().y();
-#else
-    int const delta = ev->delta();
-#endif
     if ( delta > 0 )
     {
         zoomin();
@@ -1273,10 +1255,14 @@ void MainWindow::closeEvent( QCloseEvent * ev )
     // property is false and Qt::WA_DeleteOnClose widget attribute is not set.
     Q_ASSERT(!QApplication::quitOnLastWindowClosed());
     Q_ASSERT(!testAttribute(Qt::WA_DeleteOnClose));
-#else
+#elif defined(Q_OS_WIN)
     // Ignore the close event because closing the main window breaks global hotkeys on Windows.
     ev->ignore();
     hide();
+#else
+    // On macOS, accept the close event to allow proper app termination
+    ev->accept();
+    quitApp();
 #endif
   }
   else
@@ -1346,14 +1332,8 @@ void MainWindow::applyProxySettings()
 
 void MainWindow::applyWebSettings()
 {
-#if IS_QT_6
   QWebEngineSettings *defaultSettings = QWebEngineProfile::defaultProfile()->settings();
   defaultSettings->setAttribute( QWebEngineSettings::PluginsEnabled, cfg.preferences.enableWebPlugins );
-#else
-  QWebSettings *defaultSettings = QWebSettings::globalSettings();
-  defaultSettings->setAttribute(QWebSettings::PluginsEnabled, cfg.preferences.enableWebPlugins);
-  defaultSettings->setAttribute( QWebSettings::DeveloperExtrasEnabled, true );
-#endif
 }
 
 void MainWindow::setupNetworkCache( int maxSize )
@@ -1781,7 +1761,6 @@ void MainWindow::tabCloseRequested( int x )
   // if everything is closed, add a new tab
   addNewTab();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
   QWidget const * const focused = focusWidget();
   if( !focused || focused == ui.tabWidget->tabBar() )
   {
@@ -1792,7 +1771,6 @@ void MainWindow::tabCloseRequested( int x )
     Q_ASSERT( getCurrentArticleView() );
     getCurrentArticleView()->focus();
   }
-#endif
 }
 
 void MainWindow::closeCurrentTab()
@@ -3878,7 +3856,6 @@ void MainWindow::applyZoomFactor()
   // triggered() signal is no longer emitted, which in turn improves performance.
   adjustCurrentZoomFactor();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 0, 0 )
   // Scaling article views asynchronously dramatically improves performance when
   // a zoom action is triggered repeatedly while many or large articles are open
   // in the main window or in scan popup.
@@ -3888,13 +3865,6 @@ void MainWindow::applyZoomFactor()
   // In effect, some intermediate zoom factors are skipped when scaling is slow.
   // The slower the scaling, the more steps are skipped.
   QTimer::singleShot( 0, this, SLOT( scaleArticlesByCurrentZoomFactor() ) );
-#else
-  // The timer trick above usually doesn't improve performance with Qt4
-  // due to a different ordering of keyboard and timer events.
-  // Sometimes, unpredictably, it does work like with Qt5.
-  // Scale article views synchronously to avoid inconsistent or unexpected behavior.
-  scaleArticlesByCurrentZoomFactor();
-#endif
 }
 
 void MainWindow::adjustCurrentZoomFactor()
