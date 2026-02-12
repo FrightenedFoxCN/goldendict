@@ -28,7 +28,7 @@ file(GLOB AUDIO_SOURCES "${AUDIO_DIR}/*.cc")
 # Exclude Windows-specific files
 list(FILTER AUDIO_SOURCES EXCLUDE REGEX "speechclient_win\\.cc|speechhlp\\.cc")
 file(GLOB AUDIO_HEADERS "${AUDIO_DIR}/*.hh")
-list(FILTER AUDIO_HEADERS EXCLUDE REGEX "speechhlp\\.hh|sapi\\.hh|sphelper\\.hh|speechclient\\.hh")
+list(FILTER AUDIO_HEADERS EXCLUDE REGEX "speechhlp\\.hh|sapi\\.hh|sphelper\\.hh")
 
 # Text processing and transliteration
 set(TEXT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/text)
@@ -52,11 +52,11 @@ file(GLOB ABOUT_HEADERS "${ABOUT_DIR}/*.hh")
 
 # Platform-specific code
 set(PLATFORM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/platform)
-file(GLOB PLATFORM_SOURCES "${PLATFORM_DIR}/*.cc" "${PLATFORM_DIR}/*.cpp" "${PLATFORM_DIR}/*.mm")
+file(GLOB PLATFORM_SOURCES "${PLATFORM_DIR}/*.cc" "${PLATFORM_DIR}/*.cpp" "${PLATFORM_DIR}/*.mm" "${PLATFORM_DIR}/*.c")
 file(GLOB PLATFORM_HEADERS "${PLATFORM_DIR}/*.hh" "${PLATFORM_DIR}/*.h")
 # Exclude Windows-only files
-list(FILTER PLATFORM_SOURCES EXCLUDE REGEX ".*_win(32|64)\\.(cc|cpp)|x64\\.cc|wordbyauto\\.cc")
-list(FILTER PLATFORM_HEADERS EXCLUDE REGEX ".*_win(32|64)\\.h|x64\\.hh|wordbyauto\\.hh|uiauto\\.hh")
+list(FILTER PLATFORM_SOURCES EXCLUDE REGEX ".*_win(32|64)\\.(cc|cpp|c)|x64\\.cc|wordbyauto\\.cc|hotkeys\\.c|guids\\.c")
+list(FILTER PLATFORM_HEADERS EXCLUDE REGEX ".*_win(32|64)\\.h|x64\\.hh|wordbyauto\\.hh|uiauto\\.hh|hotkeys\\.h|fixx11h\\.h")
 
 # Combine all sources and headers
 set(ALL_SOURCES
@@ -116,6 +116,8 @@ if(APPLE)
         MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_ICON_FILE "macicon.icns"
+        BUNDLE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 elseif(NOT WIN32)
     set_target_properties(GoldenDict PROPERTIES OUTPUT_NAME "goldendict")
