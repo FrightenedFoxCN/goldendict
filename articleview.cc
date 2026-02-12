@@ -199,23 +199,42 @@ public:
 
 /// End of DiacriticsHandler class
 
+// Helper struct to safely manage lifetime of local variables in async callbacks
+struct JavaScriptResultWrapper {
+  QVariant result;
+  QEventLoop* loop;
+};
+
 static QVariant runJavaScriptSync( QWebEnginePage * page, QString const & script )
 {
-  QVariant result;
+  if ( !page ) {
+    return QVariant();
+  }
+  
+  JavaScriptResultWrapper wrapper;
+  wrapper.loop = nullptr;
   QEventLoop loop;
-  page->runJavaScript( script, [&]( const QVariant & value ) {
-    result = value;
-    loop.quit();
+  wrapper.loop = &loop;
+  
+  page->runJavaScript( script, [&wrapper]( const QVariant & value ) {
+    if ( wrapper.loop ) {
+      wrapper.result = value;
+      wrapper.loop->quit();
+    }
   } );
   loop.exec();
-  return result;
+  return wrapper.result;
 }
 
 static QString toHtmlSync( QWebEnginePage * page )
 {
+  if ( !page ) {
+    return QString();
+  }
+  
   QString html;
   QEventLoop loop;
-  page->toHtml( [&]( const QString & value ) {
+  page->toHtml( [&html, &loop]( const QString & value ) {
     html = value;
     loop.quit();
   } );
@@ -225,9 +244,13 @@ static QString toHtmlSync( QWebEnginePage * page )
 
 static QString toPlainTextSync( QWebEnginePage * page )
 {
+  if ( !page ) {
+    return QString();
+  }
+  
   QString text;
   QEventLoop loop;
-  page->toPlainText( [&]( const QString & value ) {
+  page->toPlainText( [&text, &loop]( const QString & value ) {
     text = value;
     loop.quit();
   } );
