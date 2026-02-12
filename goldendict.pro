@@ -597,22 +597,7 @@ CONFIG( zim_support ) {
   !CONFIG( use_homebrew ) {
     LIBS += -ltiff
   }
-}
 
-CONFIG( no_epwing_support ) {
-  DEFINES += NO_EPWING_SUPPORT
-}
-
-!CONFIG( no_epwing_support ) {
-  HEADERS += epwing.hh \
-             epwing_book.hh \
-             epwing_charmap.hh
-  SOURCES += epwing.cc \
-             epwing_book.cc \
-             epwing_charmap.cc
-  !CONFIG( use_homebrew ) {
-    LIBS += -leb
-  }
 }
 
 CONFIG( chinese_conversion_support ) {

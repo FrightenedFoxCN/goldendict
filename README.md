@@ -75,13 +75,6 @@ If you have problem building with libtiff5-dev package, you can pass
 
     qmake "CONFIG+=no_extra_tiff_handler"
 
-### Building without Epwing format support
-
-If you have problem building with libeb-dev package, you can pass
-`"CONFIG+=no_epwing_support"` to `qmake` in order to disable Epwing format support
-
-    qmake "CONFIG+=no_epwing_support"
-
 ### Building without internal audio players
 
 If you have problem building with FFmpeg/libao (for example, Ubuntu older than 12.04), you can pass
