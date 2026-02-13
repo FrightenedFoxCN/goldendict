@@ -169,8 +169,8 @@ if(WIN32)
             ${AVUTIL_LIBRARY} ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY}
         )
     endif()
-    target_include_directories(GoldenDict PRIVATE ../winlibs/include)
-    target_link_directories(GoldenDict PRIVATE ../winlibs/lib)
+    target_include_directories(GoldenDict PRIVATE ../third-party/windows/include)
+    target_link_directories(GoldenDict PRIVATE ../third-party/windows/lib)
 
 elseif(UNIX AND NOT APPLE)
     target_link_directories(GoldenDict PRIVATE ${HUNSPELL_LIBRARY_DIRS})
@@ -212,5 +212,5 @@ target_include_directories(GoldenDict PRIVATE
 )
 
 # Translations
-file(GLOB TRANSLATION_FILES ../locale/*.ts)
+file(GLOB TRANSLATION_FILES ../resources/locale/*.ts)
 qt_add_translations(GoldenDict TS_FILES ${TRANSLATION_FILES})

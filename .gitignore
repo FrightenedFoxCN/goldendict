@@ -4,15 +4,22 @@
 mouseover_win32/*.dll
 mouseover_win32/*.a
 
-locale/*.qm
+resources/locale/*.qm
 debug/
 build/
 build-*/
+build-qt6/
 release/
 tmp/
 goldendict
-winlibs/lib32-48/
 .vscode/
+
+# Build logs
+*.log
+build.log
+build-chinese.log
+final_build.log
+build_check.log
 
 # CMake build artifacts
 CMakeCache.txt
@@ -24,14 +31,17 @@ compile_commands.json
 build.ninja
 .lupdate/
 .qt/
+.qtcreator/
+.qmake.stash
+CMakeUserPresets.json
 src/CMakeFiles/
 src/*_autogen/
 src/cmake_install.cmake
 src/*.qm
-qtsingleapplication/CMakeFiles/
-qtsingleapplication/*_autogen/
-qtsingleapplication/cmake_install.cmake
-qtsingleapplication/libQtSingleApplication.a
+third-party/qtsingleapplication/CMakeFiles/
+third-party/qtsingleapplication/*_autogen/
+third-party/qtsingleapplication/cmake_install.cmake
+third-party/qtsingleapplication/libQtSingleApplication.a
 
 Makefile
 Makefile.Debug
@@ -61,3 +71,8 @@ GoldenDict.xcodeproj/
 *.opensdf
 *.suo
 *.vcxproj.user
+
+# Editor
+.editorconfig.local
+*.swp
+*.swo

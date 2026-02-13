@@ -185,7 +185,7 @@ if(APPLE)
 endif()
 
 # Add subdirectories
-add_subdirectory(qtsingleapplication)
+add_subdirectory(third-party/qtsingleapplication)
 add_subdirectory(src)
 
 # Installation
@@ -199,17 +199,17 @@ if(UNIX AND NOT APPLE)
         DESTINATION share/goldendict/locale/
         FILES_MATCHING PATTERN "*.qm"
     )
-    install(DIRECTORY help/
+    install(DIRECTORY resources/help/
         DESTINATION share/goldendict/help/
         FILES_MATCHING PATTERN "*.qch"
     )
-    install(FILES redist/icons/*
+    install(FILES packaging/linux/icons/*
         DESTINATION share/pixmaps/
     )
-    install(FILES redist/*.desktop
+    install(FILES packaging/linux/*.desktop
         DESTINATION share/applications/
     )
-    install(FILES redist/*.metainfo.xml
+    install(FILES packaging/linux/*.metainfo.xml
         DESTINATION share/metainfo/
     )
 endif()
