@@ -117,5 +117,7 @@
         <file>icons/internet.svg</file>
         <file>icons/network.svg</file>
         <file>icons/programs.svg</file>
+        <file>icons/collapse_opt.svg</file>
+        <file>icons/blank.svg</file>
     </qresource>
 </RCC>

@@ -904,7 +904,7 @@ string DslDictionary::nodeToHtml( ArticleDom::Node const & node )
       result += addAudioLink( ref, getId() );
 
       result += "<span class=\"dsl_s_wav\"><a href=" + ref
-         + "><img src=\"qrcx://localhost/icons/playsound.png\" border=\"0\" align=\"absmiddle\" alt=\"Play\"/></a></span>";
+         + "><img src=\"qrcx://localhost/icons/playsound.svg\" border=\"0\" align=\"absmiddle\" alt=\"Play\"/></a></span>";
     }
     else
     if ( Filetype::isNameOfPicture( filename ) )
@@ -1809,7 +1809,7 @@ void DslArticleRequest::run()
         string prefix = "O" + dict.getId().substr( 0, 7 ) + "_" + QString::number( dict.articleNom ).toStdString();
         string id1 = prefix + "_expand";
         string id2 = prefix + "_opt_";
-        string button = " <img src=\"qrcx://localhost/icons/expand_opt.png\" class=\"hidden_expand_opt\" id=\"" + id1 +
+        string button = " <img src=\"qrcx://localhost/icons/expand_opt.svg\" class=\"hidden_expand_opt\" id=\"" + id1 +
                         "\" onclick=\"gdExpandOptPart('" + id1 + "','" + id2 +"')\" alt=\"[+]\"/>";
         if( articleText.compare( articleText.size() - 4, 4, "</p>" ) == 0 )
           articleText.insert( articleText.size() - 4, " " + button );
