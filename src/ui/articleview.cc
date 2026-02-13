@@ -415,7 +415,26 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
 
     QWebEngineScript channelInit;
     channelInit.setName( "gd-webchannel-init" );
-    channelInit.setSourceCode( "new QWebChannel(qt.webChannelTransport, function(channel) { window.articleview = channel.objects.articleview; });" );
+    channelInit.setSourceCode(
+      "(function() {"
+      "  function initChannel() {"
+      "    if (typeof qt !== 'undefined' && qt.webChannelTransport) {"
+      "      try {"
+      "        new QWebChannel(qt.webChannelTransport, function(channel) {"
+      "          window.articleview = channel.objects.articleview;"
+      "        });"
+      "      } catch(e) {}"
+      "    } else if (typeof qt === 'undefined') {"
+      "      setTimeout(initChannel, 100);"
+      "    }"
+      "  }"
+      "  if (document.readyState === 'loading') {"
+      "    document.addEventListener('DOMContentLoaded', initChannel);"
+      "  } else {"
+      "    setTimeout(initChannel, 0);"
+      "  }"
+      "})();"
+    );
     channelInit.setInjectionPoint( QWebEngineScript::DocumentReady );
     channelInit.setRunsOnSubFrames( true );
     ui.definition->page()->scripts().insert( channelInit );
