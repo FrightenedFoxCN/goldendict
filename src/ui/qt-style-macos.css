@@ -1,32 +1,29 @@
 #navToolbar #translateLine
 {
-  margin-top: 1px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 #navToolbar GroupComboBox
 {
-  margin-bottom: 1px;
-  margin-top: 0px;
-  padding: 2px 18px 2px 4px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 #navToolbar GroupComboBox::drop-down {
-  padding-right: 2px;
-  border-right: 1px solid darkgray;
+  padding-right: 4px;
 }
 
 ScanPopup #translateLine
 {
-  padding: 3px 3px 3px 3px;
+  padding: 8px 16px;
 }
 
 ScanPopup GroupComboBox
 {
-  margin: 2px 0px 4px 1px;
-  padding: 1px 18px 1px 4px;
+  margin: 2px 0px 2px 1px;
 }
 
 ScanPopup GroupComboBox::drop-down {
-  padding-right: 2px;
-  border-right: 1px solid darkgray;
+  padding-right: 4px;
 }

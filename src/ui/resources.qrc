@@ -83,5 +83,24 @@
         <file>icons/star_blue.png</file>
         <file>icons/folder.png</file>
         <file>icons/ontop.png</file>
+        <file>icons/previous.svg</file>
+        <file>icons/next.svg</file>
+        <file>icons/wizard.svg</file>
+        <file>icons/playsound_full.svg</file>
+        <file>icons/icon32_zoomin.svg</file>
+        <file>icons/icon32_zoomout.svg</file>
+        <file>icons/icon32_zoombase.svg</file>
+        <file>icons/filesave.svg</file>
+        <file>icons/print.svg</file>
+        <file>icons/star.svg</file>
+        <file>icons/star_blue.svg</file>
+        <file>icons/menu_button.svg</file>
+        <file>icons/addtab.svg</file>
+        <file>icons/closetab.svg</file>
+        <file>icons/highlighter.svg</file>
+        <file>icons/clear.svg</file>
+        <file>icons/system-search.svg</file>
+        <file>icons/book.svg</file>
+        <file>icons/configure.svg</file>
     </qresource>
 </RCC>

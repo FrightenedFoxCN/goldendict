@@ -309,8 +309,8 @@ QGestureRecognizer::Result GDSwipeGestureRecognizer::recognize( QGesture * state
   return result;
 }
 
-const qreal GDPinchGestureRecognizer::OUT_SCALE_LIMIT = 0.5;
-const qreal GDPinchGestureRecognizer::IN_SCALE_LIMIT = 2;
+const qreal GDPinchGestureRecognizer::OUT_SCALE_LIMIT = 0.75;
+const qreal GDPinchGestureRecognizer::IN_SCALE_LIMIT = 1.4;
 
 bool handleGestureEvent( QObject * obj, QEvent * event, GestureResult & result,
                          QPoint & point )
@@ -342,22 +342,7 @@ bool handleGestureEvent( QObject * obj, QEvent * event, GestureResult & result,
     return true;
   }
 
-  gesture = gev->gesture( GDPinchGestureType );
-  if( gesture )
-  {
-    GDPinchGesture * pinch = static_cast< GDPinchGesture * >( gesture );
-    point = pinch->getCenterPoint().toPoint();
-
-    if( pinch->isScaleChanged() )
-    {
-      if( pinch->getTotalScaleFactor() <= GDPinchGestureRecognizer::OUT_SCALE_LIMIT )
-        result = ZOOM_OUT;
-      if( pinch->getTotalScaleFactor() >= GDPinchGestureRecognizer::IN_SCALE_LIMIT )
-        result = ZOOM_IN;
-    }
-    gev->setAccepted( true );
-    return true;
-  }
+  // Pinch zoom is intentionally disabled to avoid conflicts with trackpad scroll.
 
   gesture = gev->gesture( Qt::PanGesture );
   if( gesture )
@@ -370,18 +355,12 @@ bool handleGestureEvent( QObject * obj, QEvent * event, GestureResult & result,
 
 void registerRecognizers()
 {
-  QGestureRecognizer * pRecognizer = new Gestures::GDPinchGestureRecognizer();
-  GDPinchGestureType = QGestureRecognizer::registerRecognizer( pRecognizer );
-
-  pRecognizer = new Gestures::GDSwipeGestureRecognizer();
+  QGestureRecognizer * pRecognizer = new Gestures::GDSwipeGestureRecognizer();
   GDSwipeGestureType = QGestureRecognizer::registerRecognizer( pRecognizer );
 }
 
 void unregisterRecognizers()
 {
-  if( GDPinchGestureType )
-    QGestureRecognizer::unregisterRecognizer( GDPinchGestureType );
-
   if( GDSwipeGestureType )
     QGestureRecognizer::unregisterRecognizer( GDSwipeGestureType );
 }

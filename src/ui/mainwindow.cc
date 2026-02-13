@@ -151,8 +151,8 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 , ftsIndexing( dictionaries )
 , ftsDlg( 0 )
 , helpWindow( 0 )
-, starIcon( ":/icons/star.png" )
-, blueStarIcon( ":/icons/star_blue.png" )
+, starIcon( ":/icons/star.svg" )
+, blueStarIcon( ":/icons/star_blue.svg" )
 #ifdef Q_OS_WIN32
 , gdAskMessage( 0xFFFFFFFF )
 #endif
@@ -183,9 +183,9 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   navToolbar = addToolBar( tr( "&Navigation" ) );
   navToolbar->setObjectName( "navToolbar" );
 
-  navBack = navToolbar->addAction( QIcon( ":/icons/previous.png" ), tr( "Back" ) );
+  navBack = navToolbar->addAction( QIcon( ":/icons/previous.svg" ), tr( "Back" ) );
   navToolbar->widgetForAction( navBack )->setObjectName( "backButton" );
-  navForward = navToolbar->addAction( QIcon( ":/icons/next.png" ), tr( "Forward" ) );
+  navForward = navToolbar->addAction( QIcon( ":/icons/next.svg" ), tr( "Forward" ) );
   navToolbar->widgetForAction( navForward )->setObjectName( "forwardButton" );
 
   QWidget * translateBoxWidget = new QWidget( this );
@@ -210,7 +210,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   beforeScanPopupSeparator->setVisible( cfg.preferences.enableScanPopup );
   navToolbar->widgetForAction( beforeScanPopupSeparator )->setObjectName( "beforeScanPopupSeparator" );
 
-  enableScanPopup = navToolbar->addAction( QIcon( ":/icons/wizard.png" ), tr( "Scan Popup" ) );
+  enableScanPopup = navToolbar->addAction( QIcon( ":/icons/wizard.svg" ), tr( "Scan Popup" ) );
   enableScanPopup->setCheckable( true );
   enableScanPopup->setVisible( cfg.preferences.enableScanPopup );
   navToolbar->widgetForAction( enableScanPopup )->setObjectName( "scanPopupButton" );
@@ -225,7 +225,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   navToolbar->widgetForAction( afterScanPopupSeparator )->setObjectName( "afterScanPopupSeparator" );
 
   // sound
-  navPronounce = navToolbar->addAction( QIcon( ":/icons/playsound_full.png" ), tr( "Pronounce Word (Alt+S)" ) );
+  navPronounce = navToolbar->addAction( QIcon( ":/icons/playsound_full.svg" ), tr( "Pronounce Word (Alt+S)" ) );
   navPronounce->setShortcut( QKeySequence( "Alt+S" ) );
   navPronounce->setEnabled( false );
   navToolbar->widgetForAction( navPronounce )->setObjectName( "soundButton" );
@@ -237,17 +237,17 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   // named separator (to be able to hide it via CSS)
   navToolbar->widgetForAction( navToolbar->addSeparator() )->setObjectName( "separatorBeforeZoom" );
 
-  zoomIn = navToolbar->addAction( QIcon( ":/icons/icon32_zoomin.png" ), tr( "Zoom In" ) );
+  zoomIn = navToolbar->addAction( QIcon( ":/icons/icon32_zoomin.svg" ), tr( "Zoom In" ) );
   zoomIn->setShortcuts( QList< QKeySequence >() <<
                        QKeySequence::ZoomIn <<
                        QKeySequence( "Ctrl+=" ) );
   navToolbar->widgetForAction( zoomIn )->setObjectName( "zoomInButton" );
 
-  zoomOut = navToolbar->addAction( QIcon( ":/icons/icon32_zoomout.png" ), tr( "Zoom Out" ) );
+  zoomOut = navToolbar->addAction( QIcon( ":/icons/icon32_zoomout.svg" ), tr( "Zoom Out" ) );
   zoomOut->setShortcut( QKeySequence::ZoomOut );
   navToolbar->widgetForAction( zoomOut )->setObjectName( "zoomOutButton" );
 
-  zoomBase = navToolbar->addAction( QIcon( ":/icons/icon32_zoombase.png" ), tr( "Normal Size" ) );
+  zoomBase = navToolbar->addAction( QIcon( ":/icons/icon32_zoombase.svg" ), tr( "Normal Size" ) );
   zoomBase->setShortcut( QKeySequence( "Ctrl+0" ) );
   navToolbar->widgetForAction( zoomBase )->setObjectName( "zoomBaseButton" );
 
@@ -289,7 +289,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   menuButton = new QToolButton( navToolbar );
   menuButton->setPopupMode( QToolButton::InstantPopup );
   menuButton->setMenu( buttonMenu );
-  menuButton->setIcon( QIcon (":/icons/menu_button.png") );
+  menuButton->setIcon( QIcon (":/icons/menu_button.svg") );
   menuButton->addAction( ui.menuOptions );
   menuButton->setToolTip( tr( "Menu Button" ) );
   menuButton->setObjectName( "menuButton" );
@@ -368,13 +368,13 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 
   ui.menuZoom->addSeparator();
 
-  wordsZoomIn = ui.menuZoom->addAction( QIcon( ":/icons/icon32_zoomin.png" ), tr( "Words Zoom In" ) );
+  wordsZoomIn = ui.menuZoom->addAction( QIcon( ":/icons/icon32_zoomin.svg" ), tr( "Words Zoom In" ) );
   wordsZoomIn->setShortcuts( QList< QKeySequence >() <<
                             QKeySequence( "Alt++" ) <<
                             QKeySequence( "Alt+=" ) );
-  wordsZoomOut = ui.menuZoom->addAction( QIcon( ":/icons/icon32_zoomout.png" ), tr( "Words Zoom Out" ) );
+  wordsZoomOut = ui.menuZoom->addAction( QIcon( ":/icons/icon32_zoomout.svg" ), tr( "Words Zoom Out" ) );
   wordsZoomOut->setShortcut( QKeySequence( "Alt+-" ) );
-  wordsZoomBase = ui.menuZoom->addAction( QIcon( ":/icons/icon32_zoombase.png" ), tr( "Words Normal Size" ) );
+  wordsZoomBase = ui.menuZoom->addAction( QIcon( ":/icons/icon32_zoombase.svg" ), tr( "Words Normal Size" ) );
   wordsZoomBase->setShortcut( QKeySequence( "Alt+0" ) );
 
   connect( wordsZoomIn, SIGNAL(triggered()), this, SLOT(doWordsZoomIn()) );
@@ -421,7 +421,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   closeCurrentTabAction.setShortcutContext( Qt::WidgetWithChildrenShortcut );
   closeCurrentTabAction.setShortcut( QKeySequence( "Ctrl+W" ) );
   closeCurrentTabAction.setText( tr("Close current tab") );
-  closeCurrentTabAction.setIcon( QIcon(":/icons/closetab.png") );
+  closeCurrentTabAction.setIcon( QIcon(":/icons/closetab.svg") );
 
   connect( &closeCurrentTabAction, SIGNAL( triggered() ),
            this, SLOT( closeCurrentTab() ) );
@@ -627,7 +627,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   addTab.setAutoRaise( true );
   addTab.setToolTip( tr( "New Tab"  ) );
   addTab.setFocusPolicy( Qt::NoFocus );
-  addTab.setIcon( QIcon( ":/icons/addtab.png" ) );
+  addTab.setIcon( QIcon( ":/icons/addtab.svg" ) );
 
   ui.tabWidget->setHideSingleTab(cfg.preferences.hideSingleTab);
   ui.tabWidget->clear();
@@ -916,8 +916,8 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   if( layoutDirection() == Qt::RightToLeft )
   {
     // Adjust button icons for Right-To-Left layout
-    navBack->setIcon( QIcon( ":/icons/next.png" ) );
-    navForward->setIcon( QIcon( ":/icons/previous.png" ) );
+    navBack->setIcon( QIcon( ":/icons/next.svg" ) );
+    navForward->setIcon( QIcon( ":/icons/previous.svg" ) );
   }
 }
 
@@ -3423,10 +3423,11 @@ void MainWindow::useSmallIconsInToolbarsTriggered()
   int extent = useSmallIcons ? QApplication::style()->pixelMetric(QStyle::PM_SmallIconSize) :
                                QApplication::style()->pixelMetric(QStyle::PM_ToolBarIconSize);
 
-  navToolbar->setIconSize( QSize( extent, extent ) );
+  int toolbarExtent = extent > 12 ? extent - 2 : extent;
+  navToolbar->setIconSize( QSize( toolbarExtent, toolbarExtent ) );
 
   // additional fix for #176
-  menuButton->setIconSize( QSize( extent, extent ) );
+  menuButton->setIconSize( QSize( toolbarExtent, toolbarExtent ) );
 
   updateDictionaryBar();
 

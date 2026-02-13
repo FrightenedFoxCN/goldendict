@@ -1,70 +1,214 @@
-MainWindow #translateLine, ScanPopup #translateLine, MainWindow #wordList, MainWindow #dictsPane #dictsList, MainWindow #historyPane #historyList, MainWindow #favoritesPane #favoritesTree
-{
-  background: #fefdeb;
-  color: black;
+MainWindow #translateLine, ScanPopup #translateLine {
+  background: white;
+  color: #202124;
+  border: 1px solid #dadce0;
+  border-radius: 24px;
+  padding: 8px 16px;
+  font-size: 14px;
+  selection-background-color: #d2e3fc;
+  selection-color: #202124;
+}
+
+MainWindow #translateLine:focus, ScanPopup #translateLine:focus {
+  border-color: #1a73e8;
+  outline: none;
 }
 
 MainWindow #translateLine[noResults="true"],
 ScanPopup #translateLine[noResults="true"]
 {
-  background: #febb7d;
+  background: #fce8e6;
+  border-color: #d93025;
+}
+
+/* Simple flat list containers */
+MainWindow #wordList, MainWindow #dictsPane #dictsList, MainWindow #historyPane #historyList, MainWindow #favoritesPane #favoritesTree
+{
+  background: white;
+  color: #202124;
+  border: none;
+  outline: none;
+  font-size: 13px;
+}
+
+/* Simple flat list items */
+MainWindow #wordList::item, MainWindow #dictsPane #dictsList::item, 
+MainWindow #historyPane #historyList::item, MainWindow #favoritesPane #favoritesTree::item {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  margin: 0px;
+}
+
+MainWindow #wordList::item:hover, MainWindow #dictsPane #dictsList::item:hover,
+MainWindow #historyPane #historyList::item:hover, MainWindow #favoritesPane #favoritesTree::item:hover {
+  background: #f1f3f4;
+}
+
+MainWindow #wordList::item:selected, MainWindow #dictsPane #dictsList::item:selected,
+MainWindow #historyPane #historyList::item:selected, MainWindow #favoritesPane #favoritesTree::item:selected {
+  background: #e8f0fe;
+  color: #1967d2;
+}
+
+/* Dock Widgets as Material Design Cards */
+QDockWidget {
+  titlebar-close-icon: url(:/icons/close.png);
+  titlebar-normal-icon: url(:/icons/blank.png);
+  border: 1px solid #e8eaed;
+  border-radius: 12px;
+  font-size: 13px;
+  background: white;
+  margin: 6px;
+}
+
+QDockWidget::title {
+  background: white;
+  color: #202124;
+  padding: 14px 16px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom: 1px solid #f1f3f4;
+  font-weight: 500;
+  text-align: left;
+}
+
+QDockWidget::close-button, QDockWidget::float-button {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+  background: #e8eaed;
+}
+
+/* Pane Title Bars - Cleaner card header style */
+#dictsPaneTitleBar, #searchPaneTitleBar, #historyPaneTitleBar, #favoritesPaneTitleBar {
+  background: white;
+  border-bottom: 1px solid #f1f3f4;
+  padding: 12px 16px;
+}
+
+#dictsPaneTitleBar QLabel, #searchPaneTitleBar QLabel, 
+#historyPaneTitleBar QLabel, #favoritesPaneTitleBar QLabel {
+  color: #202124;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* Main window separator - lighter for card separation */
+QMainWindow::separator {
+  background: #f1f3f4;
+  width: 6px;
+  height: 6px;
+}
+
+QMainWindow::separator:hover {
+  background: #e8eaed;
 }
 
 #navToolbar #menuButton::menu-indicator {
   image: none;
 }
 
+#navToolbar QToolButton {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 3px;
+  margin: 2px 1px;
+}
+
+#navToolbar QToolButton:hover {
+  background: #eef2f6;
+  border-color: #e2e8f0;
+}
+
+#navToolbar QToolButton:pressed,
+#navToolbar QToolButton:checked {
+  background: #dfe6ee;
+  border-color: #cbd5e1;
+}
+
+#navToolbar QToolButton:disabled {
+  background: transparent;
+  border-color: transparent;
+  color: #9aa0a6;
+}
+
 #navToolbar #translateLine
 {
-  border: 1px solid gray;
-  border-radius: 3px;
-  padding: 1px 3px 2px 3px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
+  padding: 8px 16px;
   margin-left: 0px;
 }
 
 #navToolbar GroupComboBox
 {
   margin-right: 0px;
-  border: 1px solid gray;
-  border-right: 1px transparent;
-  border-radius: 3px;
+  border: 1px solid #dadce0;
+  border-right: none;
+  border-radius: 24px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  padding: 2px 4px 2px 4px;
-  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                              stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                              stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+  padding: 8px 12px 8px 16px;
+  background: white;
+  color: #5f6368;
+  font-size: 14px;
+}
+
+#navToolbar GroupComboBox:hover {
+  background: #f8f9fa;
+  border-color: #dadce0;
 }
 
 #navToolbar GroupComboBox:on {
-  padding: 3px 3px 1px 5px;
-  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                              stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                              stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  color: #1967d2;
 }
 
 #navToolbar GroupComboBox::drop-down {
    subcontrol-origin: padding;
-   subcontrol-position: top right;
-   width: 15px;
-   border-left: 1px solid darkgray;
-   border-right: 1px transparent;
+   subcontrol-position: center right;
+   width: 24px;
+   border: none;
+   padding-right: 4px;
 }
 
 #navToolbar GroupComboBox::down-arrow {
    image: url(:/icons/1downarrow.png);
+   width: 16px;
+   height: 16px;
 }
 
-#navToolbar GroupComboBox::down-arrow:on { /* shift the arrow when popup is open */
-   top: 1px;
-   left: 1px;
+#navToolbar GroupComboBox::down-arrow:on {
+   top: 0px;
+   left: 0px;
+}
+
+ArticleView #searchText {
+  background: white;
+  color: #202124;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 6px 12px;
+  selection-background-color: #d2e3fc;
+  selection-color: #202124;
+}
+
+ArticleView #searchText:focus {
+  border-color: #1a73e8;
+  outline: none;
 }
 
 ArticleView #searchText[noResults="true"]
 {
-  background: #febb7d;
+  background: #fce8e6;
+  border-color: #d93025;
 }
 
 MainStatusBar #text
@@ -88,9 +232,7 @@ MainStatusBar #icon
 ScanPopup #translateLine
 {
   margin: 0px;
-  padding: 1px 3px 1px 3px;
-  border: 1px solid gray;
-  border-radius: 3px;
+  padding: 8px 16px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
 }
@@ -98,39 +240,81 @@ ScanPopup #translateLine
 ScanPopup GroupComboBox
 {
   margin: 0px 0px 0px 1px;
-  padding: 1px 4px 1px 4px;
-  border: 1px solid gray;
-  border-right: 1px transparent;
-  border-radius: 3px;
+  padding: 8px 12px 8px 16px;
+  border: 1px solid #dadce0;
+  border-right: none;
+  border-radius: 24px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                              stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                              stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+  background: white;
+  color: #5f6368;
+  font-size: 14px;
+}
+
+ScanPopup GroupComboBox:hover {
+  background: #f8f9fa;
+  border-color: #dadce0;
 }
 
 ScanPopup GroupComboBox:on {
-  padding: 3px 3px 1px 5px;
-  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                              stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                              stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  color: #1967d2;
 }
 
 ScanPopup GroupComboBox::drop-down {
    subcontrol-origin: padding;
-   subcontrol-position: top right;
-   width: 15px;
-   border-left: 1px solid darkgray;
-   border-right: 1px transparent;
+   subcontrol-position: center right;
+   width: 24px;
+   border: none;
+   padding-right: 4px;
 }
 
 ScanPopup GroupComboBox::down-arrow {
    image: url(:/icons/1downarrow.png);
+   width: 16px;
+   height: 16px;
 }
 
-ScanPopup GroupComboBox::down-arrow:on { /* shift the arrow when popup is open */
-   top: 1px;
-   left: 1px;
+ScanPopup GroupComboBox::down-arrow:on {
+   top: 0px;
+   left: 0px;
+}
+
+/* Search Pane in Dock */
+#searchPaneTitleBar GroupComboBox {
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 6px 28px 6px 12px;
+  background: white;
+  color: #5f6368;
+  font-size: 13px;
+  min-width: 120px;
+}
+
+#searchPaneTitleBar GroupComboBox:hover {
+  background: #f8f9fa;
+  border-color: #dadce0;
+}
+
+#searchPaneTitleBar GroupComboBox:on {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  color: #1967d2;
+}
+
+#searchPaneTitleBar GroupComboBox::drop-down {
+  subcontrol-origin: padding;
+  subcontrol-position: center right;
+  width: 20px;
+  border: none;
+  padding-right: 6px;
+}
+
+#searchPaneTitleBar GroupComboBox::down-arrow {
+  image: url(:/icons/1downarrow.png);
+  width: 14px;
+  height: 14px;
 }
 
 .ScanPopup #outerFrame
@@ -152,4 +336,55 @@ ScanPopup GroupComboBox::down-arrow:on { /* shift the arrow when popup is open *
 {
   border-left: 1px solid palette(dark);
   border-bottom: 1px solid palette(dark);
+}
+
+/* Material-style scrollbars */
+QScrollBar:vertical {
+  background: transparent;
+  width: 12px;
+  margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+  background: #dadce0;
+  min-height: 30px;
+  border-radius: 6px;
+  margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+  background: #bdc1c6;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+  height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+  background: none;
+}
+
+QScrollBar:horizontal {
+  background: transparent;
+  height: 12px;
+  margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+  background: #dadce0;
+  min-width: 30px;
+  border-radius: 6px;
+  margin: 2px;
+}
+
+QScrollBar::handle:horizontal:hover {
+  background: #bdc1c6;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+  width: 0px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+  background: none;
 }

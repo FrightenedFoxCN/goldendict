@@ -39,12 +39,12 @@ EditDictionaries::EditDictionaries( QWidget * parent, Config::Class & cfg_,
 
   ui.setupUi( this );
 
-  setWindowIcon( QIcon(":/icons/book.png") );
+  setWindowIcon( QIcon(":/icons/book.svg") );
 
   ui.tabs->clear();
 
   ui.tabs->addTab( &sources, QIcon(":/icons/reload.png"), tr( "&Sources" ) );
-  ui.tabs->addTab( orderAndProps.get(), QIcon(":/icons/book.png"), tr( "&Dictionaries" ) );
+  ui.tabs->addTab( orderAndProps.get(), QIcon(":/icons/book.svg"), tr( "&Dictionaries" ) );
   ui.tabs->addTab( groups.get(), QIcon(":/icons/bookcase.png"), tr( "&Groups" ) );
 
   connect( ui.buttons, SIGNAL( clicked( QAbstractButton * ) ),

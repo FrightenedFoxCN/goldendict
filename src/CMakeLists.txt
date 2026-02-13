@@ -85,6 +85,14 @@ add_executable(GoldenDict
     ${ALL_SOURCES} ${ALL_FORMS} ${ALL_RESOURCES}
 )
 
+# Add macOS app icon
+if(APPLE)
+    set(MACOSX_ICON_FILE "${UI_DIR}/icons/macicon.icns")
+    set_source_files_properties(${MACOSX_ICON_FILE} PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources)
+    target_sources(GoldenDict PRIVATE ${MACOSX_ICON_FILE})
+endif()
+
 # Skip AUTOMOC for files with inline Q_OBJECT classes
 # Note: articleview.cc needs MOC because it has #include "articleview.moc"
 set_source_files_properties(
@@ -113,6 +121,7 @@ if(APPLE)
         MACOSX_BUNDLE_BUNDLE_NAME "GoldenDict"
         MACOSX_BUNDLE_EXECUTABLE_NAME "GoldenDict"
         MACOSX_BUNDLE_INFO_STRING "GoldenDict - Dictionary lookup program"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.goldendict.GoldenDict"
         MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_ICON_FILE "macicon.icns"

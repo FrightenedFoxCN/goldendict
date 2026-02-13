@@ -31,7 +31,7 @@
      <widget class="QWidget" name="filesTab">
       <attribute name="icon">
        <iconset resource="resources.qrc">
-        <normaloff>:/icons/filesave.png</normaloff>:/icons/filesave.png</iconset>
+        <normaloff>:/icons/filesave.svg</normaloff>:/icons/filesave.svg</iconset>
       </attribute>
       <attribute name="title">
        <string>Files</string>

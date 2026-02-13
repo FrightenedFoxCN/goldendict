@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QEventLoop>
 #include <QTimer>
+#include <QSharedPointer>
 #include "folding.hh"
 #include "wstring_qt.hh"
 #include "webmultimediadownload.hh"
@@ -211,19 +212,26 @@ static QVariant runJavaScriptSync( QWebEnginePage * page, QString const & script
     return QVariant();
   }
   
-  JavaScriptResultWrapper wrapper;
-  wrapper.loop = nullptr;
+  QSharedPointer< JavaScriptResultWrapper > wrapper( new JavaScriptResultWrapper() );
+  wrapper->loop = nullptr;
   QEventLoop loop;
-  wrapper.loop = &loop;
+  wrapper->loop = &loop;
+  QTimer timer;
+  timer.setSingleShot( true );
+  timer.start( 1000 );
+  QObject::connect( &timer, &QTimer::timeout, &loop, [wrapper, &loop]() {
+    wrapper->loop = nullptr;
+    loop.quit();
+  } );
   
-  page->runJavaScript( script, [&wrapper]( const QVariant & value ) {
-    if ( wrapper.loop ) {
-      wrapper.result = value;
-      wrapper.loop->quit();
+  page->runJavaScript( script, [wrapper]( const QVariant & value ) {
+    if ( wrapper->loop ) {
+      wrapper->result = value;
+      wrapper->loop->quit();
     }
   } );
   loop.exec();
-  return wrapper.result;
+  return wrapper->result;
 }
 
 static QString toHtmlSync( QWebEnginePage * page )
@@ -817,7 +825,15 @@ bool ArticleView::setCurrentArticle( QString const & id, bool moveToIt )
     return false;
 
   if ( moveToIt )
-    ui.definition->page()->runJavaScript( QString( "document.getElementById('%1').scrollIntoView(true);" ).arg( id ) );
+  {
+    ui.definition->page()->runJavaScript(
+      QString(
+        "(function(){"
+        "var el=document.getElementById('%1');"
+        "if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}"
+        "})();" )
+        .arg( id ) );
+  }
 
   ui.definition->page()->runJavaScript(
     QString( "gdMakeArticleActive( '%1' );" ).arg( dictionaryId ) );
@@ -1227,22 +1243,29 @@ void ArticleView::linkClicked( QUrl const & url_ )
   if( kmod & Qt::AltModifier )
     return;
 
-  updateCurrentArticleFromCurrentFrame();
+  const bool openInNewTab = !popupView &&
+                            ( ui.definition->isMidButtonPressed() ||
+                              ( kmod & ( Qt::ControlModifier | Qt::ShiftModifier ) ) );
 
-  QUrl url( url_ );
-  Contexts contexts;
+  QTimer::singleShot( 0, this, [this, url_, openInNewTab]() {
+    updateCurrentArticleFromCurrentFrame();
 
-  tryMangleWebsiteClickedUrl( url, contexts );
+    QUrl url( url_ );
+    Contexts contexts;
 
-  if ( !popupView &&
-       ( ui.definition->isMidButtonPressed() ||
-         ( kmod & ( Qt::ControlModifier | Qt::ShiftModifier ) ) ) )
-  {
-    // Mid button or Control/Shift is currently pressed - open the link in new tab
-    emit openLinkInNewTab( url, ui.definition->url(), getCurrentArticle(), contexts );
-  }
-  else
-    openLink( url, ui.definition->url(), getCurrentArticle(), contexts );
+    tryMangleWebsiteClickedUrl( url, contexts );
+
+    const QString currentArticle = getCurrentArticle();
+    if ( openInNewTab )
+    {
+      // Mid button or Control/Shift is currently pressed - open the link in new tab
+      emit openLinkInNewTab( url, ui.definition->url(), currentArticle, contexts );
+    }
+    else
+    {
+      openLink( url, ui.definition->url(), currentArticle, contexts );
+    }
+  } );
 }
 
 void ArticleView::openLink( QUrl const & url, QUrl const & ref,
@@ -1274,6 +1297,26 @@ void ArticleView::openLink( QUrl const & url, QUrl const & ref,
   {
     if ( url.hasFragment() )
     {
+      QUrl baseUrl( url );
+      baseUrl.setFragment( QString() );
+      QUrl currentUrl( ui.definition->url() );
+      currentUrl.setFragment( QString() );
+
+      if ( baseUrl == currentUrl )
+      {
+        QString fragment = url.fragment( QUrl::FullyEncoded );
+        ui.definition->page()->runJavaScript(
+          QString(
+            "(function(){"
+            "var id=\"%1\";"
+            "var el=document.getElementById(id)||document.getElementsByName(id)[0];"
+            "if(el){el.scrollIntoView({behavior:'smooth',block:'start'});return;}"
+            "window.location.hash=id;"
+            "})();" )
+            .arg( fragment ) );
+        return;
+      }
+
       ui.definition->page()->runJavaScript(
         QString( "window.location = \"%1\"" ).arg( QString::fromUtf8( url.toEncoded() ) ) );
     }
