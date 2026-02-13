@@ -60,13 +60,22 @@ ArticleWebView::ArticleWebView( QWidget *parent ):
   
   // Inject JavaScript to detect double-clicks and send them to C++
   QWebEngineScript script;
+  script.setName( "gd-doubleclick-detector" );
   script.setSourceCode(
-    "document.addEventListener('dblclick', function(event) {"
-    "  var selectedText = window.getSelection().toString();"
-    "  if (selectedText.length > 0 && selectedText.length < 60) {"
-    "    console.log('SILVERDICT_DOUBLECLICK:' + selectedText);"
+    "(function() {"
+    "  if (typeof document !== 'undefined') {"
+    "    document.addEventListener('dblclick', function(event) {"
+    "      try {"
+    "        if (typeof window.getSelection === 'function') {"
+    "          var selectedText = window.getSelection().toString();"
+    "          if (selectedText && selectedText.length > 0 && selectedText.length < 60) {"
+    "            console.log('SILVERDICT_DOUBLECLICK:' + selectedText);"
+    "          }"
+    "        }"
+    "      } catch (e) {}"
+    "    }, false);"
     "  }"
-    "}, false);"
+    "})();"
   );
   script.setWorldId(QWebEngineScript::MainWorld);
   script.setInjectionPoint(QWebEngineScript::DocumentReady);
