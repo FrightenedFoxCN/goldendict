@@ -422,7 +422,7 @@ void Class::isolateCSS( QString & css, QString const & wrapperSelector )
   css = newCSS;
 }
 
-string makeDictionaryId( vector< string > const & dictionaryFiles ) throw()
+string makeDictionaryId( vector< string > const & dictionaryFiles ) noexcept
 {
   std::vector< string > sortedList;
 
@@ -468,7 +468,7 @@ string makeDictionaryId( vector< string > const & dictionaryFiles ) throw()
 // of a timestamp of the file, so we use here Qt anyway. It is supposed to
 // be fixed in the future when it's needed.
 bool needToRebuildIndex( vector< string > const & dictionaryFiles,
-                         string const & indexFile ) throw()
+                         string const & indexFile ) noexcept
 {
   unsigned long lastModified = 0;
 
@@ -477,7 +477,7 @@ bool needToRebuildIndex( vector< string > const & dictionaryFiles,
   {
     QString name = FsEncoding::decode( i->c_str() );
     QFileInfo fileInfo( name );
-    unsigned long ts;
+    qint64 ts;
 
     if( fileInfo.isDir() )
       continue;

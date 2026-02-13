@@ -32,7 +32,7 @@ size_t encode( wchar const * in, size_t inSize, char * out );
 long decode( char const * in, size_t inSize, wchar * out );
 
 /// Versions for non time-critical code.
-string encode( wstring const & ) throw();
+string encode( wstring const & ) noexcept;
 wstring decode( string const & ) THROW_SPEC( exCantDecode );
 
 /// Since the standard isspace() is locale-specific, we need something

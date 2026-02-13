@@ -549,7 +549,7 @@ Class load() THROW_SPEC( exError )
   QDomDocument dd;
 
   QString errorStr;
-  int errorLine, errorColumn;
+  [[maybe_unused]] int errorLine, errorColumn;
 
   if ( !loadFromTemplate )
   {
