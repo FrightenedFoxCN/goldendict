@@ -90,7 +90,7 @@ public:
   DEF_EX( exEncodingError, "Encoding error", Ex ) // Should never happen really
 
   GlsScanner( string const & fileName ) THROW_SPEC( Ex, Iconv::Ex );
-  ~GlsScanner() throw();
+  ~GlsScanner() noexcept;
 
   /// Returns the detected encoding of this file.
   Encoding getEncoding() const
@@ -370,7 +370,7 @@ bool GlsScanner::readNextLine( wstring & out, size_t & offset ) THROW_SPEC( Ex,
   }
 }
 
-GlsScanner::~GlsScanner() throw()
+GlsScanner::~GlsScanner() noexcept
 {
   gzclose( f );
 }
@@ -449,16 +449,16 @@ public:
 
   ~GlsDictionary();
 
-  virtual string getName() throw()
+  virtual string getName() noexcept
   { return dictionaryName; }
 
-  virtual map< Dictionary::Property, string > getProperties() throw()
+  virtual map< Dictionary::Property, string > getProperties() noexcept
   { return map< Dictionary::Property, string >(); }
 
-  virtual unsigned long getArticleCount() throw()
+  virtual unsigned long getArticleCount() noexcept
   { return idxHeader.articleCount; }
 
-  virtual unsigned long getWordCount() throw()
+  virtual unsigned long getWordCount() noexcept
   { return idxHeader.wordCount; }
 
   inline virtual quint32 getLangFrom() const
@@ -503,7 +503,7 @@ public:
   }
 protected:
 
-  void loadIcon() throw();
+  void loadIcon() noexcept;
 
 private:
 
@@ -595,7 +595,7 @@ GlsDictionary::~GlsDictionary()
     dict_data_close( dz );
 }
 
-void GlsDictionary::loadIcon() throw()
+void GlsDictionary::loadIcon() noexcept
 {
   if ( dictionaryIconLoaded )
     return;

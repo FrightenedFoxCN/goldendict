@@ -2302,7 +2302,7 @@ QString getUserQtCssFileName() THROW_SPEC( exError )
   return getHomeDir().filePath( "qt-style.css" );
 }
 
-QString getProgramDataDir() throw()
+QString getProgramDataDir() noexcept
 {
   if ( isPortableVersion() )
     return QCoreApplication::applicationDirPath();
@@ -2314,7 +2314,7 @@ QString getProgramDataDir() throw()
   #endif
 }
 
-QString getLocDir() throw()
+QString getLocDir() noexcept
 {
   if ( QDir( getProgramDataDir() ).cd( "locale" ) )
     return getProgramDataDir() + "/locale";
@@ -2322,7 +2322,7 @@ QString getLocDir() throw()
     return QCoreApplication::applicationDirPath() + "/locale";
 }
 
-QString getHelpDir() throw()
+QString getHelpDir() noexcept
 {
   if ( QDir( getProgramDataDir() ).cd( "help" ) )
     return getProgramDataDir() + "/help";
@@ -2331,7 +2331,7 @@ QString getHelpDir() throw()
 }
 
 #ifdef MAKE_CHINESE_CONVERSION_SUPPORT
-QString getOpenCCDir() throw()
+QString getOpenCCDir() noexcept
 {
 #if defined( Q_OS_WIN )
   if ( QDir( "opencc" ).exists() )
@@ -2350,7 +2350,7 @@ QString getOpenCCDir() throw()
 }
 #endif
 
-bool isPortableVersion() throw()
+bool isPortableVersion() noexcept
 {
   struct IsPortable
   {
@@ -2365,7 +2365,7 @@ bool isPortableVersion() throw()
   return p.isPortable;
 }
 
-QString getPortableVersionDictionaryDir() throw()
+QString getPortableVersionDictionaryDir() noexcept
 {
   if ( isPortableVersion() )
     return getProgramDataDir() + "/content";
@@ -2373,7 +2373,7 @@ QString getPortableVersionDictionaryDir() throw()
     return QString();
 }
 
-QString getPortableVersionMorphoDir() throw()
+QString getPortableVersionMorphoDir() noexcept
 {
   if ( isPortableVersion() )
     return getPortableVersionDictionaryDir() + "/morphology";
@@ -2381,7 +2381,7 @@ QString getPortableVersionMorphoDir() throw()
     return QString();
 }
 
-QString getStylesDir() throw()
+QString getStylesDir() noexcept
 {
   QDir result = getHomeDir();
 
@@ -2393,7 +2393,7 @@ QString getStylesDir() throw()
   return result.path() + QDir::separator();
 }
 
-QString getCacheDir() throw()
+QString getCacheDir() noexcept
 {
   return isPortableVersion() ? portableHomeDirPath() + "/cache"
   #ifdef HAVE_X11
@@ -2403,7 +2403,7 @@ QString getCacheDir() throw()
   #endif
 }
 
-QString getNetworkCacheDir() throw()
+QString getNetworkCacheDir() noexcept
 {
   return getCacheDir() + "/network";
 }

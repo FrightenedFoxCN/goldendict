@@ -152,16 +152,16 @@ public:
 
   ~StardictDictionary();
 
-  virtual string getName() throw()
+  virtual string getName() noexcept
   { return bookName; }
 
-  virtual map< Dictionary::Property, string > getProperties() throw()
+  virtual map< Dictionary::Property, string > getProperties() noexcept
   { return map< Dictionary::Property, string >(); }
 
-  virtual unsigned long getArticleCount() throw()
+  virtual unsigned long getArticleCount() noexcept
   { return idxHeader.wordCount; }
 
-  virtual unsigned long getWordCount() throw()
+  virtual unsigned long getWordCount() noexcept
   { return idxHeader.wordCount + idxHeader.synWordCount; }
 
   inline virtual quint32 getLangFrom() const
@@ -205,7 +205,7 @@ public:
   }
 protected:
 
-  void loadIcon() throw();
+  void loadIcon() noexcept;
 
 private:
 
@@ -290,7 +290,7 @@ StardictDictionary::~StardictDictionary()
     dict_data_close( dz );
 }
 
-void StardictDictionary::loadIcon() throw()
+void StardictDictionary::loadIcon() noexcept
 {
   if ( dictionaryIconLoaded )
     return;

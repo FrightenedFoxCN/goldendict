@@ -470,7 +470,7 @@ string makeDictionaryId( vector< string > const & dictionaryFiles ) noexcept
 bool needToRebuildIndex( vector< string > const & dictionaryFiles,
                          string const & indexFile ) noexcept
 {
-  unsigned long lastModified = 0;
+  qint64 lastModified = 0;
 
   for( std::vector< string >::const_iterator i = dictionaryFiles.begin();
        i != dictionaryFiles.end(); ++i )

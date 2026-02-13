@@ -1035,7 +1035,7 @@ DslScanner::DslScanner( string const & fileName ) THROW_SPEC( Ex, Iconv::Ex ):
     iconv.reinit( encoding );
 }
 
-DslScanner::~DslScanner() throw()
+DslScanner::~DslScanner() noexcept
 {
   gzclose( f );
 }
