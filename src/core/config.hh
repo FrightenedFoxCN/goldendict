@@ -364,6 +364,17 @@ struct Preferences
 
   QString addonStyle;
 
+  QString articleFontFamily;
+  int articleFontSize;
+  QString articleTextColor;
+  QString articleBackgroundColor;
+  QString articleLinkColor;
+
+  QString uiFontFamily;
+  int uiFontSize;
+  QString uiTextColor;
+  QString uiBackgroundColor;
+
   FullTextSearch fts;
 
   Preferences();
@@ -796,6 +807,9 @@ QString getUserCssPrintFileName() THROW_SPEC( exError );
 
 /// Returns the user .css file name for the Qt interface customization.
 QString getUserQtCssFileName() THROW_SPEC( exError );
+
+/// Writes managed theme overrides into user CSS files.
+bool writeUserThemeOverrides( Preferences const & preferences );
 
 /// Returns the program's data dir. Under Linux that would be something like
 /// /usr/share/apps/goldendict, under Windows C:/Program Files/GoldenDict.

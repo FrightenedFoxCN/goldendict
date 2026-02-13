@@ -6,8 +6,10 @@
 #include "wstring_qt.hh"
 #include <QDir>
 #include <QFile>
+#include <QColor>
 #include <QtXml>
 #include "gddebug.hh"
+#include <cstring>
 
 #if defined( _MSC_VER ) && _MSC_VER < 1800 // VS2012 and older
 #include <stdint_msvc.h>
@@ -268,6 +270,8 @@ Preferences::Preferences():
 , trackClipboardChanges( false )
 #endif
 , synonymSearchEnabled( true )
+, articleFontSize( 0 )
+, uiFontSize( 0 )
 {
 }
 
@@ -1005,6 +1009,33 @@ Class load() THROW_SPEC( exError )
 
     if ( !preferences.namedItem( "synonymSearchEnabled" ).isNull() )
       c.preferences.synonymSearchEnabled = ( preferences.namedItem( "synonymSearchEnabled" ).toElement().text() == "1" );
+
+    if ( !preferences.namedItem( "articleFontFamily" ).isNull() )
+      c.preferences.articleFontFamily = preferences.namedItem( "articleFontFamily" ).toElement().text();
+
+    if ( !preferences.namedItem( "articleFontSize" ).isNull() )
+      c.preferences.articleFontSize = preferences.namedItem( "articleFontSize" ).toElement().text().toInt();
+
+    if ( !preferences.namedItem( "articleTextColor" ).isNull() )
+      c.preferences.articleTextColor = preferences.namedItem( "articleTextColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "articleBackgroundColor" ).isNull() )
+      c.preferences.articleBackgroundColor = preferences.namedItem( "articleBackgroundColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "articleLinkColor" ).isNull() )
+      c.preferences.articleLinkColor = preferences.namedItem( "articleLinkColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "uiFontFamily" ).isNull() )
+      c.preferences.uiFontFamily = preferences.namedItem( "uiFontFamily" ).toElement().text();
+
+    if ( !preferences.namedItem( "uiFontSize" ).isNull() )
+      c.preferences.uiFontSize = preferences.namedItem( "uiFontSize" ).toElement().text().toInt();
+
+    if ( !preferences.namedItem( "uiTextColor" ).isNull() )
+      c.preferences.uiTextColor = preferences.namedItem( "uiTextColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "uiBackgroundColor" ).isNull() )
+      c.preferences.uiBackgroundColor = preferences.namedItem( "uiBackgroundColor" ).toElement().text();
 
     QDomNode fts = preferences.namedItem( "fullTextSearch" );
 
@@ -1987,6 +2018,42 @@ void save( Class const & c ) THROW_SPEC( exError )
     opt.appendChild( dd.createTextNode( c.preferences.synonymSearchEnabled ? "1" : "0" ) );
     preferences.appendChild( opt );
 
+    opt = dd.createElement( "articleFontFamily" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleFontFamily ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleFontSize" );
+    opt.appendChild( dd.createTextNode( QString::number( c.preferences.articleFontSize ) ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleTextColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleTextColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleBackgroundColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleBackgroundColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleLinkColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleLinkColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiFontFamily" );
+    opt.appendChild( dd.createTextNode( c.preferences.uiFontFamily ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiFontSize" );
+    opt.appendChild( dd.createTextNode( QString::number( c.preferences.uiFontSize ) ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiTextColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.uiTextColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiBackgroundColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.uiBackgroundColor ) );
+    preferences.appendChild( opt );
+
     {
       QDomNode hd = dd.createElement( "fullTextSearch" );
       preferences.appendChild( hd );
@@ -2301,6 +2368,155 @@ QString getUserQtCssFileName() THROW_SPEC( exError )
 {
   return getHomeDir().filePath( "qt-style.css" );
 }
+
+namespace {
+
+const char kThemeOverrideBegin[] = "/* GD THEME OVERRIDES BEGIN */";
+const char kThemeOverrideEnd[] = "/* GD THEME OVERRIDES END */";
+
+QString stripManagedThemeSection( QString const & css )
+{
+  QString cleaned = css;
+  int begin = cleaned.indexOf( kThemeOverrideBegin );
+  if ( begin < 0 )
+    return cleaned;
+
+  int end = cleaned.indexOf( kThemeOverrideEnd, begin );
+  if ( end < 0 )
+  {
+    cleaned.truncate( begin );
+    return cleaned;
+  }
+
+  end += int( strlen( kThemeOverrideEnd ) );
+  cleaned.remove( begin, end - begin );
+  return cleaned;
+}
+
+QString buildArticleOverrides( Preferences const & p )
+{
+  QStringList blocks;
+  QStringList bodyProps;
+
+  QString family = p.articleFontFamily.trimmed();
+  if ( !family.isEmpty() )
+  {
+    family.replace( "\"", "\\\"" );
+    bodyProps << QString( "font-family: \"%1\";" ).arg( family );
+  }
+
+  if ( p.articleFontSize > 0 )
+    bodyProps << QString( "font-size: %1px;" ).arg( p.articleFontSize );
+
+  QColor textColor( p.articleTextColor.trimmed() );
+  if ( textColor.isValid() )
+    bodyProps << QString( "color: %1;" ).arg( textColor.name() );
+
+  QColor backgroundColor( p.articleBackgroundColor.trimmed() );
+  if ( backgroundColor.isValid() )
+    bodyProps << QString( "background: %1;" ).arg( backgroundColor.name() );
+
+  if ( !bodyProps.isEmpty() )
+  {
+    blocks << "body\n{\n  " + bodyProps.join( "\n  " ) + "\n}\n";
+  }
+
+  QColor linkColor( p.articleLinkColor.trimmed() );
+  if ( linkColor.isValid() )
+  {
+    blocks << "a, a:visited\n{\n  color: " + linkColor.name() + ";\n}\n";
+  }
+
+  return blocks.join( "\n" );
+}
+
+QString buildUiOverrides( Preferences const & p )
+{
+  QStringList props;
+  QString family = p.uiFontFamily.trimmed();
+  if ( !family.isEmpty() )
+  {
+    family.replace( "\"", "\\\"" );
+    props << QString( "font-family: \"%1\";" ).arg( family );
+  }
+
+  if ( p.uiFontSize > 0 )
+    props << QString( "font-size: %1px;" ).arg( p.uiFontSize );
+
+  QColor textColor( p.uiTextColor.trimmed() );
+  if ( textColor.isValid() )
+    props << QString( "color: %1;" ).arg( textColor.name() );
+
+  QColor backgroundColor( p.uiBackgroundColor.trimmed() );
+  if ( backgroundColor.isValid() )
+    props << QString( "background-color: %1;" ).arg( backgroundColor.name() );
+
+  if ( props.isEmpty() )
+    return QString();
+
+  return "QWidget\n{\n  " + props.join( "\n  " ) + "\n}\n";
+}
+
+bool writeManagedCssFile( QString const & fileName, QString const & overrides )
+{
+  QString existing;
+  QFile cssFile( fileName );
+  if ( cssFile.open( QFile::ReadOnly ) )
+    existing = QString::fromUtf8( cssFile.readAll() );
+
+  if ( overrides.isEmpty() && !cssFile.exists() )
+    return true;
+
+  QString cleaned = stripManagedThemeSection( existing );
+  QString nextContent = cleaned;
+
+  if ( !overrides.trimmed().isEmpty() )
+  {
+    QString section = QString( "%1\n%2\n%3\n" )
+      .arg( kThemeOverrideBegin )
+      .arg( overrides.trimmed() )
+      .arg( kThemeOverrideEnd );
+
+    if ( !nextContent.isEmpty() && !nextContent.endsWith( '\n' ) )
+      nextContent += '\n';
+
+    nextContent += section;
+  }
+
+  if ( nextContent == existing )
+    return true;
+
+  QFile outFile( fileName );
+  if ( !outFile.open( QFile::WriteOnly | QFile::Truncate ) )
+  {
+    gdWarning( "Failed to write theme override CSS: %s\n", fileName.toUtf8().constData() );
+    return false;
+  }
+
+  if ( !nextContent.isEmpty() )
+    outFile.write( nextContent.toUtf8() );
+
+  return true;
+}
+
+} // namespace
+
+bool writeUserThemeOverrides( Preferences const & preferences )
+{
+  try
+  {
+    bool ok = true;
+    ok = writeManagedCssFile( getUserCssFileName(), buildArticleOverrides( preferences ) ) && ok;
+    ok = writeManagedCssFile( getUserQtCssFileName(), buildUiOverrides( preferences ) ) && ok;
+    return ok;
+  }
+  catch( exError & e )
+  {
+    gdWarning( "Failed to resolve theme override paths: %s\n", e.what() );
+    return false;
+  }
+}
+
 
 QString getProgramDataDir() noexcept
 {

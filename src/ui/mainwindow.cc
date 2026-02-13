@@ -2286,6 +2286,25 @@ void MainWindow::editPreferences()
       needReload = true;
     }
 
+    // Check if any theme overrides have changed and write them to CSS files
+    if ( cfg.preferences.articleFontFamily != p.articleFontFamily
+         || cfg.preferences.articleFontSize != p.articleFontSize
+         || cfg.preferences.articleTextColor != p.articleTextColor
+         || cfg.preferences.articleBackgroundColor != p.articleBackgroundColor
+         || cfg.preferences.articleLinkColor != p.articleLinkColor
+         || cfg.preferences.uiFontFamily != p.uiFontFamily
+         || cfg.preferences.uiFontSize != p.uiFontSize
+         || cfg.preferences.uiTextColor != p.uiTextColor
+         || cfg.preferences.uiBackgroundColor != p.uiBackgroundColor )
+    {
+      // Write theme overrides to CSS files
+      cfg.writeUserThemeOverrides( p );
+      // Reload styles to apply theme changes
+      applyQtStyleSheet( p.displayStyle, p.addonStyle );
+      articleMaker.setDisplayStyle( p.displayStyle, p.addonStyle );
+      needReload = true;
+    }
+
     if( cfg.preferences.collapseBigArticles != p.collapseBigArticles
         || cfg.preferences.articleSizeLimit != p.articleSizeLimit )
     {
