@@ -1,0 +1,237 @@
+/* macOS Dark Mode overrides */
+MainWindow {
+  background: #1f2024;
+  color: #e6e6e6;
+}
+
+MainWindow #centralWidget {
+  background: #1f2024;
+}
+
+QMenuBar {
+  background: #2a2b2f;
+  border-bottom: 1px solid #3a3b40;
+  color: #e6e6e6;
+}
+
+QMenuBar::item {
+  color: #e6e6e6;
+}
+
+QMenuBar::item:selected {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+QMenuBar::item:pressed {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+QMenu {
+  background: #2a2b2f;
+  border: 1px solid #3a3b40;
+}
+
+QMenu::item {
+  color: #e6e6e6;
+}
+
+QMenu::item:selected {
+  background: rgba(26, 115, 232, 0.25);
+  color: #d2e3fc;
+}
+
+QMenu::separator {
+  background: #3a3b40;
+}
+
+QToolBar {
+  background: #2a2b2f;
+  border-bottom: 1px solid #3a3b40;
+}
+
+QToolBar::separator {
+  background: #3a3b40;
+}
+
+#navToolbar QToolButton {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #e6e6e6;
+}
+
+#navToolbar QToolButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+#navToolbar QToolButton:pressed,
+#navToolbar QToolButton:checked {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+#navToolbar QToolButton:disabled {
+  color: #8a8a8a;
+}
+
+MainWindow #translateLine, ScanPopup #translateLine {
+  background: #2f3136;
+  color: #e6e6e6;
+  border: 1px solid #3a3b40;
+}
+
+MainWindow #translateLine:focus, ScanPopup #translateLine:focus {
+  background: #35373c;
+  border-color: #8ab4f8;
+}
+
+#navToolbar GroupComboBox {
+  background: #2f3136;
+  color: #c8c8c8;
+  border: 1px solid #3a3b40;
+}
+
+#navToolbar GroupComboBox:hover {
+  background: #36383d;
+  border-color: #45474d;
+}
+
+#navToolbar GroupComboBox:on {
+  background: rgba(26, 115, 232, 0.3);
+  border-color: #8ab4f8;
+  color: #d2e3fc;
+}
+
+QTabWidget {
+  background: #2a2b2f;
+}
+
+QTabWidget::pane {
+  background: #2a2b2f;
+  border: none;
+}
+
+QTabWidget::tab-bar {
+  background: #2a2b2f;
+}
+
+QTabBar {
+  background: #2a2b2f;
+  color: #e6e6e6;
+  qproperty-drawBase: 0;
+}
+
+QTabBar::base {
+  background: #2a2b2f;
+  border: none;
+}
+
+QTabBar::tab {
+  background: #2a2b2f;
+  color: #b0b0b0;
+}
+
+QTabBar::tab:hover {
+  background: #32343a;
+  color: #e6e6e6;
+}
+
+QTabBar::tab:selected {
+  background: #30323a;
+  color: #8ab4f8;
+  border-bottom: 2px solid #8ab4f8;
+}
+
+QTabWidget::corner {
+  background: #2a2b2f;
+}
+
+QTabWidget QToolButton {
+  background: #2a2b2f;
+  border: none;
+}
+
+QTabWidget QToolButton:hover {
+  background: #32343a;
+}
+
+#addTabButton {
+  background: transparent;
+  border: none;
+  padding: 5px;
+  margin: 0px;
+  min-width: 24px;
+  max-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
+  qproperty-iconSize: 14px 14px;
+}
+
+QDockWidget {
+  background: #222428;
+  border: 1px solid #3a3b40;
+}
+
+QDockWidget::title {
+  background: #2a2b2f;
+  color: #e6e6e6;
+  border-bottom: 1px solid #3a3b40;
+}
+
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+  background: #3a3b40;
+}
+
+#dictsPaneTitleBar, #searchPaneTitleBar, #historyPaneTitleBar, #favoritesPaneTitleBar {
+  background: #2a2b2f;
+  border-bottom: 1px solid #3a3b40;
+}
+
+#dictsPaneTitleBar QLabel, #searchPaneTitleBar QLabel,
+#historyPaneTitleBar QLabel, #favoritesPaneTitleBar QLabel {
+  color: #e6e6e6;
+}
+
+MainWindow #wordList, MainWindow #dictsPane #dictsList, MainWindow #historyPane #historyList, MainWindow #favoritesPane #favoritesTree {
+  background: #1f2024;
+  color: #e6e6e6;
+}
+
+MainWindow #wordList::item, MainWindow #dictsPane #dictsList::item,
+MainWindow #historyPane #historyList::item, MainWindow #favoritesPane #favoritesTree::item {
+  color: #e6e6e6;
+}
+
+MainWindow #wordList::item:hover, MainWindow #dictsPane #dictsList::item:hover,
+MainWindow #historyPane #historyList::item:hover, MainWindow #favoritesPane #favoritesTree::item:hover {
+  background: #2b2d32;
+}
+
+MainWindow #wordList::item:selected, MainWindow #dictsPane #dictsList::item:selected,
+MainWindow #historyPane #historyList::item:selected, MainWindow #favoritesPane #favoritesTree::item:selected {
+  background: #28364a;
+  color: #d2e3fc;
+}
+
+MainStatusBar {
+  background: #2a2b2f;
+  border-top: 1px solid #3a3b40;
+}
+
+MainStatusBar #text {
+  color: #c0c0c0;
+}
+
+MainStatusBar #icon {
+  background: transparent;
+}
+
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: #4a4d54;
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover {
+  background: #5a5d64;
+}

@@ -28,6 +28,16 @@ ScanPopup GroupComboBox::drop-down {
   padding-right: 4px;
 }
 
+/* Keep add-new-tab button borderless on macOS */
+QTabWidget QToolButton {
+  border: none;
+  background: transparent;
+}
+
+QTabWidget QToolButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
 /* Force light tab bar on macOS even in Dark Mode */
 QTabWidget {
   background: white;

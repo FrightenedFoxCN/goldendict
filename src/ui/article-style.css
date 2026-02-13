@@ -2973,3 +2973,59 @@ in bg url to hide it from iemac */
   /* Ugly hack since "vertical-align: middle;" looks _terrible_ in Qt4's webkit: */
   vertical-align: -30%;
 }
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background: #1f2024;
+		color: #e6e6e6;
+	}
+
+	::selection {
+		background: rgba(138, 180, 248, 0.35);
+		color: #e6e6e6;
+	}
+
+	.gddictname {
+		background: #2a2b2f;
+		border-bottom: 2px solid #3a3b40;
+		color: #e6e6e6;
+	}
+
+	.gdarticle {
+		background: #24262b;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+	}
+
+	a {
+		color: #8ab4f8;
+	}
+
+	a:hover {
+		color: #a8c7ff;
+	}
+
+	a:visited {
+		color: #c58af9;
+	}
+
+	pre {
+		background: #2a2b2f;
+		border: 1px solid #3a3b40;
+		color: #e6e6e6;
+	}
+
+	.xdxf_def {
+		background: #2a2b2f;
+		border-color: #3a3b40;
+	}
+
+	.gderrordesc {
+		background: rgba(217, 48, 37, 0.2) url("qrcx://localhost/icons/warning.png") 12px center no-repeat !important;
+		border-left: 3px solid rgba(217, 48, 37, 0.6);
+		color: #f28b82;
+	}
+
+	.xdxf_ex {
+		color: #b0b0b0;
+	}
+}

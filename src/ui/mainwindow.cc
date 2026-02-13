@@ -45,6 +45,7 @@
 #include "qt4x5.hh"
 #include <QGuiApplication>
 #include <QScreen>
+#include <QPalette>
 #include "ui_authentication.h"
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
@@ -79,6 +80,14 @@ using std::map;
 using std::pair;
 
 namespace {
+
+#ifdef Q_OS_MAC
+static bool isMacDarkMode()
+{
+  QColor windowColor = QGuiApplication::palette().color( QPalette::Window );
+  return windowColor.lightness() < 128;
+}
+#endif
 
 #ifdef X11_MAIN_WINDOW_FOCUS_WORKAROUNDS
 class MinimumSizeWidget: public QWidget
@@ -634,6 +643,13 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   addTab.setToolTip( tr( "New Tab"  ) );
   addTab.setFocusPolicy( Qt::NoFocus );
   addTab.setIcon( QIcon( ":/icons/addtab.svg" ) );
+  addTab.setIconSize( QSize( 14, 14 ) );
+  addTab.setMinimumHeight( 24 );
+  addTab.setMaximumHeight( 24 );
+  addTab.setFixedWidth( 24 );
+  addTab.setObjectName( "addTabButton" );
+  addTab.setToolButtonStyle( Qt::ToolButtonIconOnly );
+  addTab.setFixedSize( 24, 24 );
 
   ui.tabWidget->setHideSingleTab(cfg.preferences.hideSingleTab);
   ui.tabWidget->clear();
@@ -1157,6 +1173,13 @@ void MainWindow::applyQtStyleSheet( QString const & displayStyle, QString const 
   QFile macCssFile( ":/qt-style-macos.css" );
   (void)macCssFile.open( QFile::ReadOnly );
   css += macCssFile.readAll();
+
+  if( isMacDarkMode() )
+  {
+    QFile macDarkCssFile( ":/qt-style-macos-dark.css" );
+    if( macDarkCssFile.open( QFile::ReadOnly ) )
+      css += macDarkCssFile.readAll();
+  }
 #endif
 
   if ( displayStyle.size() )

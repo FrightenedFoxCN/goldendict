@@ -87,27 +87,44 @@ QTabWidget::corner {
 }
 
 QTabWidget QToolButton {
-  background: rgba(255, 255, 255, 0.7);
+  background: transparent;
   border: none;
-  border-radius: 6px;
-  padding: 4px;
-  margin: 4px;
+  border-radius: 0px;
+  padding: 0px 6px;
+  margin: 1px 6px 0px 4px;
+  min-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
+  icon-size: 14px 14px;
+}
+
+#addTabButton {
+  background: transparent;
+  border: none;
+  padding: 5px;
+  margin: 0px;
+  min-width: 24px;
+  max-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
+  qproperty-iconSize: 14px 14px;
 }
 
 QTabWidget QToolButton:hover {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 QTabBar::tab {
   background: rgba(255, 255, 255, 0.6);
   color: #5f6368;
-  padding: 8px 16px;
+  padding: 3px 14px;
   margin-right: 2px;
   border: none;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   min-width: 80px;
+  min-height: 24px;
+  max-height: 24px;
 }
 
 QTabBar::tab:hover {
