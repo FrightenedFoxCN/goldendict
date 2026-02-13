@@ -166,7 +166,7 @@ void FavoritesPaneWidget::deleteSelectedItems()
 
   if( m_cfg->preferences.confirmFavoritesDeletion )
   {
-    QMessageBox mb( QMessageBox::Warning, "GoldenDict",
+    QMessageBox mb( QMessageBox::Warning, "Silverdict",
                     tr( "All selected items will be deleted. Continue?" ),
                     QMessageBox::Yes | QMessageBox::No );
     mb.exec();
@@ -646,7 +646,7 @@ void FavoritesModel::readData()
     // Mailformed file
     gdWarning( "Favorites file parsing error: %s at %d,%d\n", errorStr.toUtf8().data(),  errorLine,  errorColumn );
 
-    QMessageBox mb( QMessageBox::Warning, "GoldenDict",
+    QMessageBox mb( QMessageBox::Warning, "Silverdict",
                       tr( "Error in favorities file" ),
                       QMessageBox::Ok );
     mb.exec();

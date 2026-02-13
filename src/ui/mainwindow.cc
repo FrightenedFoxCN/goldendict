@@ -823,7 +823,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   // After we have dictionaries and groups, we can populate history
 //  historyChanged();
 
-  setWindowTitle( "GoldenDict" );
+  setWindowTitle( "Silverdict" );
 
 #ifdef Q_OS_MAC
   {
@@ -1982,7 +1982,7 @@ void MainWindow::updateWindowTitle()
         str.append( (ushort)0x202C ); // PDF, POP DIRECTIONAL FORMATTING
       }
       if( !blockUpdateWindowTitle )
-        setWindowTitle( tr( "%1 - %2" ).arg( str, "GoldenDict" ) );
+        setWindowTitle( tr( "%1 - %2" ).arg( str, "Silverdict" ) );
       blockUpdateWindowTitle = false;
     }
   }
@@ -2277,9 +2277,24 @@ void MainWindow::editPreferences()
     p.fts.ignoreDiacritics = cfg.preferences.fts.ignoreDiacritics;
 
     bool needReload = false;
+    bool themeOverridesChanged =
+      cfg.preferences.articleFontFamily != p.articleFontFamily
+      || cfg.preferences.articleFontSize != p.articleFontSize
+      || cfg.preferences.articleTextColor != p.articleTextColor
+      || cfg.preferences.articleBackgroundColor != p.articleBackgroundColor
+      || cfg.preferences.articleLinkColor != p.articleLinkColor
+      || cfg.preferences.uiFontFamily != p.uiFontFamily
+      || cfg.preferences.uiFontSize != p.uiFontSize
+      || cfg.preferences.uiTextColor != p.uiTextColor
+      || cfg.preferences.uiBackgroundColor != p.uiBackgroundColor;
+
+    if ( themeOverridesChanged )
+      Config::writeUserThemeOverrides( p );
 
     // See if we need to reapply stylesheets
-    if ( cfg.preferences.displayStyle != p.displayStyle || cfg.preferences.addonStyle != p.addonStyle )
+    if ( cfg.preferences.displayStyle != p.displayStyle
+         || cfg.preferences.addonStyle != p.addonStyle
+         || themeOverridesChanged )
     {
       applyQtStyleSheet( p.displayStyle, p.addonStyle );
       articleMaker.setDisplayStyle( p.displayStyle, p.addonStyle );

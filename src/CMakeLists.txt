@@ -116,12 +116,12 @@ set_target_properties(GoldenDict PROPERTIES
 # Set output properties
 if(APPLE)
     set_target_properties(GoldenDict PROPERTIES
-        OUTPUT_NAME "GoldenDict"
+        OUTPUT_NAME "Silverdict"
         MACOSX_BUNDLE ON
-        MACOSX_BUNDLE_BUNDLE_NAME "GoldenDict"
-        MACOSX_BUNDLE_EXECUTABLE_NAME "GoldenDict"
-        MACOSX_BUNDLE_INFO_STRING "GoldenDict - Dictionary lookup program"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "org.goldendict.GoldenDict"
+        MACOSX_BUNDLE_BUNDLE_NAME "Silverdict"
+        MACOSX_BUNDLE_EXECUTABLE_NAME "Silverdict"
+        MACOSX_BUNDLE_INFO_STRING "Silverdict - Modern Dictionary Lookup Program"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.silverdict.Silverdict"
         MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_ICON_FILE "macicon.icns"
@@ -129,7 +129,7 @@ if(APPLE)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 elseif(NOT WIN32)
-    set_target_properties(GoldenDict PROPERTIES OUTPUT_NAME "goldendict")
+    set_target_properties(GoldenDict PROPERTIES OUTPUT_NAME "silverdict")
 endif()
 
 # Link Qt libraries
