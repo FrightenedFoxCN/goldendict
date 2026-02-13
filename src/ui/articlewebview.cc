@@ -58,18 +58,23 @@ ArticleWebView::ArticleWebView( QWidget *parent ):
   connect( webPage, SIGNAL( linkClicked( QUrl const & ) ), this, SIGNAL( linkClicked( QUrl const & ) ) );
   connect( webPage, SIGNAL( doubleClickDetected( QString const & ) ), this, SLOT( onDoubleClickDetected( QString const & ) ) );
   
-  // Inject JavaScript to detect double-clicks and send them to C++
+  // Inject optimized JavaScript for double-click detection with debouncing
   QWebEngineScript script;
   script.setName( "gd-doubleclick-detector" );
   script.setSourceCode(
     "(function() {"
     "  if (typeof document !== 'undefined') {"
+    "    var lastClick = 0;"
     "    document.addEventListener('dblclick', function(event) {"
+    "      var now = Date.now();"
+    "      if (now - lastClick < 100) return;"
+    "      lastClick = now;"
     "      try {"
-    "        if (typeof window.getSelection === 'function') {"
-    "          var selectedText = window.getSelection().toString();"
-    "          if (selectedText && selectedText.length > 0 && selectedText.length < 60) {"
-    "            console.log('SILVERDICT_DOUBLECLICK:' + selectedText);"
+    "        var sel = window.getSelection();"
+    "        if (sel && sel.toString) {"
+    "          var text = sel.toString().trim();"
+    "          if (text && text.length > 0 && text.length < 60) {"
+    "            console.log('SILVERDICT_DOUBLECLICK:' + text);"
     "          }"
     "        }"
     "      } catch (e) {}"
@@ -187,8 +192,7 @@ void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
 
 void ArticleWebView::onDoubleClickDetected( QString const & selectedText )
 {
-  fprintf(stderr, "[SLOT] onDoubleClickDetected called with text: '%s'\n", qPrintable(selectedText));
-  // Emit the doubleClicked signal with a dummy position (0,0)
+  // Emit the doubleClicked signal
   // The articleview.cc doubleClicked slot will use ui.definition->selectedText() instead
   emit doubleClicked( QPoint(0, 0) );
 }
