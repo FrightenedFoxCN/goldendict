@@ -103,5 +103,14 @@
         <file>icons/system-search.svg</file>
         <file>icons/book.svg</file>
         <file>icons/configure.svg</file>
+        <file>icons/reload.svg</file>
+        <file>icons/bookcase.svg</file>
+        <file>icons/folder.svg</file>
+        <file>icons/expand_opt.svg</file>
+        <file>icons/windows-list.svg</file>
+        <file>icons/home.svg</file>
+        <file>icons/error.svg</file>
+        <file>icons/warning.svg</file>
+        <file>icons/downarrow.svg</file>
     </qresource>
 </RCC>
