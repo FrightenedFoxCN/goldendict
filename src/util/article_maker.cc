@@ -48,7 +48,8 @@ std::string ArticleMaker::makeHtmlHeader( QString const & word,
   string result =
     "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
     "<html><head>"
-    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">";
+    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"
+    "<script type=\"text/javascript\">if(typeof gdAudioLinks==='undefined')window.gdAudioLinks={first:null,current:null,length:0};if(typeof gdCurrentArticle==='undefined')window.gdCurrentArticle='';</script>";
 
   // Add a css stylesheet
 
@@ -179,7 +180,7 @@ std::string ArticleMaker::makeHtmlHeader( QString const & word,
     result += "<link rel=\"icon\" type=\"image/png\" href=\"qrcx://localhost/flags/" + Html::escape( icon.toUtf8().data() ) + "\" />\n";
 
   result += "<script type=\"text/javascript\">"
-            "var gdAudioLinks = { first: null, current: null };"
+            "if(typeof gdAudioLinks==='undefined')var gdAudioLinks={first:null,current:null};"
             "function gdMakeArticleActive( newId ) {"
             "if ( gdCurrentArticle != 'gdfrom-' + newId ) {"
             "el=document.getElementById( gdCurrentArticle ); el.className = el.className.replace(' gdactivearticle','');"

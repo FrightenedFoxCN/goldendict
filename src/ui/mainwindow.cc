@@ -234,7 +234,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   beforeScanPopupSeparator->setVisible( cfg.preferences.enableScanPopup );
   navToolbar->widgetForAction( beforeScanPopupSeparator )->setObjectName( "beforeScanPopupSeparator" );
 
-  enableScanPopup = navToolbar->addAction( QIcon( ":/icons/wizard.svg" ), tr( "Scan Popup" ) );
+  enableScanPopup = navToolbar->addAction( QIcon( ":/icons/system-search.svg" ), tr( "Scan Popup" ) );
   enableScanPopup->setCheckable( true );
   enableScanPopup->setVisible( cfg.preferences.enableScanPopup );
   navToolbar->widgetForAction( enableScanPopup )->setObjectName( "scanPopupButton" );
