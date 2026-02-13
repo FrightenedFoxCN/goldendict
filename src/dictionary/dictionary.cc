@@ -160,7 +160,7 @@ sptr< WordSearchRequest > Class::findHeadwordsForSynonym( wstring const & )
 }
 
 vector< wstring > Class::getAlternateWritings( wstring const & )
-  throw()
+  noexcept
 {
   return vector< wstring >();
 }

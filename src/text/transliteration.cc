@@ -83,7 +83,7 @@ TransliterationDictionary::TransliterationDictionary( string const & id,
 }
 
 vector< wstring > TransliterationDictionary::getAlternateWritings( wstring const & str )
-  throw()
+  noexcept
 {
   vector< wstring > results;
 

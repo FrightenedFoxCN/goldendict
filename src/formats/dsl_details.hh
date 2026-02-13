@@ -139,7 +139,7 @@ public:
   DEF_EX( exEncodingError, "Encoding error", Ex ) // Should never happen really
 
   DslScanner( string const & fileName ) THROW_SPEC( Ex, Iconv::Ex );
-  ~DslScanner() throw();
+  ~DslScanner() noexcept;
 
   /// Returns the detected encoding of this file.
   DslEncoding getEncoding() const

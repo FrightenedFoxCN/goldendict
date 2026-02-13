@@ -373,7 +373,7 @@ public:
   /// supposed to be very fast and simple, and the results are thus returned
   /// synchronously.
   virtual vector< wstring > getAlternateWritings( wstring const & )
-    throw();
+    noexcept;
   
   /// Returns a definition for the given word. The definition should
   /// be an html fragment (without html/head/body tags) in an utf8 encoding.
