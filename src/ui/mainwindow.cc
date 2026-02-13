@@ -46,6 +46,8 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QPalette>
+#include <QEvent>
+#include <QTimer>
 #include "ui_authentication.h"
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
@@ -153,7 +155,10 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   wordFinder( this ),
   newReleaseCheckTimer( this ),
   latestReleaseReply( 0 ),
-  wordListSelChanged( false )
+  wordListSelChanged( false ),
+  applyingStyleSheet( false ),
+  pendingAppearanceUpdate( false ),
+  lastDarkMode( false )
 , wasMaximized( false )
 , blockUpdateWindowTitle( false )
 , headwordsDlg( 0 )
@@ -178,6 +183,10 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 
 
   ui.setupUi( this );
+
+#ifdef Q_OS_MAC
+  lastDarkMode = isMacDarkMode();
+#endif
 
 #ifdef Q_OS_MAC
   // Enable Mac-style transparency and blur
@@ -1165,6 +1174,11 @@ QPrinter & MainWindow::getPrinter()
 
 void MainWindow::applyQtStyleSheet( QString const & displayStyle, QString const & addonStyle )
 {
+  if( applyingStyleSheet )
+    return;
+
+  applyingStyleSheet = true;
+
   QFile builtInCssFile( ":/qt-style.css" );
   (void)builtInCssFile.open( QFile::ReadOnly );
   QByteArray css = builtInCssFile.readAll();
@@ -1206,6 +1220,40 @@ void MainWindow::applyQtStyleSheet( QString const & displayStyle, QString const 
   }
 
   setStyleSheet( css );
+
+  applyingStyleSheet = false;
+}
+
+void MainWindow::changeEvent( QEvent * event )
+{
+  QMainWindow::changeEvent( event );
+
+#ifdef Q_OS_MAC
+  if( event->type() == QEvent::PaletteChange ||
+      event->type() == QEvent::ApplicationPaletteChange ||
+      event->type() == QEvent::ThemeChange )
+  {
+    if( pendingAppearanceUpdate )
+      return;
+
+    pendingAppearanceUpdate = true;
+    QTimer::singleShot( 0, this, [this]() {
+      pendingAppearanceUpdate = false;
+      bool darkMode = isMacDarkMode();
+      if( darkMode != lastDarkMode )
+      {
+        lastDarkMode = darkMode;
+        applyQtStyleSheet( cfg.preferences.displayStyle, cfg.preferences.addonStyle );
+
+        if( QWidget * current = ui.tabWidget->currentWidget() )
+        {
+          if( ArticleView * view = dynamic_cast< ArticleView * >( current ) )
+            view->reload();
+        }
+      }
+    } );
+  }
+#endif
 }
 
 void MainWindow::updateTrayIcon()

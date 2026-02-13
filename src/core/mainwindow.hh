@@ -46,6 +46,8 @@
 using std::string;
 using std::vector;
 
+class QEvent;
+
 class ExpandableToolBar : public QToolBar
 {
   Q_OBJECT
@@ -86,6 +88,9 @@ public:
 
   /// Set group for main/popup window
   void setGroupByName( QString const & name, bool main_window );
+
+protected:
+  void changeEvent( QEvent * event );
 
 public slots:
 
@@ -183,6 +188,10 @@ private:
   sptr< QPrinter > printer; // The printer we use for all printing operations
 
   bool wordListSelChanged;
+
+  bool applyingStyleSheet;
+  bool pendingAppearanceUpdate;
+  bool lastDarkMode;
 
   bool wasMaximized; // Window state before minimization
 
