@@ -33,7 +33,7 @@ public:
   // Changes to another pair of encodings. All the internal state is reset.
   void reinit( char const * to, char const * from ) THROW_SPEC( exCantInit );
 
-  ~Iconv() throw();
+  ~Iconv() noexcept;
 
   enum Result
   {

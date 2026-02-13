@@ -34,7 +34,7 @@ void Iconv::reinit( char const * to, char const * from ) THROW_SPEC( exCantInit 
     throw exCantInit( strerror( errno ) );
 }
 
-Iconv::~Iconv() throw()
+Iconv::~Iconv() noexcept
 {
   iconv_close( state );
 }

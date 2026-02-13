@@ -186,21 +186,21 @@ QString Class::getMainFilename()
   return QString();
 }
 
-QIcon const & Class::getIcon() throw()
+QIcon const & Class::getIcon() noexcept
 {
   if( !dictionaryIconLoaded )
     loadIcon();
   return dictionaryIcon;
 }
 
-QIcon const & Class::getNativeIcon() throw()
+QIcon const & Class::getNativeIcon() noexcept
 {
   if( !dictionaryIconLoaded )
     loadIcon();
   return dictionaryNativeIcon;
 }
 
-void Class::loadIcon() throw()
+void Class::loadIcon() noexcept
 {
   dictionaryIconLoaded = true;
 }

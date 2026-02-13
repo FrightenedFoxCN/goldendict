@@ -272,7 +272,7 @@ protected:
 
   // Load user icon if it exist
   // By default set icon to empty
-  virtual void loadIcon() throw();
+  virtual void loadIcon() noexcept;
 
   // Load icon from filename directly if isFullName == true
   // else treat filename as name without extension
@@ -297,39 +297,39 @@ public:
   virtual void deferredInit();
 
   /// Returns the dictionary's id.
-  string getId() throw()
+  string getId() noexcept
   { return id; }
 
   /// Returns the list of file names the dictionary consists of.
-  vector< string > const & getDictionaryFilenames() throw()
+  vector< string > const & getDictionaryFilenames() noexcept
   { return dictionaryFiles; }
 
   /// Returns the dictionary's full name, utf8.
-  virtual string getName() throw()=0;
+  virtual string getName() noexcept=0;
 
   /// Returns all the available properties, like the author's name, copyright,
   /// description etc. All strings are in utf8.
-  virtual map< Property, string > getProperties() throw()=0;
+  virtual map< Property, string > getProperties() noexcept=0;
 
   /// Returns the features the dictionary possess. See the Feature enum for
   /// their list.
-  virtual Features getFeatures() const throw()
+  virtual Features getFeatures() const noexcept
   { return NoFeatures; }
 
   /// Returns the number of articles in the dictionary.
-  virtual unsigned long getArticleCount() throw()=0;
+  virtual unsigned long getArticleCount() noexcept=0;
 
   /// Returns the number of words in the dictionary. This can be equal to
   /// the number of articles, or can be larger if some synonyms are present.
-  virtual unsigned long getWordCount() throw()=0;
+  virtual unsigned long getWordCount() noexcept=0;
 
   /// Returns the dictionary's icon.
-  virtual QIcon const & getIcon() throw();
+  virtual QIcon const & getIcon() noexcept;
 
   /// Returns the dictionary's native icon. Dsl icons are usually rectangular,
   /// and are adapted by getIcon() to be square. This function allows getting
   /// the original icon with no geometry transformations applied.
-  virtual QIcon const & getNativeIcon() throw();
+  virtual QIcon const & getNativeIcon() noexcept;
 
   /// Returns the dictionary's source language.
   virtual quint32 getLangFrom() const
@@ -457,7 +457,7 @@ public:
   /// dictionary is being indexed. Since indexing can take some time, this
   /// is useful to show in some kind of a splash screen.
   /// The dictionaryName is in utf8.
-  virtual void indexingDictionary( string const & dictionaryName ) throw()=0;
+  virtual void indexingDictionary( string const & dictionaryName ) noexcept=0;
 
   virtual ~Initializing()
   {}
@@ -468,7 +468,7 @@ public:
 /// hashing the file names. This id should be used to identify dictionary
 /// and for the index file name, if one is needed.
 /// This function is supposed to be used by dictionary implementations.
-string makeDictionaryId( vector< string > const & dictionaryFiles ) throw();
+string makeDictionaryId( vector< string > const & dictionaryFiles ) noexcept;
 
 /// Checks if it is needed to regenerate index file based on its timestamp
 /// and the timestamps of the dictionary files. If some files are newer than
@@ -476,7 +476,7 @@ string makeDictionaryId( vector< string > const & dictionaryFiles ) throw();
 /// dictionary files don't exist, returns true, too.
 /// This function is supposed to be used by dictionary implementations.
 bool needToRebuildIndex( vector< string > const & dictionaryFiles,
-                         string const & indexFile ) throw();
+                         string const & indexFile ) noexcept;
 
 /// Returns a random dictionary id useful for interactively created
 /// dictionaries.
