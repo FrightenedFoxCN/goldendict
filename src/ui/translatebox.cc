@@ -124,7 +124,7 @@ TranslateBox::TranslateBox(QWidget *parent) : QWidget(parent),
   translate_line->setButtonVisible(ExtLineEdit::Left, true);
   translate_line->setButtonFocusPolicy(ExtLineEdit::Left, Qt::ClickFocus);
 
-  QPixmap right(":/icons/1downarrow.png");
+  QPixmap right(":/icons/downarrow.svg");
   translate_line->setButtonPixmap(ExtLineEdit::Right, right);
   translate_line->setButtonToolTip(ExtLineEdit::Right, tr("Drop-down"));
   translate_line->setButtonVisible(ExtLineEdit::Right, true);

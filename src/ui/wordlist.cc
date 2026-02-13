@@ -115,7 +115,7 @@ void WordList::updateMatchResults( bool finished )
 
     if ( !wordFinder->getErrorString().isEmpty() )
       emit statusBarMessage( tr( "WARNING: %1" ).arg( wordFinder->getErrorString() ),
-                             20000 , QPixmap( ":/icons/error.png" ) );
+                             20000 , QPixmap( ":/icons/error.svg" ) );
   }
 
   if( !results.empty() && results.front().first.isRightToLeft() )
