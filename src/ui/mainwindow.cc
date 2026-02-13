@@ -170,6 +170,12 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 
   ui.setupUi( this );
 
+#ifdef Q_OS_MAC
+  // Enable Mac-style transparency and blur
+  setAttribute(Qt::WA_TranslucentBackground, false);
+  setAutoFillBackground(false);
+#endif
+
   articleMaker.setCollapseParameters( cfg.preferences.collapseBigArticles, cfg.preferences.articleSizeLimit );
 
   // Set own gesture recognizers

@@ -1,16 +1,152 @@
-MainWindow #translateLine, ScanPopup #translateLine {
-  background: white;
+/* Mac-style transparent backgrounds */
+MainWindow {
+  background: rgba(245, 245, 245, 0.95);
+}
+
+MainWindow #centralWidget {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Mac-style transparent menubar */
+QMenuBar {
+  background: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 2px 4px;
+  spacing: 3px;
+}
+
+QMenuBar::item {
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 4px;
   color: #202124;
-  border: 1px solid #dadce0;
+}
+
+QMenuBar::item:selected {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+QMenuBar::item:pressed {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Mac-style menus */
+QMenu {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+QMenu::item {
+  padding: 6px 24px 6px 12px;
+  border-radius: 4px;
+  color: #202124;
+}
+
+QMenu::item:selected {
+  background: rgba(26, 115, 232, 0.15);
+  color: #1967d2;
+}
+
+QMenu::separator {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 4px 8px;
+}
+
+/* Mac-style white tab bar */
+QTabWidget {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+QTabWidget::pane {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  margin-top: 0px;
+}
+
+QTabWidget::tab-bar {
+  alignment: left;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+QTabBar {
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+}
+
+QTabBar::base {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+}
+
+QTabWidget::corner {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+}
+
+QTabWidget QToolButton {
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 6px;
+  padding: 4px;
+  margin: 4px;
+}
+
+QTabWidget QToolButton:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+QTabBar::tab {
+  background: rgba(255, 255, 255, 0.6);
+  color: #5f6368;
+  padding: 8px 16px;
+  margin-right: 2px;
+  border: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  min-width: 80px;
+}
+
+QTabBar::tab:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #202124;
+}
+
+QTabBar::tab:selected {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1967d2;
+  font-weight: 500;
+  border-bottom: 2px solid #1a73e8;
+}
+
+QTabBar::close-button {
+  image: url(:/icons/closetab.svg);
+  subcontrol-position: right;
+  padding: 2px;
+}
+
+QTabBar::close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+MainWindow #translateLine, ScanPopup #translateLine {
+  background: rgba(255, 255, 255, 0.7);
+  color: #202124;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 24px;
   padding: 8px 16px;
   font-size: 14px;
-  selection-background-color: #d2e3fc;
+  selection-background-color: rgba(26, 115, 232, 0.2);
   selection-color: #202124;
 }
 
 MainWindow #translateLine:focus, ScanPopup #translateLine:focus {
-  border-color: #1a73e8;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(26, 115, 232, 0.5);
   outline: none;
 }
 
@@ -24,7 +160,7 @@ ScanPopup #translateLine[noResults="true"]
 /* Simple flat list containers */
 MainWindow #wordList, MainWindow #dictsPane #dictsList, MainWindow #historyPane #historyList, MainWindow #favoritesPane #favoritesTree
 {
-  background: white;
+  background: rgba(255, 255, 255, 0.5);
   color: #202124;
   border: none;
   outline: none;
@@ -36,39 +172,39 @@ MainWindow #wordList::item, MainWindow #dictsPane #dictsList::item,
 MainWindow #historyPane #historyList::item, MainWindow #favoritesPane #favoritesTree::item {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   margin: 0px;
 }
 
 MainWindow #wordList::item:hover, MainWindow #dictsPane #dictsList::item:hover,
 MainWindow #historyPane #historyList::item:hover, MainWindow #favoritesPane #favoritesTree::item:hover {
-  background: #f1f3f4;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 MainWindow #wordList::item:selected, MainWindow #dictsPane #dictsList::item:selected,
 MainWindow #historyPane #historyList::item:selected, MainWindow #favoritesPane #favoritesTree::item:selected {
-  background: #e8f0fe;
+  background: rgba(26, 115, 232, 0.15);
   color: #1967d2;
 }
 
-/* Dock Widgets as Material Design Cards */
+/* Dock Widgets - Transparent Mac-style */
 QDockWidget {
   titlebar-close-icon: url(:/icons/close.png);
   titlebar-normal-icon: url(:/icons/blank.png);
-  border: 1px solid #e8eaed;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   font-size: 13px;
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
   margin: 6px;
 }
 
 QDockWidget::title {
-  background: white;
+  background: rgba(255, 255, 255, 0.4);
   color: #202124;
   padding: 14px 16px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-  border-bottom: 1px solid #f1f3f4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   font-weight: 500;
   text-align: left;
 }
@@ -81,13 +217,13 @@ QDockWidget::close-button, QDockWidget::float-button {
 }
 
 QDockWidget::close-button:hover, QDockWidget::float-button:hover {
-  background: #e8eaed;
+  background: rgba(0, 0, 0, 0.08);
 }
 
-/* Pane Title Bars - Cleaner card header style */
+/* Pane Title Bars - Transparent Mac-style */
 #dictsPaneTitleBar, #searchPaneTitleBar, #historyPaneTitleBar, #favoritesPaneTitleBar {
-  background: white;
-  border-bottom: 1px solid #f1f3f4;
+  background: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   padding: 12px 16px;
 }
 
@@ -98,15 +234,31 @@ QDockWidget::close-button:hover, QDockWidget::float-button:hover {
   font-size: 14px;
 }
 
-/* Main window separator - lighter for card separation */
+/* Main window separator - transparent */
 QMainWindow::separator {
-  background: #f1f3f4;
+  background: rgba(0, 0, 0, 0.05);
   width: 6px;
   height: 6px;
 }
 
 QMainWindow::separator:hover {
-  background: #e8eaed;
+  background: rgba(26, 115, 232, 0.2);
+}
+
+/* Mac-style transparent toolbar */
+QToolBar {
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 4px;
+  spacing: 2px;
+}
+
+QToolBar::separator {
+  background: rgba(0, 0, 0, 0.1);
+  width: 1px;
+  height: 20px;
+  margin: 0px 6px;
 }
 
 #navToolbar #menuButton::menu-indicator {
@@ -122,14 +274,14 @@ QMainWindow::separator:hover {
 }
 
 #navToolbar QToolButton:hover {
-  background: #eef2f6;
-  border-color: #e2e8f0;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 #navToolbar QToolButton:pressed,
 #navToolbar QToolButton:checked {
-  background: #dfe6ee;
-  border-color: #cbd5e1;
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 #navToolbar QToolButton:disabled {
@@ -149,25 +301,25 @@ QMainWindow::separator:hover {
 #navToolbar GroupComboBox
 {
   margin-right: 0px;
-  border: 1px solid #dadce0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-right: none;
   border-radius: 24px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   padding: 8px 12px 8px 16px;
-  background: white;
+  background: rgba(255, 255, 255, 0.7);
   color: #5f6368;
   font-size: 14px;
 }
 
 #navToolbar GroupComboBox:hover {
-  background: #f8f9fa;
-  border-color: #dadce0;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 #navToolbar GroupComboBox:on {
-  background: #e8f0fe;
-  border-color: #1a73e8;
+  background: rgba(26, 115, 232, 0.15);
+  border-color: rgba(26, 115, 232, 0.5);
   color: #1967d2;
 }
 
@@ -191,17 +343,18 @@ QMainWindow::separator:hover {
 }
 
 ArticleView #searchText {
-  background: white;
+  background: rgba(255, 255, 255, 0.7);
   color: #202124;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
   padding: 6px 12px;
-  selection-background-color: #d2e3fc;
+  selection-background-color: rgba(26, 115, 232, 0.2);
   selection-color: #202124;
 }
 
 ArticleView #searchText:focus {
-  border-color: #1a73e8;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(26, 115, 232, 0.5);
   outline: none;
 }
 
@@ -211,22 +364,30 @@ ArticleView #searchText[noResults="true"]
   border-color: #d93025;
 }
 
+/* Mac-style transparent status bar */
+MainStatusBar {
+  background: rgba(255, 255, 255, 0.7);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 MainStatusBar #text
 {
-  border-top-right-radius: 3px;
-  border-top: 1px solid palette(dark);
-  border-right: 1px solid palette(dark);
-  background: palette(window);
-  padding: 2px;
+  border-top-right-radius: 4px;
+  border-top: none;
+  border-right: none;
+  background: transparent;
+  padding: 4px 8px;
+  color: #5f6368;
+  font-size: 12px;
 }
 
 MainStatusBar #icon
 {
-  border-top: 1px solid palette(dark);
-  background: palette(window);
-  padding: 2px;
-  padding-left: 4px;
-  padding-right: 0px;
+  border-top: none;
+  background: transparent;
+  padding: 4px;
+  padding-left: 8px;
+  padding-right: 4px;
 }
 
 ScanPopup #translateLine
@@ -346,14 +507,14 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-  background: #dadce0;
+  background: rgba(0, 0, 0, 0.2);
   min-height: 30px;
   border-radius: 6px;
   margin: 2px;
 }
 
 QScrollBar::handle:vertical:hover {
-  background: #bdc1c6;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
@@ -371,14 +532,14 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-  background: #dadce0;
+  background: rgba(0, 0, 0, 0.2);
   min-width: 30px;
   border-radius: 6px;
   margin: 2px;
 }
 
 QScrollBar::handle:horizontal:hover {
-  background: #bdc1c6;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {

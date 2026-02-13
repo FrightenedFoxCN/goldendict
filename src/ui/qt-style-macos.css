@@ -27,3 +27,31 @@ ScanPopup GroupComboBox
 ScanPopup GroupComboBox::drop-down {
   padding-right: 4px;
 }
+
+/* Force light tab bar on macOS even in Dark Mode */
+QTabWidget {
+  background: white;
+}
+
+QTabWidget::pane {
+  background: white;
+  border: none;
+}
+
+QTabWidget::tab-bar {
+  background: white;
+}
+
+QTabBar {
+  background: white;
+  qproperty-drawBase: 0;
+}
+
+QTabBar::base {
+  background: white;
+  border: none;
+}
+
+QTabBar::tab {
+  background: white;
+}
