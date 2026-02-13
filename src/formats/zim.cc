@@ -824,11 +824,11 @@ void ZimDictionary::loadIcon() throw()
 
       dictionaryNativeIcon = dictionaryIcon = QIcon( QPixmap::fromImage( img ) );
       if( dictionaryIcon.isNull() )
-        dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_zim.png");
+        dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_zim.svg");
     }
     else
       // Load failed -- use default icons
-      dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_zim.png");
+      dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_zim.svg");
   }
 
   dictionaryIconLoaded = true;

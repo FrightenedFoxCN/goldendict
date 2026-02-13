@@ -612,7 +612,7 @@ void GlsDictionary::loadIcon() throw()
   if ( !loadIconFromFile( fileName ) )
   {
     // Load failed -- use default icon
-    dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_gls.png");
+    dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_gls.svg");
   }
 
   dictionaryIconLoaded = true;

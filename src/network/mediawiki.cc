@@ -90,7 +90,7 @@ void MediaWikiDictionary::loadIcon() throw()
       loadIconFromFile( fInfo.absoluteFilePath(), true );
   }
   if( dictionaryIcon.isNull() )
-    dictionaryIcon = dictionaryNativeIcon = QIcon(":/icons/icon32_wiki.png");
+    dictionaryIcon = dictionaryNativeIcon = QIcon(":/icons/icon32_wiki.svg");
   dictionaryIconLoaded = true;
 }
 

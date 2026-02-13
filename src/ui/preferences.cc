@@ -162,10 +162,10 @@ Preferences::Preferences( QWidget * parent, Config::Class & cfg_ ):
 
   ui.displayStyle->addItem( QIcon( ":/icons/programicon_old.png" ), tr( "Default" ), QString() );
   ui.displayStyle->addItem( QIcon( ":/icons/programicon.png" ), tr( "Modern" ), QString( "modern" ) );
-  ui.displayStyle->addItem( QIcon( ":/icons/icon32_dsl.png" ), tr( "Lingvo" ), QString( "lingvo" ) );
-  ui.displayStyle->addItem( QIcon( ":/icons/icon32_bgl.png" ), tr( "Babylon" ), QString( "babylon" ) );
-  ui.displayStyle->addItem( QIcon( ":/icons/icon32_lingoes.png" ), tr( "Lingoes" ), QString( "lingoes" ) );
-  ui.displayStyle->addItem( QIcon( ":/icons/icon32_lingoes.png" ), tr( "Lingoes-Blue" ), QString( "lingoes-blue" ) );
+  ui.displayStyle->addItem( QIcon( ":/icons/icon32_dsl.svg" ), tr( "Lingvo" ), QString( "lingvo" ) );
+  ui.displayStyle->addItem( QIcon( ":/icons/icon32_bgl.svg" ), tr( "Babylon" ), QString( "babylon" ) );
+  ui.displayStyle->addItem( QIcon( ":/icons/icon32_lingoes.svg" ), tr( "Lingoes" ), QString( "lingoes" ) );
+  ui.displayStyle->addItem( QIcon( ":/icons/icon32_lingoes.svg" ), tr( "Lingoes-Blue" ), QString( "lingoes-blue" ) );
 
   for( int x = 0; x < ui.displayStyle->count(); ++x )
     if ( ui.displayStyle->itemData( x ).toString() == p.displayStyle )

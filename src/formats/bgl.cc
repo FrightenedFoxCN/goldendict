@@ -361,7 +361,7 @@ namespace
       }
 
       if ( dictionaryIcon.isNull() )
-        dictionaryIcon = dictionaryNativeIcon = QIcon(":/icons/icon32_bgl.png");
+        dictionaryIcon = dictionaryNativeIcon = QIcon(":/icons/icon32_bgl.svg");
     }
 
     dictionaryIconLoaded = true;

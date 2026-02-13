@@ -6,35 +6,35 @@
         <file>article-style.css</file>
         <file>article-style-print.css</file>
         <file>qt-style.css</file>
-        <file>icons/icon32_dsl.png</file>
-        <file>icons/icon32_stardict.png</file>
-        <file>icons/icon32_xdxf.png</file>
-        <file>icons/icon32_bgl.png</file>
-        <file>icons/icon32_dictd.png</file>
-        <file>icons/icon32_hunspell.png</file>
-        <file>icons/icon32_wiki.png</file>
+        <file>icons/icon32_dsl.svg</file>
+        <file>icons/icon32_stardict.svg</file>
+        <file>icons/icon32_xdxf.svg</file>
+        <file>icons/icon32_bgl.svg</file>
+        <file>icons/icon32_dictd.svg</file>
+        <file>icons/icon32_hunspell.svg</file>
+        <file>icons/icon32_wiki.svg</file>
         <file>article-style-st-lingvo.css</file>
         <file>icons/icon_dsl_native.png</file>
         <file>icons/forvo.png</file>
         <file>CREDITS.txt</file>
         <file>icons/macicon.png</file>
-        <file>icons/icon32_sdict.png</file>
-        <file>icons/icon32_aard.png</file>
+        <file>icons/icon32_sdict.svg</file>
+        <file>icons/icon32_aard.svg</file>
         <file>article-style-st-babylon.css</file>
         <file>qt-style-st-babylon.css</file>
         <file>article-style-st-modern.css</file>
         <file>qt-style-st-modern.css</file>
         <file>article-style-st-lingoes.css</file>
-        <file>icons/icon32_lingoes.png</file>
+        <file>icons/icon32_lingoes.svg</file>
         <file>article-style-st-lingoes-blue.css</file>
         <file>qt-style-st-lingoes-blue.css</file>
         <file>qt-style-macos.css</file>
         <file>qt-style-macos-dark.css</file>
         <file>icons/mdict.png</file>
         <file>icons/programicon_old.png</file>
-        <file>icons/icon32_zim.png</file>
-        <file>icons/icon32_slob.png</file>
-        <file>icons/icon32_gls.png</file>
+        <file>icons/icon32_zim.svg</file>
+        <file>icons/icon32_slob.svg</file>
+        <file>icons/icon32_gls.svg</file>
         <file>icons/previous.svg</file>
         <file>icons/next.svg</file>
         <file>icons/playsound_full.svg</file>

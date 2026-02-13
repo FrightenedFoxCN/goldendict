@@ -229,7 +229,7 @@ void DictdDictionary::loadIcon() throw()
   if( !loadIconFromFile( fileName ) )
   {
     // Load failed -- use default icons
-    dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_dictd.png");
+    dictionaryNativeIcon = dictionaryIcon = QIcon(":/icons/icon32_dictd.svg");
   }
 
   dictionaryIconLoaded = true;
