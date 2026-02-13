@@ -325,7 +325,7 @@ MdxDictionary::MdxDictionary( string const & id, string const & indexFile,
   }
 
   dictFile.setFileName( QString::fromUtf8( dictionaryFiles[ 0 ].c_str() ) );
-  dictFile.open( QIODevice::ReadOnly );
+  (void)dictFile.open( QIODevice::ReadOnly );
 
   // Full-text search parameters
 
@@ -688,7 +688,7 @@ void MdxArticleRequest::run()
       continue; // We already have this article in the body.
 
     QCryptographicHash hash( QCryptographicHash::Md5 );
-    hash.addData( articleBody.data(), articleBody.size() );
+    hash.addData( QByteArrayView( articleBody.data(), articleBody.size() ) );
     if ( !articleBodiesIncluded.insert( hash.result() ).second )
       continue; // Already had this body
 
@@ -819,7 +819,7 @@ void MddResourceRequest::run()
 
     string u8ResourceName = Utf8::encode( resourceName );
     QCryptographicHash hash( QCryptographicHash::Md5 );
-    hash.addData( u8ResourceName.data(), u8ResourceName.size() );
+    hash.addData( QByteArrayView( u8ResourceName.data(), u8ResourceName.size() ) );
     if ( !resourceIncluded.insert( hash.result() ).second )
       continue;
 
@@ -1245,7 +1245,7 @@ QString MdxDictionary::getCachedFileName( QString filename )
 
         string u8ResourceName = Utf8::encode( resourceName );
         QCryptographicHash hash( QCryptographicHash::Md5 );
-        hash.addData( u8ResourceName.data(), u8ResourceName.size() );
+        hash.addData( QByteArrayView( u8ResourceName.data(), u8ResourceName.size() ) );
         if ( !resourceIncluded.insert( hash.result() ).second )
           continue;
 

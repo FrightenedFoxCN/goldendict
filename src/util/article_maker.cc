@@ -54,7 +54,7 @@ std::string ArticleMaker::makeHtmlHeader( QString const & word,
 
   {
     QFile builtInCssFile( ":/article-style.css" );
-    builtInCssFile.open( QFile::ReadOnly );
+    (void)builtInCssFile.open( QFile::ReadOnly );
     QByteArray css = builtInCssFile.readAll();
 
     if( !css.isEmpty() )
@@ -69,7 +69,7 @@ std::string ArticleMaker::makeHtmlHeader( QString const & word,
     {
       // Load an additional stylesheet
       QFile builtInCssFile( QString( ":/article-style-st-%1.css" ).arg( displayStyle ) );
-      builtInCssFile.open( QFile::ReadOnly );
+      (void)builtInCssFile.open( QFile::ReadOnly );
       css = builtInCssFile.readAll();
       if( !css.isEmpty() )
       {
@@ -127,7 +127,7 @@ std::string ArticleMaker::makeHtmlHeader( QString const & word,
 
   {
     QFile builtInCssFile( ":/article-style-print.css" );
-    builtInCssFile.open( QFile::ReadOnly );
+    (void)builtInCssFile.open( QFile::ReadOnly );
     QByteArray css = builtInCssFile.readAll();
     if( !css.isEmpty() )
     {

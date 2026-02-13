@@ -448,15 +448,27 @@ bool DecoderContext::play( QString & errorString )
     return false;
   }
 
-  AVPacket packet;
-  av_init_packet( &packet );
+    AVPacket * packet = av_packet_alloc();
+    if ( !packet )
+    {
+    errorString = QObject::tr( "av_packet_alloc() failed." );
+  #if LIBAVCODEC_VERSION_MAJOR < 54
+    av_free( frame );
+  #elif LIBAVCODEC_VERSION_MAJOR < 55 || ( LIBAVCODEC_VERSION_MAJOR == 55 && LIBAVCODEC_VERSION_MINOR < 28 )
+    avcodec_free_frame( &frame );
+  #else
+    av_frame_free( &frame );
+  #endif
+    return false;
+    }
 
   while ( !Qt4x5::AtomicInt::loadAcquire( isCancelled_ ) &&
-          av_read_frame( formatContext_, &packet ) >= 0 )
+          av_read_frame( formatContext_, packet ) >= 0 )
   {
-    if ( packet.stream_index == audioStream_->index )
+    if ( packet->stream_index == audioStream_->index )
     {
-      AVPacket pack = packet;
+      AVPacket pack;
+      av_packet_ref( &pack, packet );
 #if LIBAVCODEC_VERSION_MAJOR < 57 || ( LIBAVCODEC_VERSION_MAJOR == 57 && LIBAVCODEC_VERSION_MINOR < 37 )
       int gotFrame = 0;
       do
@@ -485,12 +497,13 @@ bool DecoderContext::play( QString & errorString )
         playFrame( frame );
       }
 #endif
+        av_packet_unref( &pack );
     }
     // av_free_packet() must be called after each call to av_read_frame()
 #if LIBAVCODEC_VERSION_MAJOR < 57 || ( LIBAVCODEC_VERSION_MAJOR == 57 && LIBAVCODEC_VERSION_MINOR < 7 )
-    av_free_packet( &packet );
+      av_free_packet( packet );
 #else
-    av_packet_unref( &packet );
+      av_packet_unref( packet );
 #endif
   }
 
@@ -498,9 +511,9 @@ bool DecoderContext::play( QString & errorString )
   if ( !Qt4x5::AtomicInt::loadAcquire( isCancelled_ ) &&
        codecContext_->codec->capabilities & CODEC_CAP_DELAY )
   {
-    av_init_packet( &packet );
+    av_packet_unref( packet );
     int gotFrame = 0;
-    while ( avcodec_decode_audio4( codecContext_, frame, &gotFrame, &packet ) >= 0 && gotFrame )
+    while ( avcodec_decode_audio4( codecContext_, frame, &gotFrame, packet ) >= 0 && gotFrame )
     {
       if ( Qt4x5::AtomicInt::loadAcquire( isCancelled_ ) )
         break;
@@ -509,10 +522,10 @@ bool DecoderContext::play( QString & errorString )
   }
 #else
   /* flush the decoder */
-  av_init_packet( &packet );
-  packet.data = NULL;
-  packet.size = 0;
-  int ret = avcodec_send_packet(codecContext_, &packet );
+  av_packet_unref( packet );
+  packet->data = NULL;
+  packet->size = 0;
+  int ret = avcodec_send_packet(codecContext_, packet );
   while( ret >= 0 )
   {
     ret = avcodec_receive_frame(codecContext_, frame);
@@ -521,6 +534,8 @@ bool DecoderContext::play( QString & errorString )
     playFrame( frame );
   }
 #endif
+
+  av_packet_free( &packet );
 
 #if LIBAVCODEC_VERSION_MAJOR < 54
   av_free( frame );

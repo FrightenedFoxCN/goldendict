@@ -224,8 +224,13 @@ void ForvoArticleRequest::requestFinished( QNetworkReply * r )
       QString errorStr;
       int errorLine, errorColumn;
   
-      if ( !dd.setContent( netReply.get(), false, &errorStr, &errorLine, &errorColumn  ) )
+      QDomDocument::ParseResult parseResult = dd.setContent( netReply.get(),
+                                                           QDomDocument::ParseOption::Default );
+      if ( !parseResult )
       {
+        errorStr = parseResult.errorMessage;
+        errorLine = static_cast< int >( parseResult.errorLine );
+        errorColumn = static_cast< int >( parseResult.errorColumn );
         setErrorString( QString( tr( "XML parse error: %1 at %2,%3" ).
                                  arg( errorStr ).arg( errorLine ).arg( errorColumn ) ) );
       }

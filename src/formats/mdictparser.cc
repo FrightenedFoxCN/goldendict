@@ -212,7 +212,9 @@ QString MdictParser::toUtf16( const char * fromCode, const char * from, size_t f
   iconv_close( conv );
   if ( result.size() <= 2 )
     return QString();
-  return QString::fromUtf16( ( const ushort * )&result.front() );
+  return QString::fromUtf16(
+    reinterpret_cast< const char16_t * >( result.data() ),
+    static_cast< qsizetype >( result.size() / 2 ) );
 }
 
 bool MdictParser::decryptHeadWordIndex(char * buffer, qint64 len)

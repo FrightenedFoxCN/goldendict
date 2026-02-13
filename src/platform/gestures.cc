@@ -89,11 +89,11 @@ QGestureRecognizer::Result GDPinchGestureRecognizer::recognize( QGesture * state
       {
         gest->scaleChanged = false;
         const QTouchEvent * const ev = static_cast< const QTouchEvent * >( event );
-        fewTouchPointsPresented = ( ev->touchPoints().size() > 1 );
-        if ( ev->touchPoints().size() == 2 )
+        fewTouchPointsPresented = ( ev->points().size() > 1 );
+        if ( ev->points().size() == 2 )
         {
-          QTouchEvent::TouchPoint p1 = ev->touchPoints().at( 0 );
-          QTouchEvent::TouchPoint p2 = ev->touchPoints().at( 1 );
+          QTouchEvent::TouchPoint p1 = ev->points().at( 0 );
+          QTouchEvent::TouchPoint p2 = ev->points().at( 1 );
 
           QPointF centerPoint = ( p1.globalPosition() + p2.globalPosition() ) / 2.0;
           gest->setHotSpot( centerPoint );
@@ -231,16 +231,16 @@ QGestureRecognizer::Result GDSwipeGestureRecognizer::recognize( QGesture * state
     case QEvent::TouchUpdate:
       {
         const QTouchEvent * const ev = static_cast< const QTouchEvent * >( event );
-        fewTouchPointsPresented = ( ev->touchPoints().size() > 1 );
+        fewTouchPointsPresented = ( ev->points().size() > 1 );
         if( !swipe->started )
           result = QGestureRecognizer::CancelGesture;
         else
-        if( ev->touchPoints().size() == 2 )
+        if( ev->points().size() == 2 )
         {
           //2-point gesture
 
-          QTouchEvent::TouchPoint p1 = ev->touchPoints().at( 0 );
-          QTouchEvent::TouchPoint p2 = ev->touchPoints().at( 1 );
+          QTouchEvent::TouchPoint p1 = ev->points().at( 0 );
+          QTouchEvent::TouchPoint p2 = ev->points().at( 1 );
 
           if (swipe->lastPositions[0].isNull()) {
             swipe->lastPositions[ 0 ] = p1.globalPressPosition().toPoint();

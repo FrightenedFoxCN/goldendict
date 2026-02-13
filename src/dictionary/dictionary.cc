@@ -458,7 +458,7 @@ string makeDictionaryId( vector< string > const & dictionaryFiles ) throw()
 
   for( std::vector< string >::const_iterator i = sortedList.begin();
        i != sortedList.end(); ++i )
-    hash.addData( i->c_str(), i->size() + 1 );
+    hash.addData( QByteArrayView( i->c_str(), i->size() + 1 ) );
 
   return hash.result().toHex().data();
 }

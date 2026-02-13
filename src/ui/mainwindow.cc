@@ -1144,12 +1144,12 @@ QPrinter & MainWindow::getPrinter()
 void MainWindow::applyQtStyleSheet( QString const & displayStyle, QString const & addonStyle )
 {
   QFile builtInCssFile( ":/qt-style.css" );
-  builtInCssFile.open( QFile::ReadOnly );
+  (void)builtInCssFile.open( QFile::ReadOnly );
   QByteArray css = builtInCssFile.readAll();
 
 #if defined(Q_OS_MAC)
   QFile macCssFile( ":/qt-style-macos.css" );
-  macCssFile.open( QFile::ReadOnly );
+  (void)macCssFile.open( QFile::ReadOnly );
   css += macCssFile.readAll();
 #endif
 

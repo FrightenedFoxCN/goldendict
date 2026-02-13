@@ -420,14 +420,14 @@ int main( int argc, char ** argv )
   QString localeName = QLocale::system().name();
 
   if ( !qtTranslator.load( "qt_" + localeName, Config::getLocDir() ) )
-    qtTranslator.load( "qt_" + localeName,
-                       QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+    (void)qtTranslator.load( "qt_" + localeName,
+                             QLibraryInfo::path( QLibraryInfo::TranslationsPath ) );
 
   app.installTranslator( &qtTranslator );
 
   QTranslator translator;
 
-  translator.load( Config::getLocDir() + "/" + localeName );
+  (void)translator.load( Config::getLocDir() + "/" + localeName );
 
   app.installTranslator( &translator );
 
@@ -498,8 +498,8 @@ int main( int argc, char ** argv )
   {
     // Open log file
     logFilePtr->setFileName( Config::getConfigDir() + "gd_log.txt" );
-    logFilePtr->remove();
-    logFilePtr->open( QFile::ReadWrite );
+    (void)logFilePtr->remove();
+    (void)logFilePtr->open( QFile::ReadWrite );
 
     // Write UTF-8 BOM
     QByteArray line;
@@ -527,10 +527,10 @@ int main( int argc, char ** argv )
     localeName = cfg.preferences.interfaceLanguage;
 
     if ( !qtTranslator.load( "qt_" + localeName, Config::getLocDir() ) )
-      qtTranslator.load( "qt_" + localeName,
-                                 QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+      (void)qtTranslator.load( "qt_" + localeName,
+                               QLibraryInfo::path( QLibraryInfo::TranslationsPath ) );
 
-    translator.load( Config::getLocDir() + "/" + localeName );
+    (void)translator.load( Config::getLocDir() + "/" + localeName );
   }
 
   // Prevent app from quitting spontaneously when it works with scan popup

@@ -83,7 +83,7 @@ QString MacMouseOver::CFStringRefToQString( CFStringRef str )
   UniChar *chars = new UniChar[ length ];
   CFStringGetCharacters( str, CFRangeMake( 0, length ), chars );
 
-  QString result = QString::fromUtf16( chars, length );
+  QString result = QString::fromUtf16( reinterpret_cast< const char16_t * >( chars ), length );
 
   delete[] chars;
   return result;
@@ -330,8 +330,5 @@ void MacMouseOver::handleRetrievedString( QString & wordSeq, int wordSeqPos )
 
 bool MacMouseOver::isAXAPIEnabled()
 {
-  if( NSFoundationVersionNumber >= 1000 )  // MacOS 10.9+
-    return AXIsProcessTrusted();
-
-  return AXAPIEnabled();
+  return AXIsProcessTrusted();
 }

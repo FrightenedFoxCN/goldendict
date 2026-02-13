@@ -15,7 +15,7 @@ ExternalAudioPlayer::~ExternalAudioPlayer()
 
   // Set viewer to null first and foremost to make sure that onViewerDestroyed()
   // doesn't attempt to start viewer or mess the smart pointer up.
-  stopAndDestroySynchronously( viewer.take() );
+  stopAndDestroySynchronously( viewer.release() );
 
   stopAndDestroySynchronously( exitingViewer );
 }
@@ -58,7 +58,7 @@ void ExternalAudioPlayer::stop()
     //   1) the process gets a chance to clean up and save its state;
     //   2) there is no event loop blocking and consequently no (short) UI freeze
     //      while synchronously waiting for the external process to exit.
-    exitingViewer = viewer.take();
+    exitingViewer = viewer.release();
   }
   else // viewer is either not started or already stopped -> simply destroy it.
     viewer.reset();
@@ -77,14 +77,14 @@ void ExternalAudioPlayer::onViewerDestroyed( QObject * destroyedViewer )
     }
   }
   else
-  if( viewer.data() == destroyedViewer )
-    viewer.take(); // viewer finished and died -> release ownership.
+  if( viewer.get() == destroyedViewer )
+    viewer.release(); // viewer finished and died -> release ownership.
 }
 
 QString ExternalAudioPlayer::startViewer()
 {
   Q_ASSERT( !exitingViewer && viewer );
-  connect( viewer.data(), SIGNAL( destroyed( QObject * ) ),
+  connect( viewer.get(), SIGNAL( destroyed( QObject * ) ),
            this, SLOT( onViewerDestroyed( QObject * ) ) );
   try
   {

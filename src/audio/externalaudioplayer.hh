@@ -4,7 +4,7 @@
 #ifndef EXTERNALAUDIOPLAYER_HH_INCLUDED
 #define EXTERNALAUDIOPLAYER_HH_INCLUDED
 
-#include <QScopedPointer>
+#include <memory>
 #include <QString>
 #include "audioplayerinterface.hh"
 
@@ -33,12 +33,12 @@ private:
                                   ///< the current viewer (if any) is not started yet
                                   ///< and waits for exitingViewer to be destroyed first.
 
-  struct ScopedPointerDeleteLater
+  struct DeleteLater
   {
-    static void cleanup( QObject * p ) { if( p ) p->deleteLater(); }
+    void operator()( QObject * p ) const { if( p ) p->deleteLater(); }
   };
   // deleteLater() is safer because viewer actively participates in the QEventLoop.
-  QScopedPointer< ExternalViewer, ScopedPointerDeleteLater > viewer;
+  std::unique_ptr< ExternalViewer, DeleteLater > viewer;
 };
 
 #endif // EXTERNALAUDIOPLAYER_HH_INCLUDED

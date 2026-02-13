@@ -1,7 +1,7 @@
 /* This file is (c) 2018 Igor Kushnir <igorkuo@gmail.com>
  * Part of GoldenDict. Licensed under GPLv3 or later, see the LICENSE file */
 
-#include <QScopedPointer>
+#include <memory>
 #include <QObject>
 #include "audioplayerfactory.hh"
 #include "ffmpegaudioplayer.hh"
@@ -73,9 +73,9 @@ void AudioPlayerFactory::reset()
 #endif
   }
 
-  QScopedPointer< ExternalAudioPlayer > externalPlayer( new ExternalAudioPlayer );
+  std::unique_ptr< ExternalAudioPlayer > externalPlayer( new ExternalAudioPlayer );
   setAudioPlaybackProgram( *externalPlayer );
-  playerPtr.reset( externalPlayer.take() );
+  playerPtr.reset( externalPlayer.release() );
 }
 
 void AudioPlayerFactory::setAudioPlaybackProgram( ExternalAudioPlayer & externalPlayer )

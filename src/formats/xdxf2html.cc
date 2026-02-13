@@ -132,8 +132,13 @@ string convert( string const & in, DICT_TYPE type, map < string, string > const 
       in_data = "<div class=\"sdct_x\">";
   in_data += inConverted + "</div>";
 
-  if( !dd.setContent( QByteArray( in_data.c_str() ), false, &errorStr, &errorLine, &errorColumn  ) )
+  QDomDocument::ParseResult parseResult = dd.setContent( QByteArray( in_data.c_str() ),
+                                                       QDomDocument::ParseOption::Default );
+  if( !parseResult )
   {
+    errorStr = parseResult.errorMessage;
+    errorLine = static_cast< int >( parseResult.errorLine );
+    errorColumn = static_cast< int >( parseResult.errorColumn );
     qWarning( "Xdxf2html error, xml parse failed: %s at %d,%d\n", errorStr.toLocal8Bit().constData(),  errorLine,  errorColumn );
     gdWarning( "The input was: %s\n", in.c_str() );
 

@@ -106,7 +106,12 @@ void ArticleWebView::mousePressEvent( QMouseEvent * event )
   if ( selectionBySingleClick && ( event->buttons() & Qt::LeftButton ) )
   {
     findText( "" ); // clear the selection first, if any
-    QMouseEvent ev( QEvent::MouseButtonDblClick, event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers() );
+    QMouseEvent ev( QEvent::MouseButtonDblClick,
+            event->position(),
+            event->globalPosition(),
+            Qt::LeftButton,
+            Qt::LeftButton,
+            event->modifiers() );
     QApplication::sendEvent( this, &ev );
   }
 }
@@ -128,8 +133,8 @@ void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
   int scrollBarHeight = 0;
 
   // emit the signal only if we are not double-clicking on scrollbars
-  if ( ( event->x() < width() - scrollBarWidth ) &&
-       ( event->y() < height() - scrollBarHeight ) )
+    if ( ( event->position().x() < width() - scrollBarWidth ) &&
+      ( event->position().y() < height() - scrollBarHeight ) )
   {
     emit doubleClicked( event->pos() );
   }
