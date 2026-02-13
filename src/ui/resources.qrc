@@ -112,5 +112,10 @@
         <file>icons/error.svg</file>
         <file>icons/warning.svg</file>
         <file>icons/downarrow.svg</file>
+        <file>icons/playsound.svg</file>
+        <file>icons/playsound_color.svg</file>
+        <file>icons/internet.svg</file>
+        <file>icons/network.svg</file>
+        <file>icons/programs.svg</file>
     </qresource>
 </RCC>
