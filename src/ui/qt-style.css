@@ -206,8 +206,8 @@ MainWindow #historyPane #historyList::item:selected, MainWindow #favoritesPane #
 
 /* Dock Widgets - Transparent Mac-style */
 QDockWidget {
-  titlebar-close-icon: url(:/icons/close.png);
-  titlebar-normal-icon: url(:/icons/blank.png);
+  titlebar-close-icon: url(:/icons/close.svg);
+  titlebar-normal-icon: url(:/icons/blank.svg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   font-size: 13px;
@@ -349,7 +349,7 @@ QToolBar::separator {
 }
 
 #navToolbar GroupComboBox::down-arrow {
-   image: url(:/icons/1downarrow.png);
+   image: url(:/icons/1downarrow.svg);
    width: 16px;
    height: 16px;
 }
@@ -449,7 +449,7 @@ ScanPopup GroupComboBox::drop-down {
 }
 
 ScanPopup GroupComboBox::down-arrow {
-   image: url(:/icons/1downarrow.png);
+   image: url(:/icons/1downarrow.svg);
    width: 16px;
    height: 16px;
 }
@@ -490,7 +490,7 @@ ScanPopup GroupComboBox::down-arrow:on {
 }
 
 #searchPaneTitleBar GroupComboBox::down-arrow {
-  image: url(:/icons/1downarrow.png);
+  image: url(:/icons/1downarrow.svg);
   width: 14px;
   height: 14px;
 }

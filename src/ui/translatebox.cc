@@ -118,14 +118,19 @@ TranslateBox::TranslateBox(QWidget *parent) : QWidget(parent),
   layout->setContentsMargins( 0, 0, 0, 0 );
   layout->addWidget(translate_line);
 
-  QPixmap image(":/icons/system-search.svg");
-  translate_line->setButtonPixmap(ExtLineEdit::Left, image.scaled(18, 18, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  QIcon searchIcon(":/icons/system-search.svg");
+  qreal dpr = qApp->devicePixelRatio();
+  QPixmap searchPixmap = searchIcon.pixmap(QSize(16 * dpr, 16 * dpr));
+  searchPixmap.setDevicePixelRatio(dpr);
+  translate_line->setButtonPixmap(ExtLineEdit::Left, searchPixmap);
   // translate_line->setButtonToolTip(ExtLineEdit::Left, tr("Options"));
   translate_line->setButtonVisible(ExtLineEdit::Left, true);
   translate_line->setButtonFocusPolicy(ExtLineEdit::Left, Qt::ClickFocus);
 
-  QPixmap right(":/icons/downarrow.svg");
-  translate_line->setButtonPixmap(ExtLineEdit::Right, right);
+  QIcon downIcon(":/icons/downarrow.svg");
+  QPixmap downPixmap = downIcon.pixmap(QSize(16 * dpr, 16 * dpr));
+  downPixmap.setDevicePixelRatio(dpr);
+  translate_line->setButtonPixmap(ExtLineEdit::Right, downPixmap);
   translate_line->setButtonToolTip(ExtLineEdit::Right, tr("Drop-down"));
   translate_line->setButtonVisible(ExtLineEdit::Right, true);
   translate_line->setButtonFocusPolicy(ExtLineEdit::Right, Qt::NoFocus);

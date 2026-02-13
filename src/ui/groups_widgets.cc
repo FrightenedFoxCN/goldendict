@@ -1023,13 +1023,18 @@ QuickFilterLine::QuickFilterLine( QWidget * parent ): ExtLineEdit( parent ), m_f
   connect( &m_focusAction, SIGNAL( triggered() ),
            this, SLOT( focusFilterLine() ) );
 
-  QPixmap image(":/icons/system-search.svg");
-  setButtonPixmap(ExtLineEdit::Left, image.scaled(18, 18, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  QIcon searchIcon(":/icons/system-search.svg");
+  qreal dpr = qApp->devicePixelRatio();
+  QPixmap searchPixmap = searchIcon.pixmap(QSize(16 * dpr, 16 * dpr));
+  searchPixmap.setDevicePixelRatio(dpr);
+  setButtonPixmap(ExtLineEdit::Left, searchPixmap);
   setButtonToolTip(ExtLineEdit::Left, tr("Quick Search"));
   setButtonVisible(ExtLineEdit::Left, true);
 
-  QPixmap right(":/icons/clear.svg");
-  setButtonPixmap(ExtLineEdit::Right, right);
+  QIcon clearIcon(":/icons/clear.svg");
+  QPixmap clearPixmap = clearIcon.pixmap(QSize(16 * dpr, 16 * dpr));
+  clearPixmap.setDevicePixelRatio(dpr);
+  setButtonPixmap(ExtLineEdit::Right, clearPixmap);
   setButtonToolTip(ExtLineEdit::Right, tr("Clear Search"));
   setButtonVisible(ExtLineEdit::Right, true);
   setButtonAutoHide(ExtLineEdit::Right, true);

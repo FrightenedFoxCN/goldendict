@@ -119,5 +119,13 @@
         <file>icons/programs.svg</file>
         <file>icons/collapse_opt.svg</file>
         <file>icons/blank.svg</file>
+        <file>icons/expand_article.svg</file>
+        <file>icons/expand_article_hovered.svg</file>
+        <file>icons/collapse_article.svg</file>
+        <file>icons/collapse_article_hovered.svg</file>
+        <file>icons/arrow.svg</file>
+        <file>icons/1downarrow.svg</file>
+        <file>icons/close.svg</file>
+        <file>icons/video.svg</file>
     </qresource>
 </RCC>

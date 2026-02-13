@@ -109,19 +109,19 @@ a:hover {
 }
 
 .gdexpandicon {
-    background-image: url('qrcx://localhost/icons/expand_article.png');
+    background-image: url('qrcx://localhost/icons/expand_article.svg');
 }
 
 .gdexpandicon:hover {
-    background-image: url('qrcx://localhost/icons/expand_article_hovered.png');
+    background-image: url('qrcx://localhost/icons/expand_article_hovered.svg');
 }
 
 .gdcollapseicon {
-    background-image: url('qrcx://localhost/icons/collapse_article.png');
+    background-image: url('qrcx://localhost/icons/collapse_article.svg');
 }
 
 .gdcollapseicon:hover {
-    background-image: url('qrcx://localhost/icons/collapse_article_hovered.png');
+    background-image: url('qrcx://localhost/icons/collapse_article_hovered.svg');
 }
 
 .gdarticleseparator {

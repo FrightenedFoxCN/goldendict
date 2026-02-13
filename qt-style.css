@@ -54,7 +54,7 @@ ScanPopup #translateLine[noResults="true"]
 }
 
 #navToolbar GroupComboBox::down-arrow {
-   image: url(:/icons/1downarrow.png);
+   image: url(:/icons/1downarrow.svg);
 }
 
 #navToolbar GroupComboBox::down-arrow:on { /* shift the arrow when popup is open */
@@ -125,7 +125,7 @@ ScanPopup GroupComboBox::drop-down {
 }
 
 ScanPopup GroupComboBox::down-arrow {
-   image: url(:/icons/1downarrow.png);
+   image: url(:/icons/1downarrow.svg);
 }
 
 ScanPopup GroupComboBox::down-arrow:on { /* shift the arrow when popup is open */

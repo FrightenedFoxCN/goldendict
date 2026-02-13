@@ -698,7 +698,7 @@ void ArticleRequest::bodyFinished()
           + "/dicticon.png\"></span><span class=\"gdfromprefix\">"  +
           Html::escape( tr( "From " ).toUtf8().data() ) + "</span><span class=\"gddicttitle\">" +
           Html::escape( activeDict->getName().c_str() ) + "</span>"
-          + "<span class=\"collapse_expand_area\"><img src=\"qrcx://localhost/icons/blank.png\" class=\""
+          + "<span class=\"collapse_expand_area\"><img src=\"qrcx://localhost/icons/blank.svg\" class=\""
           + ( collapse ? "gdexpandicon" : "gdcollapseicon" )
           + "\" id=\"expandicon-" + Html::escape( dictId ) + "\""
           + ( collapse ? "" : string( " title=\"" ) + tr( "Collapse article" ).toUtf8().data() + "\"" )

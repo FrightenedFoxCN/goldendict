@@ -108,7 +108,7 @@ pre
 .gderrordesc
 {
   font-style: italic;
-  background: rgba(252, 232, 230, 0.8) url("qrcx://localhost/icons/warning.png") 12px center no-repeat !important;
+  background: rgba(252, 232, 230, 0.8) url("qrcx://localhost/icons/warning.svg") 12px center no-repeat !important;
   padding: 12px 12px 12px 40px !important;
   margin: 1em;
   border-radius: 8px;
@@ -537,7 +537,7 @@ div.xdxf
 .dsl_video .img
 {
   display: inline-block;
-  background: url('qrcx://localhost/icons/video.png');
+  background: url('qrcx://localhost/icons/video.svg');
   background-repeat: no-repeat;
   /* Ugly hack since "vertical-align: middle;" looks _terrible_ in Qt4's webkit: */
   vertical-align: -30%;
@@ -2940,7 +2940,7 @@ in bg url to hide it from iemac */
     width:16px;
     height:16px;
     vertical-align: text-bottom;
-    background-image:url('qrcx://localhost/icons/arrow.png');
+    background-image:url('qrcx://localhost/icons/arrow.svg');
 }
 
 .gdcollapseicon {
@@ -2948,7 +2948,7 @@ in bg url to hide it from iemac */
     width:16px;
     height:16px;
     vertical-align: text-bottom;
-    background-image:url('qrcx://localhost/icons/downarrow.png');
+    background-image:url('qrcx://localhost/icons/downarrow.svg');
 }
 
 /********** Slob dictionaries ***********/
@@ -3020,7 +3020,7 @@ in bg url to hide it from iemac */
 	}
 
 	.gderrordesc {
-		background: rgba(217, 48, 37, 0.2) url("qrcx://localhost/icons/warning.png") 12px center no-repeat !important;
+		background: rgba(217, 48, 37, 0.2) url("qrcx://localhost/icons/warning.svg") 12px center no-repeat !important;
 		border-left: 3px solid rgba(217, 48, 37, 0.6);
 		color: #f28b82;
 	}

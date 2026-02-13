@@ -94,8 +94,11 @@ void ExtLineEdit::updateMargins()
     Side realLeft = (leftToRight ? Left : Right);
     Side realRight = (leftToRight ? Right : Left);
 
-    int leftMargin = iconButtons[realLeft]->pixmap().width() + 8;
-    int rightMargin = iconButtons[realRight]->pixmap().width() + 8;
+    // Handle high DPI displays - use logical size not physical pixels
+    QPixmap leftPix = iconButtons[realLeft]->pixmap();
+    QPixmap rightPix = iconButtons[realRight]->pixmap();
+    int leftMargin = (leftPix.width() / leftPix.devicePixelRatio()) + 8;
+    int rightMargin = (rightPix.width() / rightPix.devicePixelRatio()) + 8;
 
     setTextMargins(
             (iconEnabled[realLeft] ? leftMargin : 0), 1,
@@ -160,7 +163,9 @@ void IconButton::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
 
-    QRect pixmapRect = QRect(0, 0, m_pixmap.width(), m_pixmap.height());
+    // Handle high DPI displays properly
+    qreal dpr = m_pixmap.devicePixelRatio();
+    QRect pixmapRect = QRect(0, 0, m_pixmap.width() / dpr, m_pixmap.height() / dpr);
     pixmapRect.moveCenter(rect().center());
 
     if (m_autohide)
