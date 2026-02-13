@@ -81,7 +81,7 @@ if(APPLE)
 endif()
 
 # Create main executable
-add_executable(GoldenDict 
+add_executable(SilverDict 
     ${ALL_SOURCES} ${ALL_FORMS} ${ALL_RESOURCES}
 )
 
@@ -90,7 +90,7 @@ if(APPLE)
     set(MACOSX_ICON_FILE "${UI_DIR}/icons/macicon.icns")
     set_source_files_properties(${MACOSX_ICON_FILE} PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources)
-    target_sources(GoldenDict PRIVATE ${MACOSX_ICON_FILE})
+    target_sources(SilverDict PRIVATE ${MACOSX_ICON_FILE})
 endif()
 
 # Skip AUTOMOC for files with inline Q_OBJECT classes
@@ -103,11 +103,11 @@ set_source_files_properties(
 # Add source files asproperty for IDE organization
 foreach(hdr ${ALL_HEADERS})
     set_source_files_properties(${hdr} PROPERTIES HEADER_FILE_ONLY ON)
-    target_sources(GoldenDict PRIVATE ${hdr})
+    target_sources(SilverDict PRIVATE ${hdr})
 endforeach()
 
 # Configure MOC to handle subdirectories properly
-set_target_properties(GoldenDict PROPERTIES
+set_target_properties(SilverDict PROPERTIES
     AUTOUIC_SEARCH_PATHS "${UI_DIR}/forms"
     AUTOMOC_MACRO_NAMES  "Q_OBJECT"
     AUTOMOC_PATH_PREFIX  ON
@@ -115,13 +115,13 @@ set_target_properties(GoldenDict PROPERTIES
 
 # Set output properties
 if(APPLE)
-    set_target_properties(GoldenDict PROPERTIES
-        OUTPUT_NAME "Silverdict"
+    set_target_properties(SilverDict PROPERTIES
+        OUTPUT_NAME "SilverDict"
         MACOSX_BUNDLE ON
-        MACOSX_BUNDLE_BUNDLE_NAME "Silverdict"
-        MACOSX_BUNDLE_EXECUTABLE_NAME "Silverdict"
-        MACOSX_BUNDLE_INFO_STRING "Silverdict - Modern Dictionary Lookup Program"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "org.silverdict.Silverdict"
+        MACOSX_BUNDLE_BUNDLE_NAME "SilverDict"
+        MACOSX_BUNDLE_EXECUTABLE_NAME "SilverDict"
+        MACOSX_BUNDLE_INFO_STRING "SilverDict - Dictionary lookup program"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.goldendict.SilverDict"
         MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_ICON_FILE "macicon.icns"
@@ -129,11 +129,11 @@ if(APPLE)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 elseif(NOT WIN32)
-    set_target_properties(GoldenDict PROPERTIES OUTPUT_NAME "silverdict")
+    set_target_properties(SilverDict PROPERTIES OUTPUT_NAME "silverdict")
 endif()
 
 # Link Qt libraries
-target_link_libraries(GoldenDict PRIVATE
+target_link_libraries(SilverDict PRIVATE
     Qt6::Core Qt6::Gui Qt6::Xml Qt6::Network Qt6::Svg Qt6::Widgets
     Qt6::PrintSupport Qt6::Help Qt6::WebEngineWidgets Qt6::WebEngineCore
     Qt6::WebChannel Qt6::Core5Compat ZLIB::ZLIB BZip2::BZip2
@@ -142,75 +142,75 @@ target_link_libraries(GoldenDict PRIVATE
 )
 
 if(MAKE_QTMULTIMEDIA_PLAYER)
-    target_link_libraries(GoldenDict PRIVATE Qt6::Multimedia)
+    target_link_libraries(SilverDict PRIVATE Qt6::Multimedia)
 endif()
 
 if(MAKE_ZIM_SUPPORT)
     if(TARGET LibLZMA::LibLZMA)
-        target_link_libraries(GoldenDict PRIVATE LibLZMA::LibLZMA)
+        target_link_libraries(SilverDict PRIVATE LibLZMA::LibLZMA)
     endif()
 endif()
 
 if(MAKE_EXTRA_TIFF_HANDLER)
-    target_link_libraries(GoldenDict PRIVATE TIFF::TIFF)
+    target_link_libraries(SilverDict PRIVATE TIFF::TIFF)
 endif()
 
 # Platform-specific linking
 if(WIN32)
-    target_link_libraries(GoldenDict PRIVATE ${HUNSPELL_LIBRARIES} iconv
+    target_link_libraries(SilverDict PRIVATE ${HUNSPELL_LIBRARIES} iconv
         shell32 user32 sapi ole32 oleaut32 advapi32 comdlg32 wsock32 psapi dwmapi
         vorbisfile vorbis ogg
     )
     if(LZO2_LIBRARY)
-        target_link_libraries(GoldenDict PRIVATE ${LZO2_LIBRARY})
+        target_link_libraries(SilverDict PRIVATE ${LZO2_LIBRARY})
     endif()
     if(MAKE_FFMPEG_PLAYER)
-        target_link_libraries(GoldenDict PRIVATE ${AO_LIBRARY} ${SWRESAMPLE_LIBRARY}
+        target_link_libraries(SilverDict PRIVATE ${AO_LIBRARY} ${SWRESAMPLE_LIBRARY}
             ${AVUTIL_LIBRARY} ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY}
         )
     endif()
-    target_include_directories(GoldenDict PRIVATE ../third-party/windows/include)
-    target_link_directories(GoldenDict PRIVATE ../third-party/windows/lib)
+    target_include_directories(SilverDict PRIVATE ../third-party/windows/include)
+    target_link_directories(SilverDict PRIVATE ../third-party/windows/lib)
 
 elseif(UNIX AND NOT APPLE)
-    target_link_directories(GoldenDict PRIVATE ${HUNSPELL_LIBRARY_DIRS})
-    target_link_libraries(GoldenDict PRIVATE ${HUNSPELL_LIBRARIES} ${VORBIS_LIBRARIES})
+    target_link_directories(SilverDict PRIVATE ${HUNSPELL_LIBRARY_DIRS})
+    target_link_libraries(SilverDict PRIVATE ${HUNSPELL_LIBRARIES} ${VORBIS_LIBRARIES})
     if(MAKE_FFMPEG_PLAYER)
-        target_link_libraries(GoldenDict PRIVATE ${FFMPEG_LIBRARIES})
+        target_link_libraries(SilverDict PRIVATE ${FFMPEG_LIBRARIES})
     endif()
     if(NOT ARM)
-        target_link_libraries(GoldenDict PRIVATE ${X11_LIBRARIES})
+        target_link_libraries(SilverDict PRIVATE ${X11_LIBRARIES})
     else()
-        target_link_libraries(GoldenDict PRIVATE iconv)
+        target_link_libraries(SilverDict PRIVATE iconv)
     endif()
-    target_compile_definitions(GoldenDict PRIVATE PROGRAM_DATA_DIR="/usr/local/share/goldendict/")
+    target_compile_definitions(SilverDict PRIVATE PROGRAM_DATA_DIR="/usr/local/share/goldendict/")
 
 elseif(APPLE)
-    target_link_libraries(GoldenDict PRIVATE ${APPKIT} ${CARBON} ${ICONV})
+    target_link_libraries(SilverDict PRIVATE ${APPKIT} ${CARBON} ${ICONV})
     if(VORBIS_FOUND)
-        target_link_directories(GoldenDict PRIVATE ${VORBIS_LIBRARY_DIRS})
-        target_link_libraries(GoldenDict PRIVATE ${VORBIS_LIBRARIES})
+        target_link_directories(SilverDict PRIVATE ${VORBIS_LIBRARY_DIRS})
+        target_link_libraries(SilverDict PRIVATE ${VORBIS_LIBRARIES})
     endif()
     if(HUNSPELL_FOUND)
-        target_link_directories(GoldenDict PRIVATE ${HUNSPELL_LIBRARY_DIRS})
-        target_link_libraries(GoldenDict PRIVATE ${HUNSPELL_LIBRARIES})
+        target_link_directories(SilverDict PRIVATE ${HUNSPELL_LIBRARY_DIRS})
+        target_link_libraries(SilverDict PRIVATE ${HUNSPELL_LIBRARIES})
     endif()
     if(LZO2_FOUND)
-        target_link_directories(GoldenDict PRIVATE ${LZO2_LIBRARY_DIRS})
-        target_link_libraries(GoldenDict PRIVATE ${LZO2_LIBRARIES})
+        target_link_directories(SilverDict PRIVATE ${LZO2_LIBRARY_DIRS})
+        target_link_libraries(SilverDict PRIVATE ${LZO2_LIBRARIES})
     endif()
     if(MAKE_FFMPEG_PLAYER AND FFMPEG_FOUND)
-        target_link_directories(GoldenDict PRIVATE ${FFMPEG_LIBRARY_DIRS})
-        target_link_libraries(GoldenDict PRIVATE ${FFMPEG_LIBRARIES})
+        target_link_directories(SilverDict PRIVATE ${FFMPEG_LIBRARY_DIRS})
+        target_link_libraries(SilverDict PRIVATE ${FFMPEG_LIBRARIES})
     endif()
 endif()
 
 # Include directories - all subdirectories
-target_include_directories(GoldenDict PRIVATE
+target_include_directories(SilverDict PRIVATE
     ${CORE_DIR} ${DICTIONARY_DIR} ${FORMATS_DIR} ${UI_DIR} ${AUDIO_DIR}
     ${TEXT_DIR} ${NETWORK_DIR} ${UTIL_DIR} ${ABOUT_DIR} ${PLATFORM_DIR} ${QSA_DIR}
 )
 
 # Translations
 file(GLOB TRANSLATION_FILES ../resources/locale/*.ts)
-qt_add_translations(GoldenDict TS_FILES ${TRANSLATION_FILES})
+qt_add_translations(SilverDict TS_FILES ${TRANSLATION_FILES})

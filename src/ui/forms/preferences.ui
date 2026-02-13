@@ -47,13 +47,13 @@
        <string>&amp;Interface</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="2" column="1">
-        <widget class="QGroupBox" name="groupBox_2">
+       <item row="2" column="0" colspan="2">
+        <widget class="QGroupBox" name="startupGroup">
          <property name="title">
-          <string>Startup</string>
+          <string>Startup &amp; Window Behavior</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
+         <layout class="QGridLayout" name="gridLayout_startup">
+          <item row="0" column="0">
            <widget class="QCheckBox" name="cbAutostart">
             <property name="toolTip">
              <string>Automatically starts GoldenDict after operation system bootup.</string>
@@ -63,109 +63,85 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="8" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="addonStylesLabel">
-           <property name="text">
-            <string>Add-on style:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="StylesComboBox" name="addonStyles"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <widget class="QGroupBox" name="enableTrayIcon">
-         <property name="toolTip">
-          <string>When enabled, an icon appears in the system tray area which can be used
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="enableTrayIcon">
+            <property name="toolTip">
+             <string>When enabled, an icon appears in the system tray area which can be used
 to open main window and perform other tasks.</string>
-         </property>
-         <property name="title">
-          <string>Enable system tray icon</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QCheckBox" name="startToTray">
-            <property name="toolTip">
-             <string>With this on, the application starts directly to system tray without showing
+            </property>
+            <property name="title">
+             <string>Enable system tray icon</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QCheckBox" name="startToTray">
+               <property name="toolTip">
+                <string>With this on, the application starts directly to system tray without showing
 its main window.</string>
-            </property>
-            <property name="text">
-             <string>Start to system tray</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="closeToTray">
-            <property name="toolTip">
-             <string>With this on, an attempt to close main window would hide it instead of closing
+               </property>
+               <property name="text">
+                <string>Start to system tray</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="closeToTray">
+               <property name="toolTip">
+                <string>With this on, an attempt to close main window would hide it instead of closing
 the application.</string>
-            </property>
-            <property name="text">
-             <string>Close to system tray</string>
-            </property>
+               </property>
+               <property name="text">
+                <string>Close to system tray</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="doubleClickTranslates">
-         <property name="text">
-          <string>Double-click translates the word clicked</string>
+       <item row="3" column="0" colspan="2">
+        <widget class="QGroupBox" name="interactionGroup">
+         <property name="title">
+          <string>Interaction</string>
          </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QCheckBox" name="escKeyHidesMainWindow">
-         <property name="toolTip">
-          <string>Normally, pressing ESC key moves focus to the translation line.
+         <layout class="QGridLayout" name="gridLayout_interaction">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="doubleClickTranslates">
+            <property name="text">
+             <string>Double-click translates the word clicked</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="selectBySingleClick">
+            <property name="toolTip">
+             <string>Turn this option on if you want to select words by single mouse click</string>
+            </property>
+            <property name="text">
+             <string>Select word by single click</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="escKeyHidesMainWindow">
+            <property name="toolTip">
+             <string>Normally, pressing ESC key moves focus to the translation line.
 With this on however, it will hide the main window.</string>
-         </property>
-         <property name="text">
-          <string>ESC key hides main window</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="selectBySingleClick">
-         <property name="toolTip">
-          <string>Turn this option on if you want to select words by single mouse click</string>
-         </property>
-         <property name="text">
-          <string>Select word by single click</string>
-         </property>
+            </property>
+            <property name="text">
+             <string>ESC key hides main window</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="0" column="0" colspan="2">
@@ -231,383 +207,8 @@ be the last ones.</string>
          </layout>
         </widget>
        </item>
-       <item row="6" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Interface language:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="interfaceLanguage"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Display style:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="displayStyle"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_12">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_16">
-           <property name="text">
-            <string>Help language</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="helpLanguage"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-          <item row="9" column="0" colspan="2">
-           <widget class="QGroupBox" name="themeOverridesGroup">
-            <property name="title">
-             <string>Theme overrides</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_themeOverrides">
-             <item>
-              <widget class="QLabel" name="themeOverridesHint">
-               <property name="text">
-            <string>Leave fields empty (or size set to Default) to keep the selected theme defaults.</string>
-               </property>
-               <property name="wordWrap">
-            <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="articleThemeGroup">
-               <property name="title">
-            <string>Article</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_articleTheme">
-            <item row="0" column="0">
-             <widget class="QLabel" name="articleFontFamilyLabel">
-              <property name="text">
-               <string>Font family:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="articleFontFamily">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="articleFontPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QPushButton" name="articleFontClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="articleFontSizeLabel">
-              <property name="text">
-               <string>Font size:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="articleFontSize">
-              <property name="minimum">
-               <number>0</number>
-              </property>
-              <property name="maximum">
-               <number>72</number>
-              </property>
-              <property name="specialValueText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2" colspan="2">
-             <spacer name="horizontalSpacer_articleFontSize">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="articleTextColorLabel">
-              <property name="text">
-               <string>Text color:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="articleTextColor">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QPushButton" name="articleTextColorPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QPushButton" name="articleTextColorClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="articleBackgroundColorLabel">
-              <property name="text">
-               <string>Background color:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="articleBackgroundColor">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QPushButton" name="articleBackgroundColorPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QPushButton" name="articleBackgroundColorClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="articleLinkColorLabel">
-              <property name="text">
-               <string>Link color:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLineEdit" name="articleLinkColor">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="QPushButton" name="articleLinkColorPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
-             <widget class="QPushButton" name="articleLinkColorClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="uiThemeGroup">
-               <property name="title">
-            <string>Interface</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_uiTheme">
-            <item row="0" column="0">
-             <widget class="QLabel" name="uiFontFamilyLabel">
-              <property name="text">
-               <string>Font family:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="uiFontFamily">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="uiFontPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QPushButton" name="uiFontClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="uiFontSizeLabel">
-              <property name="text">
-               <string>Font size:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="uiFontSize">
-              <property name="minimum">
-               <number>0</number>
-              </property>
-              <property name="maximum">
-               <number>72</number>
-              </property>
-              <property name="specialValueText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2" colspan="2">
-             <spacer name="horizontalSpacer_uiFontSize">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="uiTextColorLabel">
-              <property name="text">
-               <string>Text color:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="uiTextColor">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QPushButton" name="uiTextColorPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QPushButton" name="uiTextColorClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="uiBackgroundColorLabel">
-              <property name="text">
-               <string>Background color:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="uiBackgroundColor">
-              <property name="placeholderText">
-               <string>Default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QPushButton" name="uiBackgroundColorPick">
-              <property name="text">
-               <string>Pick...</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QPushButton" name="uiBackgroundColorClear">
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-       <item row="10" column="0" colspan="2">
-        <spacer name="verticalSpacer">
+       <item row="5" column="0" colspan="2">
+        <spacer name="verticalSpacer_interface">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -619,7 +220,7 @@ be the last ones.</string>
          </property>
         </spacer>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
           <widget class="QLabel" name="maxDictsInContextMenuLabel">
@@ -668,12 +269,468 @@ be the last ones.</string>
          </item>
         </layout>
        </item>
+       <item row="8" column="0" colspan="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_display">
+      <attribute name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/icons/style.svg</normaloff>:/icons/style.svg</iconset>
+      </attribute>
+      <attribute name="title">
+       <string>&amp;Display</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_display">
+       <item row="0" column="0" colspan="2">
+        <spacer name="verticalSpacer_display_top">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_languages">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Interface language:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="interfaceLanguage"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Help language:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="helpLanguage"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_displaystyle">
+         <item>
+          <widget class="QLabel" name="label_displayStyle">
+           <property name="text">
+            <string>Display style:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="displayStyle"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_displayStyle">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_addonstyle">
+         <item>
+          <widget class="QLabel" name="addonStylesLabel">
+           <property name="text">
+            <string>Add-on style:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="StylesComboBox" name="addonStyles"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QGroupBox" name="themeOverridesGroup">
+         <property name="title">
+          <string>Theme overrides</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_themeOverrides">
+          <item>
+           <widget class="QLabel" name="themeOverridesHint">
+            <property name="text">
+             <string>Leave fields empty (or size set to Default) to keep the selected theme defaults.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="articleThemeGroup">
+            <property name="title">
+             <string>Article</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_articleTheme">
+             <item row="0" column="0">
+              <widget class="QLabel" name="articleFontFamilyLabel">
+               <property name="text">
+                <string>Font family:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="articleFontFamily">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="articleFontPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="articleFontClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="articleFontSizeLabel">
+               <property name="text">
+                <string>Font size:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="articleFontSize">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>72</number>
+               </property>
+               <property name="specialValueText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2" colspan="2">
+              <spacer name="horizontalSpacer_articleFontSize">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="articleTextColorLabel">
+               <property name="text">
+                <string>Text color:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="articleTextColor">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QPushButton" name="articleTextColorPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QPushButton" name="articleTextColorClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="articleBackgroundColorLabel">
+               <property name="text">
+                <string>Background color:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="articleBackgroundColor">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QPushButton" name="articleBackgroundColorPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QPushButton" name="articleBackgroundColorClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="articleLinkColorLabel">
+               <property name="text">
+                <string>Link color:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="articleLinkColor">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="2">
+              <widget class="QPushButton" name="articleLinkColorPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="3">
+              <widget class="QPushButton" name="articleLinkColorClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="uiThemeGroup">
+            <property name="title">
+             <string>Interface</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_uiTheme">
+             <item row="0" column="0">
+              <widget class="QLabel" name="uiFontFamilyLabel">
+               <property name="text">
+                <string>Font family:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="uiFontFamily">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="uiFontPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="uiFontClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="uiFontSizeLabel">
+               <property name="text">
+                <string>Font size:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="uiFontSize">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>72</number>
+               </property>
+               <property name="specialValueText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2" colspan="2">
+              <spacer name="horizontalSpacer_uiFontSize">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="uiTextColorLabel">
+               <property name="text">
+                <string>Text color:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="uiTextColor">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QPushButton" name="uiTextColorPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QPushButton" name="uiTextColorClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="uiBackgroundColorLabel">
+               <property name="text">
+                <string>Background color:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="uiBackgroundColor">
+               <property name="placeholderText">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QPushButton" name="uiBackgroundColorPick">
+               <property name="text">
+                <string>Pick...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QPushButton" name="uiBackgroundColorClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <spacer name="verticalSpacer_display_bottom">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="icon">
        <iconset resource="resources.qrc">
-        <normaloff>:/icons/wizard.svg</normaloff>:/icons/wizard.svg</iconset>
+        <normaloff>:/icons/system-search.svg</normaloff>:/icons/system-search.svg</iconset>
       </attribute>
       <attribute name="title">
        <string>&amp;Scan Popup</string>

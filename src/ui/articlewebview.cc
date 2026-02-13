@@ -4,6 +4,9 @@
 #include "articlewebview.hh"
 #include <QMouseEvent>
 #include <QApplication>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
+#include <cstdio>
 #include "articleinspector.hh"
 #include "qt4x5.hh"
 
@@ -27,6 +30,22 @@ bool ArticleWebPage::acceptNavigationRequest( QUrl const & url, NavigationType t
   return QWebEnginePage::acceptNavigationRequest( url, type, isMainFrame );
 }
 
+void ArticleWebPage::javaScriptConsoleMessage( JavaScriptConsoleMessageLevel level, QString const & message,
+                                              int lineNumber, QString const & sourceID )
+{
+  // Check if this is a double-click message from injected JavaScript
+  if ( message.startsWith( "SILVERDICT_DOUBLECLICK:" ) )
+  {
+    QString selectedText = message.mid( 23 ); // Remove "SILVERDICT_DOUBLECLICK:"
+    fprintf(stderr, "[JS_SIGNAL] Received double-click from JavaScript with text: '%s'\n", qPrintable(selectedText));
+    emit doubleClickDetected( selectedText );
+  }
+  else
+  {
+    fprintf(stderr, "[JS] %s\n", qPrintable(message));
+  }
+}
+
 ArticleWebView::ArticleWebView( QWidget *parent ):
   QWebEngineView( parent ),
   inspector( NULL ),
@@ -37,6 +56,36 @@ ArticleWebView::ArticleWebView( QWidget *parent ):
 {
   setPage( webPage );
   connect( webPage, SIGNAL( linkClicked( QUrl const & ) ), this, SIGNAL( linkClicked( QUrl const & ) ) );
+  connect( webPage, SIGNAL( doubleClickDetected( QString const & ) ), this, SLOT( onDoubleClickDetected( QString const & ) ) );
+  
+  // Inject optimized JavaScript for double-click detection with debouncing
+  QWebEngineScript script;
+  script.setName( "gd-doubleclick-detector" );
+  script.setSourceCode(
+    "(function() {"
+    "  if (typeof document !== 'undefined') {"
+    "    var lastClick = 0;"
+    "    document.addEventListener('dblclick', function(event) {"
+    "      var now = Date.now();"
+    "      if (now - lastClick < 100) return;"
+    "      lastClick = now;"
+    "      try {"
+    "        var sel = window.getSelection();"
+    "        if (sel && sel.toString) {"
+    "          var text = sel.toString().trim();"
+    "          if (text && text.length > 0 && text.length < 60) {"
+    "            console.log('SILVERDICT_DOUBLECLICK:' + text);"
+    "          }"
+    "        }"
+    "      } catch (e) {}"
+    "    }, false);"
+    "  }"
+    "})();"
+  );
+  script.setWorldId(QWebEngineScript::MainWorld);
+  script.setInjectionPoint(QWebEngineScript::DocumentReady);
+  script.setRunsOnSubFrames(true);
+  page()->scripts().insert(script);
 }
 
 ArticleWebView::~ArticleWebView()
@@ -139,6 +188,13 @@ void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
     emit doubleClicked( event->pos() );
   }
 
+}
+
+void ArticleWebView::onDoubleClickDetected( QString const & selectedText )
+{
+  // Emit the doubleClicked signal
+  // The articleview.cc doubleClicked slot will use ui.definition->selectedText() instead
+  emit doubleClicked( QPoint(0, 0) );
 }
 
 void ArticleWebView::focusInEvent( QFocusEvent * event )

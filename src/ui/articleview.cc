@@ -415,7 +415,26 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
 
     QWebEngineScript channelInit;
     channelInit.setName( "gd-webchannel-init" );
-    channelInit.setSourceCode( "new QWebChannel(qt.webChannelTransport, function(channel) { window.articleview = channel.objects.articleview; });" );
+    channelInit.setSourceCode(
+      "(function() {"
+      "  function initChannel() {"
+      "    if (typeof qt !== 'undefined' && qt.webChannelTransport) {"
+      "      try {"
+      "        new QWebChannel(qt.webChannelTransport, function(channel) {"
+      "          window.articleview = channel.objects.articleview;"
+      "        });"
+      "      } catch(e) {}"
+      "    } else if (typeof qt === 'undefined') {"
+      "      setTimeout(initChannel, 100);"
+      "    }"
+      "  }"
+      "  if (document.readyState === 'loading') {"
+      "    document.addEventListener('DOMContentLoaded', initChannel);"
+      "  } else {"
+      "    setTimeout(initChannel, 0);"
+      "  }"
+      "})();"
+    );
     channelInit.setInjectionPoint( QWebEngineScript::DocumentReady );
     channelInit.setRunsOnSubFrames( true );
     ui.definition->page()->scripts().insert( channelInit );
@@ -937,19 +956,48 @@ void ArticleView::setCurrentHistoryUserData( const QVariantMap & userData )
 
 void ArticleView::saveHistoryUserData()
 {
+  // OPTIMIZATION: This function is called frequently (on navigation) and must be
+  // non-blocking. All JavaScript evaluations are now async.
+  
   QVariantMap userData = currentHistoryUserData();
-
-  // Save current article, which can be empty
-
-  userData[ "currentArticle" ] = getCurrentArticle();
-
-  // We also save window position. We restore it when the page is fully loaded,
-  // when any hidden frames are expanded.
-
-  userData[ "sx" ] = runJavaScriptSync( ui.definition->page(), "window.scrollX;" ).toDouble();
-  userData[ "sy" ] = runJavaScriptSync( ui.definition->page(), "window.scrollY;" ).toDouble();
-
+  const QString historyKey = currentHistoryKey();
+  
+  if ( historyKey.isEmpty() )
+    return;
+  
+  // Mark that we're collecting data for this key asynchronously
+  // Use previous value as fallback - it's good enough for history restoration
   setCurrentHistoryUserData( userData );
+  
+  QWebEnginePage * page = ui.definition->page();
+  if ( !page )
+    return;
+  
+  // Retrieve ALL JS data in a single async call to minimize overhead
+  // This is much faster than multiple separate calls
+  page->runJavaScript(
+    "[{"
+    "  article: (typeof(gdCurrentArticle) !== 'undefined' && gdCurrentArticle !== undefined) ? gdCurrentArticle : null,"
+    "  sx: window.scrollX,"
+    "  sy: window.scrollY"
+    "}][0];",
+    [this, historyKey]( const QVariant & result ) {
+      if ( result.typeId() != QMetaType::QVariantMap )
+        return;
+      
+      QVariantMap data = result.toMap();
+      QVariantMap userData = historyUserDataByUrl.value( historyKey );
+      
+      if ( data.contains( "article" ) )
+        userData[ "currentArticle" ] = data[ "article" ];
+      if ( data.contains( "sx" ) )
+        userData[ "sx" ] = data[ "sx" ].toDouble();
+      if ( data.contains( "sy" ) )
+        userData[ "sy" ] = data[ "sy" ].toDouble();
+      
+      historyUserDataByUrl.insert( historyKey, userData );
+    }
+  );
 }
 
 void ArticleView::load( QUrl const & url )
@@ -1255,16 +1303,27 @@ void ArticleView::linkClicked( QUrl const & url_ )
 
     tryMangleWebsiteClickedUrl( url, contexts );
 
-    const QString currentArticle = getCurrentArticle();
-    if ( openInNewTab )
-    {
-      // Mid button or Control/Shift is currently pressed - open the link in new tab
-      emit openLinkInNewTab( url, ui.definition->url(), currentArticle, contexts );
-    }
-    else
-    {
-      openLink( url, ui.definition->url(), currentArticle, contexts );
-    }
+    // OPTIMIZATION: Fetch current article asynchronously instead of blocking
+    QWebEnginePage * page = ui.definition->page();
+    if ( !page )
+      return;
+    
+    page->runJavaScript(
+      "(typeof(gdCurrentArticle) !== 'undefined' && gdCurrentArticle !== undefined) ? gdCurrentArticle : null;",
+      [this, url, contexts, openInNewTab]( const QVariant & articleVar ) {
+        QString currentArticle = articleVar.toString();
+        
+        if ( openInNewTab )
+        {
+          // Mid button or Control/Shift is currently pressed - open the link in new tab
+          emit openLinkInNewTab( url, ui.definition->url(), currentArticle, contexts );
+        }
+        else
+        {
+          openLink( url, ui.definition->url(), currentArticle, contexts );
+        }
+      }
+    );
   } );
 }
 
@@ -1790,9 +1849,7 @@ void ArticleView::reload()
 {
   QVariantMap userData = currentHistoryUserData();
 
-  // Save current article, which can be empty
-  userData[ "currentArticle" ] = getCurrentArticle();
-
+  // OPTIMIZATION: Save current article asynchronously to avoid blocking on reload
   // Remove saved window position. Reloading occurs in response to changes that
   // may affect content height, so restoring the current window position can cause
   // uncontrolled jumps. Scrolling to the current article (i.e. jumping to the top
@@ -1801,6 +1858,22 @@ void ArticleView::reload()
   userData[ "sy" ].clear();
 
   setCurrentHistoryUserData( userData );
+
+  // Asynchronously fetch and save current article
+  QWebEnginePage * page = ui.definition->page();
+  if ( page ) {
+    const QString historyKey = currentHistoryKey();
+    page->runJavaScript(
+      "(typeof(gdCurrentArticle) !== 'undefined' && gdCurrentArticle !== undefined) ? gdCurrentArticle : null;",
+      [this, historyKey]( const QVariant & articleVar ) {
+        if ( !historyKey.isEmpty() ) {
+          QVariantMap userData = historyUserDataByUrl.value( historyKey );
+          userData[ "currentArticle" ] = articleVar.toString();
+          historyUserDataByUrl.insert( historyKey, userData );
+        }
+      }
+    );
+  }
 
   ui.definition->reload();
 }
@@ -2378,106 +2451,123 @@ void ArticleView::onJsActiveArticleChanged(QString const & id)
 
 void ArticleView::doubleClicked( QPoint pos )
 {
-  QUrl imageUrl;
+  // OPTIMIZATION: Check for image click and get current article asynchronously
+  // This avoids blocking the UI waiting for JavaScript results
   const QString script =
-    QString( "var el=document.elementFromPoint(%1,%2);"
-             "if(el && el.tagName && el.tagName.toLowerCase()==='img'){el.src;}else{'';}" )
+    QString( "var el=document.elementFromPoint(%1,%2);var url='';"
+             "if(el && el.tagName && el.tagName.toLowerCase()==='img'){url=el.src;}"
+             "[{ imageUrl: url, article: (typeof(gdCurrentArticle) !== 'undefined' ? gdCurrentArticle : null) }][0];" )
       .arg( pos.x() ).arg( pos.y() );
-  imageUrl = QUrl::fromUserInput( runJavaScriptSync( ui.definition->page(), script ).toString() );
-
-  if( imageUrl.isValid() && !imageUrl.isEmpty() )
-  {
-    // Double click on image; download it and transfer to external program
-
-    // Clear any pending ones
-    resourceDownloadRequests.clear();
-
-    resourceDownloadUrl = imageUrl;
-    sptr< Dictionary::DataRequest > req;
-
-    if ( imageUrl.scheme() == "http" || imageUrl.scheme() == "https" || imageUrl.scheme() == "ftp" )
-    {
-      // Web resource
-      req = new Dictionary::WebMultimediaDownload( imageUrl, articleNetMgr );
-    }
-    else
-    if ( imageUrl.scheme() == "bres" || imageUrl.scheme() == "gdpicture" )
-    {
-      // Local resource
-      QString contentType;
-      req = articleNetMgr.getResource( imageUrl, contentType );
-    }
-    else
-    {
-      // Unsupported scheme
-      gdWarning( "Unsupported url scheme \"%s\" to download image\n", imageUrl.scheme().toUtf8().data() );
-      return;
-    }
-
-    if ( !req.get() )
-    {
-      // Request failed, fail
-      gdWarning( "Can't create request to download image \"%s\"\n", imageUrl.toString().toUtf8().data() );
-      return;
-    }
-
-    if ( req->isFinished() && req->dataSize() >= 0 )
-    {
-      // Have data ready, handle it
-      resourceDownloadRequests.push_back( req );
-      resourceDownloadFinished();
-      return;
-    }
-    else
-    if ( !req->isFinished() )
-    {
-      // Queue to be handled when done
-      resourceDownloadRequests.push_back( req );
-      connect( req.get(), SIGNAL( finished() ), this, SLOT( resourceDownloadFinished() ) );
-    }
-    if ( resourceDownloadRequests.empty() ) // No requests were queued
-    {
-      gdWarning( "The referenced resource \"%s\" doesn't exist\n", imageUrl.toString().toUtf8().data() ) ;
-      return;
-    }
-    else
-      resourceDownloadFinished(); // Check any requests finished already
-
+  
+  QWebEnginePage * page = ui.definition->page();
+  if ( !page )
     return;
-  }
+  
+  // Execute both checks asynchronously to avoid UI blocking
+  page->runJavaScript( script, [this]( const QVariant & result ) {
+    if ( result.typeId() != QMetaType::QVariantMap )
+      return;
+    
+    QVariantMap data = result.toMap();
+    QString imageUrlStr = data[ "imageUrl" ].toString();
+    QString currentArticle = data[ "article" ].toString();
+    
+    QUrl imageUrl = QUrl::fromUserInput( imageUrlStr );
 
-  // We might want to initiate translation of the selected word
-
-  if ( cfg.preferences.doubleClickTranslates )
-  {
-    QString selectedText = ui.definition->selectedText();
-
-    // Do some checks to make sure there's a sensible selection indeed
-    if ( Folding::applyWhitespaceOnly( gd::toWString( selectedText ) ).size() &&
-         selectedText.size() < 60 )
+    if( imageUrl.isValid() && !imageUrl.isEmpty() )
     {
-      // Initiate translation
-      Qt::KeyboardModifiers kmod = QApplication::keyboardModifiers();
-      if (kmod & (Qt::ControlModifier | Qt::ShiftModifier))
-      { // open in new tab
-        emit showDefinitionInNewTab( selectedText, getGroup( ui.definition->url() ),
-                                     getCurrentArticle(), Contexts() );
+      // Double click on image; download it and transfer to external program
+
+      // Clear any pending ones
+      resourceDownloadRequests.clear();
+
+      resourceDownloadUrl = imageUrl;
+      sptr< Dictionary::DataRequest > req;
+
+      if ( imageUrl.scheme() == "http" || imageUrl.scheme() == "https" || imageUrl.scheme() == "ftp" )
+      {
+        // Web resource
+        req = new Dictionary::WebMultimediaDownload( imageUrl, articleNetMgr );
+      }
+      else
+      if ( imageUrl.scheme() == "bres" || imageUrl.scheme() == "gdpicture" )
+      {
+        // Local resource
+        QString contentType;
+        req = articleNetMgr.getResource( imageUrl, contentType );
       }
       else
       {
-        QUrl const & ref = ui.definition->url();
+        // Unsupported scheme
+        gdWarning( "Unsupported url scheme \"%s\" to download image\n", imageUrl.scheme().toUtf8().data() );
+        return;
+      }
 
-        if( Qt4x5::Url::hasQueryItem( ref, "dictionaries" ) )
-        {
-          QStringList dictsList = Qt4x5::Url::queryItemValue(ref, "dictionaries" )
-                                              .split( ",", Qt4x5::skipEmptyParts() );
-          showDefinition( selectedText, dictsList, QRegularExpression(), getGroup( ref ), false );
+      if ( !req.get() )
+      {
+        // Request failed, fail
+        gdWarning( "Can't create request to download image \"%s\"\n", imageUrl.toString().toUtf8().data() );
+        return;
+      }
+
+      if ( req->isFinished() && req->dataSize() >= 0 )
+      {
+        // Have data ready, handle it
+        resourceDownloadRequests.push_back( req );
+        resourceDownloadFinished();
+        return;
+      }
+      else
+      if ( !req->isFinished() )
+      {
+        // Queue to be handled when done
+        resourceDownloadRequests.push_back( req );
+        connect( req.get(), SIGNAL( finished() ), this, SLOT( resourceDownloadFinished() ) );
+      }
+      if ( resourceDownloadRequests.empty() ) // No requests were queued
+      {
+        gdWarning( "The referenced resource \"%s\" doesn't exist\n", imageUrl.toString().toUtf8().data() ) ;
+        return;
+      }
+      else
+        resourceDownloadFinished(); // Check any requests finished already
+
+      return;
+    }
+
+    // We might want to initiate translation of the selected word
+
+    if ( cfg.preferences.doubleClickTranslates )
+    {
+      QString selectedText = ui.definition->selectedText();
+
+      // Fast path: check size first (cheaper than Folding)
+      if ( selectedText.size() > 0 && selectedText.size() < 60 &&
+           Folding::applyWhitespaceOnly( gd::toWString( selectedText ) ).size() )
+      {
+        // Initiate translation - use the asynchronously-fetched currentArticle
+        Qt::KeyboardModifiers kmod = QApplication::keyboardModifiers();
+        if (kmod & (Qt::ControlModifier | Qt::ShiftModifier))
+        { // open in new tab
+          emit showDefinitionInNewTab( selectedText, getGroup( ui.definition->url() ),
+                                       currentArticle, Contexts() );
         }
         else
-          showDefinition( selectedText, getGroup( ref ), getCurrentArticle() );
+        {
+          QUrl const & ref = ui.definition->url();
+
+          if( Qt4x5::Url::hasQueryItem( ref, "dictionaries" ) )
+          {
+            QStringList dictsList = Qt4x5::Url::queryItemValue(ref, "dictionaries" )
+                                                .split( ",", Qt4x5::skipEmptyParts() );
+            showDefinition( selectedText, dictsList, QRegularExpression(), getGroup( ref ), false );
+          }
+          else
+            showDefinition( selectedText, getGroup( ref ), currentArticle );
+        }
       }
     }
-  }
+  } );
 }
 
 

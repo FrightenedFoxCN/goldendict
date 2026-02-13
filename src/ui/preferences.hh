@@ -83,7 +83,25 @@ private slots:
 
   void helpRequested();
   void closeHelp();
+
+  // Theme override handlers
+  void on_articleFontPick_clicked();
+  void on_articleFontClear_clicked();
+  void on_articleTextColorPick_clicked();
+  void on_articleTextColorClear_clicked();
+  void on_articleBackgroundColorPick_clicked();
+  void on_articleBackgroundColorClear_clicked();
+  void on_articleLinkColorPick_clicked();
+  void on_articleLinkColorClear_clicked();
+  void on_uiFontPick_clicked();
+  void on_uiFontClear_clicked();
+  void on_uiTextColorPick_clicked();
+  void on_uiTextColorClear_clicked();
+  void on_uiBackgroundColorPick_clicked();
+  void on_uiBackgroundColorClear_clicked();
+
+private:
+  void setColorFieldColor( QLineEdit * field, const QColor & color );
 };
 
 #endif
-

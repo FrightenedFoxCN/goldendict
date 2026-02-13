@@ -27,9 +27,12 @@ public:
 
 signals:
   void linkClicked( QUrl const & url );
+  void doubleClickDetected( QString const & selectedText );
 
 protected:
   bool acceptNavigationRequest( QUrl const & url, NavigationType type, bool isMainFrame ) override;
+  void javaScriptConsoleMessage( JavaScriptConsoleMessageLevel level, QString const & message,
+                                 int lineNumber, QString const & sourceID ) override;
 };
 
 class ArticleWebView: public QWebEngineView
@@ -58,6 +61,9 @@ signals:
   /// word, which gets selected by the view in response to double-click.
   void doubleClicked( QPoint pos );
   void linkClicked( QUrl const & url );
+
+private slots:
+  void onDoubleClickDetected( QString const & selectedText );
 
 protected:
 

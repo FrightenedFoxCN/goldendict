@@ -30,6 +30,15 @@ GroupComboBox::GroupComboBox( QWidget * parent ): QComboBox( parent ),
   addAction( &selectPreviousAction );
 
   setMaxVisibleItems( 30 );
+
+  // Connect QComboBox's currentIndexChanged(int) signal to emit our custom currentIndexChanged(QString) signal
+  connect( this, QOverload<int>::of(&QComboBox::currentIndexChanged),
+           this, &GroupComboBox::onIndexChanged );
+}
+
+void GroupComboBox::onIndexChanged( int index )
+{
+  emit currentIndexChanged( itemText(index) );
 }
 
 void GroupComboBox::fill( Instances::Groups const & groups )

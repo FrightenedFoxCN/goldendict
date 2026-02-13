@@ -234,7 +234,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   beforeScanPopupSeparator->setVisible( cfg.preferences.enableScanPopup );
   navToolbar->widgetForAction( beforeScanPopupSeparator )->setObjectName( "beforeScanPopupSeparator" );
 
-  enableScanPopup = navToolbar->addAction( QIcon( ":/icons/wizard.svg" ), tr( "Scan Popup" ) );
+  enableScanPopup = navToolbar->addAction( QIcon( ":/icons/system-search.svg" ), tr( "Scan Popup" ) );
   enableScanPopup->setCheckable( true );
   enableScanPopup->setVisible( cfg.preferences.enableScanPopup );
   navToolbar->widgetForAction( enableScanPopup )->setObjectName( "scanPopupButton" );
@@ -2296,6 +2296,25 @@ void MainWindow::editPreferences()
          || cfg.preferences.addonStyle != p.addonStyle
          || themeOverridesChanged )
     {
+      applyQtStyleSheet( p.displayStyle, p.addonStyle );
+      articleMaker.setDisplayStyle( p.displayStyle, p.addonStyle );
+      needReload = true;
+    }
+
+    // Check if any theme overrides have changed and write them to CSS files
+    if ( cfg.preferences.articleFontFamily != p.articleFontFamily
+         || cfg.preferences.articleFontSize != p.articleFontSize
+         || cfg.preferences.articleTextColor != p.articleTextColor
+         || cfg.preferences.articleBackgroundColor != p.articleBackgroundColor
+         || cfg.preferences.articleLinkColor != p.articleLinkColor
+         || cfg.preferences.uiFontFamily != p.uiFontFamily
+         || cfg.preferences.uiFontSize != p.uiFontSize
+         || cfg.preferences.uiTextColor != p.uiTextColor
+         || cfg.preferences.uiBackgroundColor != p.uiBackgroundColor )
+    {
+      // Write theme overrides to CSS files
+      Config::writeUserThemeOverrides( p );
+      // Reload styles to apply theme changes
       applyQtStyleSheet( p.displayStyle, p.addonStyle );
       articleMaker.setDisplayStyle( p.displayStyle, p.addonStyle );
       needReload = true;

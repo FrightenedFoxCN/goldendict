@@ -978,33 +978,6 @@ Class load() THROW_SPEC( exError )
     if ( !preferences.namedItem( "addonStyle" ).isNull() )
       c.preferences.addonStyle = preferences.namedItem( "addonStyle" ).toElement().text();
 
-    if ( !preferences.namedItem( "articleFontFamily" ).isNull() )
-      c.preferences.articleFontFamily = preferences.namedItem( "articleFontFamily" ).toElement().text();
-
-    if ( !preferences.namedItem( "articleFontSize" ).isNull() )
-      c.preferences.articleFontSize = preferences.namedItem( "articleFontSize" ).toElement().text().toInt();
-
-    if ( !preferences.namedItem( "articleTextColor" ).isNull() )
-      c.preferences.articleTextColor = preferences.namedItem( "articleTextColor" ).toElement().text();
-
-    if ( !preferences.namedItem( "articleBackgroundColor" ).isNull() )
-      c.preferences.articleBackgroundColor = preferences.namedItem( "articleBackgroundColor" ).toElement().text();
-
-    if ( !preferences.namedItem( "articleLinkColor" ).isNull() )
-      c.preferences.articleLinkColor = preferences.namedItem( "articleLinkColor" ).toElement().text();
-
-    if ( !preferences.namedItem( "uiFontFamily" ).isNull() )
-      c.preferences.uiFontFamily = preferences.namedItem( "uiFontFamily" ).toElement().text();
-
-    if ( !preferences.namedItem( "uiFontSize" ).isNull() )
-      c.preferences.uiFontSize = preferences.namedItem( "uiFontSize" ).toElement().text().toInt();
-
-    if ( !preferences.namedItem( "uiTextColor" ).isNull() )
-      c.preferences.uiTextColor = preferences.namedItem( "uiTextColor" ).toElement().text();
-
-    if ( !preferences.namedItem( "uiBackgroundColor" ).isNull() )
-      c.preferences.uiBackgroundColor = preferences.namedItem( "uiBackgroundColor" ).toElement().text();
-
     if ( !preferences.namedItem( "historyStoreInterval" ).isNull() )
       c.preferences.historyStoreInterval = preferences.namedItem( "historyStoreInterval" ).toElement().text().toUInt() ;
 
@@ -1036,6 +1009,33 @@ Class load() THROW_SPEC( exError )
 
     if ( !preferences.namedItem( "synonymSearchEnabled" ).isNull() )
       c.preferences.synonymSearchEnabled = ( preferences.namedItem( "synonymSearchEnabled" ).toElement().text() == "1" );
+
+    if ( !preferences.namedItem( "articleFontFamily" ).isNull() )
+      c.preferences.articleFontFamily = preferences.namedItem( "articleFontFamily" ).toElement().text();
+
+    if ( !preferences.namedItem( "articleFontSize" ).isNull() )
+      c.preferences.articleFontSize = preferences.namedItem( "articleFontSize" ).toElement().text().toInt();
+
+    if ( !preferences.namedItem( "articleTextColor" ).isNull() )
+      c.preferences.articleTextColor = preferences.namedItem( "articleTextColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "articleBackgroundColor" ).isNull() )
+      c.preferences.articleBackgroundColor = preferences.namedItem( "articleBackgroundColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "articleLinkColor" ).isNull() )
+      c.preferences.articleLinkColor = preferences.namedItem( "articleLinkColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "uiFontFamily" ).isNull() )
+      c.preferences.uiFontFamily = preferences.namedItem( "uiFontFamily" ).toElement().text();
+
+    if ( !preferences.namedItem( "uiFontSize" ).isNull() )
+      c.preferences.uiFontSize = preferences.namedItem( "uiFontSize" ).toElement().text().toInt();
+
+    if ( !preferences.namedItem( "uiTextColor" ).isNull() )
+      c.preferences.uiTextColor = preferences.namedItem( "uiTextColor" ).toElement().text();
+
+    if ( !preferences.namedItem( "uiBackgroundColor" ).isNull() )
+      c.preferences.uiBackgroundColor = preferences.namedItem( "uiBackgroundColor" ).toElement().text();
 
     QDomNode fts = preferences.namedItem( "fullTextSearch" );
 
@@ -1729,42 +1729,6 @@ void save( Class const & c ) THROW_SPEC( exError )
     opt.appendChild( dd.createTextNode( c.preferences.displayStyle ) );
     preferences.appendChild( opt );
 
-    opt = dd.createElement( "articleFontFamily" );
-    opt.appendChild( dd.createTextNode( c.preferences.articleFontFamily ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "articleFontSize" );
-    opt.appendChild( dd.createTextNode( QString::number( c.preferences.articleFontSize ) ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "articleTextColor" );
-    opt.appendChild( dd.createTextNode( c.preferences.articleTextColor ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "articleBackgroundColor" );
-    opt.appendChild( dd.createTextNode( c.preferences.articleBackgroundColor ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "articleLinkColor" );
-    opt.appendChild( dd.createTextNode( c.preferences.articleLinkColor ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "uiFontFamily" );
-    opt.appendChild( dd.createTextNode( c.preferences.uiFontFamily ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "uiFontSize" );
-    opt.appendChild( dd.createTextNode( QString::number( c.preferences.uiFontSize ) ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "uiTextColor" );
-    opt.appendChild( dd.createTextNode( c.preferences.uiTextColor ) );
-    preferences.appendChild( opt );
-
-    opt = dd.createElement( "uiBackgroundColor" );
-    opt.appendChild( dd.createTextNode( c.preferences.uiBackgroundColor ) );
-    preferences.appendChild( opt );
-
     opt = dd.createElement( "newTabsOpenAfterCurrentOne" );
     opt.appendChild( dd.createTextNode( c.preferences.newTabsOpenAfterCurrentOne ? "1":"0" ) );
     preferences.appendChild( opt );
@@ -2052,6 +2016,42 @@ void save( Class const & c ) THROW_SPEC( exError )
 
     opt = dd.createElement( "synonymSearchEnabled" );
     opt.appendChild( dd.createTextNode( c.preferences.synonymSearchEnabled ? "1" : "0" ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleFontFamily" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleFontFamily ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleFontSize" );
+    opt.appendChild( dd.createTextNode( QString::number( c.preferences.articleFontSize ) ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleTextColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleTextColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleBackgroundColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleBackgroundColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "articleLinkColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.articleLinkColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiFontFamily" );
+    opt.appendChild( dd.createTextNode( c.preferences.uiFontFamily ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiFontSize" );
+    opt.appendChild( dd.createTextNode( QString::number( c.preferences.uiFontSize ) ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiTextColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.uiTextColor ) );
+    preferences.appendChild( opt );
+
+    opt = dd.createElement( "uiBackgroundColor" );
+    opt.appendChild( dd.createTextNode( c.preferences.uiBackgroundColor ) );
     preferences.appendChild( opt );
 
     {
@@ -2516,6 +2516,7 @@ bool writeUserThemeOverrides( Preferences const & preferences )
     return false;
   }
 }
+
 
 QString getProgramDataDir() noexcept
 {

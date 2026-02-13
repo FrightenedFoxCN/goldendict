@@ -33,6 +33,10 @@ public:
   /// Return actions which should be accessible from FTS and Headwords dialogs
   QList< QAction * > getExternActions();
 
+signals:
+  /// Signal emitted when the current group changes (with group name)
+  void currentIndexChanged( QString const & );
+
 protected:
 
   /// We handle shortcut events here.
@@ -47,6 +51,7 @@ private slots:
   void popupGroups();
   void selectNextGroup();
   void selectPreviousGroup();
+  void onIndexChanged( int index );
 
 private:
 

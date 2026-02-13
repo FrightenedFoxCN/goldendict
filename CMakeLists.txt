@@ -192,7 +192,7 @@ add_subdirectory(src)
 if(UNIX AND NOT APPLE)
     set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix" FORCE)
     
-    install(TARGETS GoldenDict
+    install(TARGETS SilverDict
         RUNTIME DESTINATION bin
     )
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/src/locale/"
@@ -215,14 +215,14 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
-    install(TARGETS GoldenDict
+    install(TARGETS SilverDict
         BUNDLE DESTINATION .
         RUNTIME DESTINATION bin
     )
 endif()
 
 if(WIN32)
-    install(TARGETS GoldenDict
+    install(TARGETS SilverDict
         RUNTIME DESTINATION bin
     )
 endif()
