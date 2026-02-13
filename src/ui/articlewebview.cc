@@ -4,6 +4,7 @@
 #include "articlewebview.hh"
 #include <QMouseEvent>
 #include <QApplication>
+#include <QDebug>
 #include "articleinspector.hh"
 #include "qt4x5.hh"
 
@@ -128,6 +129,7 @@ void ArticleWebView::mouseReleaseEvent( QMouseEvent * event )
 
 void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
 {
+  qDebug() << "ArticleWebView::mouseDoubleClickEvent CALLED";
   QWebEngineView::mouseDoubleClickEvent( event );
   int scrollBarWidth = 0;
   int scrollBarHeight = 0;
@@ -136,6 +138,7 @@ void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
     if ( ( event->position().x() < width() - scrollBarWidth ) &&
       ( event->position().y() < height() - scrollBarHeight ) )
   {
+    qDebug() << "ArticleWebView::mouseDoubleClickEvent emitting doubleClicked signal";
     emit doubleClicked( event->pos() );
   }
 

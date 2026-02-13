@@ -2448,14 +2448,19 @@ void ArticleView::doubleClicked( QPoint pos )
 
   // We might want to initiate translation of the selected word
 
+  qDebug() << "ArticleView::doubleClicked called at" << pos;
+  qDebug() << "doubleClickTranslates enabled:" << cfg.preferences.doubleClickTranslates;
+  
   if ( cfg.preferences.doubleClickTranslates )
   {
     QString selectedText = ui.definition->selectedText();
+    qDebug() << "Selected text:" << selectedText << "length:" << selectedText.size();
 
     // Do some checks to make sure there's a sensible selection indeed
     if ( Folding::applyWhitespaceOnly( gd::toWString( selectedText ) ).size() &&
          selectedText.size() < 60 )
     {
+      qDebug() << "Initiating translation for:" << selectedText;
       // Initiate translation
       Qt::KeyboardModifiers kmod = QApplication::keyboardModifiers();
       if (kmod & (Qt::ControlModifier | Qt::ShiftModifier))
