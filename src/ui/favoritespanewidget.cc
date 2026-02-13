@@ -637,8 +637,12 @@ void FavoritesModel::readData()
   int errorLine, errorColumn;
   dom.clear();
 
-  if ( !dom.setContent( &favoritesFile, false, &errorStr, &errorLine, &errorColumn  ) )
+  QDomDocument::ParseResult parseResult = dom.setContent( &favoritesFile, QDomDocument::ParseOption::Default );
+  if ( !parseResult )
   {
+    errorStr = parseResult.errorMessage;
+    errorLine = static_cast<int>( parseResult.errorLine );
+    errorColumn = static_cast<int>( parseResult.errorColumn );
     // Mailformed file
     gdWarning( "Favorites file parsing error: %s at %d,%d\n", errorStr.toUtf8().data(),  errorLine,  errorColumn );
 
@@ -1144,8 +1148,13 @@ bool FavoritesModel::setDataFromXml( QString const & dataStr )
   int errorLine, errorColumn;
   dom.clear();
 
-  if ( !dom.setContent( dataStr, false, &errorStr, &errorLine, &errorColumn  ) )
+  QDomDocument::ParseResult parseResult = dom.setContent( QAnyStringView( dataStr ),
+                                                         QDomDocument::ParseOption::Default );
+  if ( !parseResult )
   {
+    errorStr = parseResult.errorMessage;
+    errorLine = static_cast<int>( parseResult.errorLine );
+    errorColumn = static_cast<int>( parseResult.errorColumn );
     // Mailformed data
     gdWarning( "XML parsing error: %s at %d,%d\n", errorStr.toUtf8().data(),  errorLine,  errorColumn );
     dom.clear();

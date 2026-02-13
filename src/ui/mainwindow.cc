@@ -3031,7 +3031,6 @@ void MainWindow::toggleMainWindow( bool onlyShow )
     }
 #endif
 
-    qApp->setActiveWindow( this );
     activateWindow();
     raise();
     shown = true;
@@ -3050,7 +3049,6 @@ void MainWindow::toggleMainWindow( bool onlyShow )
   else
   if ( !isActiveWindow() )
   {
-    qApp->setActiveWindow( this );
 #ifdef Q_OS_WIN32
     if( !!( hotkeyWrapper ) && hotkeyWrapper->handleViaDLL() )
     {

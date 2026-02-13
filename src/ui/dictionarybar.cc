@@ -185,7 +185,7 @@ void DictionaryBar::showContextMenu( QContextMenuEvent * event, bool extended )
 
   connect( this, SIGNAL( closePopupMenu() ), &menu, SLOT( close() ) );
 
-  QAction * result = menu.exec( event->globalPos() );
+  QAction * result = menu.exec( event->globalPosition().toPoint() );
 
   if( result && result == infoAction )
   {

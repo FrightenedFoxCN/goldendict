@@ -100,9 +100,9 @@ HotKey::HotKey(): modifiers(), key1( 0 ), key2( 0 )
 uint32_t const keyMask = 0x01FFFFFF;
 
 HotKey::HotKey( QKeySequence const & seq ):
-  modifiers( seq[ 0 ] & ~keyMask ),
-  key1( seq[ 0 ] & keyMask ),
-  key2( seq[ 1 ] & keyMask )
+  modifiers( seq[ 0 ].toCombined() & ~keyMask ),
+  key1( seq[ 0 ].toCombined() & keyMask ),
+  key2( seq[ 1 ].toCombined() & keyMask )
 {
 }
 
@@ -554,8 +554,12 @@ Class load() THROW_SPEC( exError )
   if ( !loadFromTemplate )
   {
     // Load the config as usual
-    if ( !dd.setContent( &configFile, false, &errorStr, &errorLine, &errorColumn  ) )
+    QDomDocument::ParseResult parseResult = dd.setContent( &configFile, QDomDocument::ParseOption::Default );
+    if ( !parseResult )
     {
+      errorStr = parseResult.errorMessage;
+      errorLine = static_cast<int>( parseResult.errorLine );
+      errorColumn = static_cast<int>( parseResult.errorColumn );
       GD_DPRINTF( "Error: %s at %d,%d\n", errorStr.toLocal8Bit().constData(),  errorLine,  errorColumn );
         throw exMalformedConfigFile();
     }
@@ -569,8 +573,12 @@ Class load() THROW_SPEC( exError )
 
     QBuffer bufferedData( &data );
 
-    if ( !dd.setContent( &bufferedData, false, &errorStr, &errorLine, &errorColumn  ) )
+    QDomDocument::ParseResult parseResult = dd.setContent( &bufferedData, QDomDocument::ParseOption::Default );
+    if ( !parseResult )
     {
+      errorStr = parseResult.errorMessage;
+      errorLine = static_cast<int>( parseResult.errorLine );
+      errorColumn = static_cast<int>( parseResult.errorColumn );
       GD_DPRINTF( "Error: %s at %d,%d\n", errorStr.toLocal8Bit().constData(),  errorLine,  errorColumn );
         throw exMalformedConfigFile();
     }

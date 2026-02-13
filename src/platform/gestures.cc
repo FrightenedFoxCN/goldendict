@@ -95,12 +95,12 @@ QGestureRecognizer::Result GDPinchGestureRecognizer::recognize( QGesture * state
           QTouchEvent::TouchPoint p1 = ev->touchPoints().at( 0 );
           QTouchEvent::TouchPoint p2 = ev->touchPoints().at( 1 );
 
-          QPointF centerPoint = ( p1.screenPos() + p2.screenPos() ) / 2.0;
+          QPointF centerPoint = ( p1.globalPosition() + p2.globalPosition() ) / 2.0;
           gest->setHotSpot( centerPoint );
           if ( gest->isNewSequence )
           {
-            gest->startPosition[ 0 ] = p1.screenPos();
-            gest->startPosition[ 1 ] = p2.screenPos();
+            gest->startPosition[ 0 ] = p1.globalPosition();
+            gest->startPosition[ 1 ] = p2.globalPosition();
             gest->lastCenterPoint = centerPoint;
           }
           else
@@ -118,8 +118,8 @@ QGestureRecognizer::Result GDPinchGestureRecognizer::recognize( QGesture * state
           else
           {
             gest->lastScaleFactor = gest->scaleFactor;
-            QLineF line( p1.screenPos(), p2.screenPos() );
-            QLineF lastLine( p1.lastScreenPos(),  p2.lastScreenPos() );
+            QLineF line( p1.globalPosition(), p2.globalPosition() );
+            QLineF lastLine( p1.globalLastPosition(),  p2.globalLastPosition() );
             gest->scaleFactor = line.length() / lastLine.length();
           }
 
@@ -243,19 +243,19 @@ QGestureRecognizer::Result GDSwipeGestureRecognizer::recognize( QGesture * state
           QTouchEvent::TouchPoint p2 = ev->touchPoints().at( 1 );
 
           if (swipe->lastPositions[0].isNull()) {
-            swipe->lastPositions[ 0 ] = p1.startScreenPos().toPoint();
-            swipe->lastPositions[ 1 ] = p2.startScreenPos().toPoint();
+            swipe->lastPositions[ 0 ] = p1.globalPressPosition().toPoint();
+            swipe->lastPositions[ 1 ] = p2.globalPressPosition().toPoint();
           }
 
           if( !swipe->hasHotSpot() )
           {
-            swipe->setHotSpot( ( p1.startScreenPos() + p2.startScreenPos() ) / 2 );
+            swipe->setHotSpot( ( p1.globalPressPosition() + p2.globalPressPosition() ) / 2 );
           }
 
-          int dx1 = p1.screenPos().toPoint().x() - swipe->lastPositions[ 0 ].x();
-          int dx2 = p2.screenPos().toPoint().x() - swipe->lastPositions[ 1 ].x();
-          int dy1 = p1.screenPos().toPoint().y() - swipe->lastPositions[ 0 ].y();
-          int dy2 = p2.screenPos().toPoint().y() - swipe->lastPositions[ 1 ].y();
+          int dx1 = p1.globalPosition().toPoint().x() - swipe->lastPositions[ 0 ].x();
+          int dx2 = p2.globalPosition().toPoint().x() - swipe->lastPositions[ 1 ].x();
+          int dy1 = p1.globalPosition().toPoint().y() - swipe->lastPositions[ 0 ].y();
+          int dy2 = p2.globalPosition().toPoint().y() - swipe->lastPositions[ 1 ].y();
 
           if( qAbs( ( dx1 + dx2 ) / 2.0 ) >= MOVE_X_TRESHOLD ||
               qAbs( ( dy1 + dy2 ) / 2.0 ) >= MOVE_Y_TRESHOLD )
@@ -284,8 +284,8 @@ QGestureRecognizer::Result GDSwipeGestureRecognizer::recognize( QGesture * state
             swipe->vertDirection = vertDir;
             swipe->horizDirection = horizDir;
 
-            swipe->lastPositions[ 0 ] = p1.screenPos().toPoint();
-            swipe->lastPositions[ 1 ] = p2.screenPos().toPoint();
+            swipe->lastPositions[ 0 ] = p1.globalPosition().toPoint();
+            swipe->lastPositions[ 1 ] = p2.globalPosition().toPoint();
 
             result = QGestureRecognizer::TriggerGesture;
           }

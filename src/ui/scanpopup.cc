@@ -910,7 +910,7 @@ bool ScanPopup::eventFilter( QObject * watched, QEvent * event )
     {
 //    DPRINTF( "Object: %s\n", watched->objectName().toUtf8().data() );
       QMouseEvent * mouseEvent = ( QMouseEvent * ) event;
-      reactOnMouseMove( mouseEvent->globalPos() );
+      reactOnMouseMove( mouseEvent->globalPosition().toPoint() );
     }
   }
 
@@ -962,7 +962,7 @@ void ScanPopup::mousePressEvent( QMouseEvent * ev )
   // With mouse grabs, the press can occur anywhere on the screen, which
   // might mean hiding the window.
 
-  if ( !frameGeometry().contains( ev->globalPos() ) )
+  if ( !frameGeometry().contains( ev->globalPosition().toPoint() ) )
   {
     hideWindow();
 
@@ -971,7 +971,7 @@ void ScanPopup::mousePressEvent( QMouseEvent * ev )
 
   if ( ev->button() == Qt::LeftButton )
   {
-    startPos = ev->globalPos();
+    startPos = ev->globalPosition().toPoint();
     setCursor( Qt::ClosedHandCursor );
   }
 
@@ -982,7 +982,7 @@ void ScanPopup::mouseMoveEvent( QMouseEvent * event )
 {
   if ( event->buttons() && cursor().shape() == Qt::ClosedHandCursor )
   {
-    QPoint newPos = event->globalPos();
+    QPoint newPos = event->globalPosition().toPoint();
 
     QPoint delta = newPos - startPos;
 
