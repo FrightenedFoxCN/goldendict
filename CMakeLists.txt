@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(GoldenDict VERSION 1.5.1 LANGUAGES CXX C OBJCXX)
+project(Silverdict VERSION 1.5.1 LANGUAGES CXX C OBJCXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -229,7 +229,7 @@ endif()
 
 # Print configuration summary
 message(STATUS "")
-message(STATUS "GoldenDict ${PROJECT_VERSION} - Build Configuration")
+message(STATUS "Silverdict ${PROJECT_VERSION} (based on GoldenDict) - Build Configuration")
 message(STATUS "==========================================")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")

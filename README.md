@@ -1,132 +1,225 @@
-## Introduction
+# Silverdict - A Modern Fork of GoldenDict
 
-<b>GoldenDict</b> is a feature-rich dictionary lookup program, supporting multiple dictionary formats (StarDict/Babylon/Lingvo/Dictd/AARD/MDict/SDict) and online dictionaries, featuring perfect article rendering with the complete markup, illustrations and other content retained, and allowing you to type in words without any accents or correct case.
+## About Silverdict
+
+**Silverdict** is a modernized and refactored dictionary lookup program based on the original [GoldenDict](http://goldendict.org) project. This repository represents a complete restructuring and modernization of the codebase with focus on:
+
+- **Modern C++17 standards** - Eliminated deprecated exception specifications, improved type safety
+- **Professional project organization** - Logical folder structure with separated resources, tools, and third-party dependencies  
+- **CMake build system** - Modern build configuration replacing legacy qmake
+- **Qt 6 support** - Full compatibility with Qt 6 alongside Qt 5
+- **Cleaner codebase** - Comprehensive warning fixes and code quality improvements
+
+### Acknowledgements
+
+Silverdict is built upon the excellent work of the original **GoldenDict** project. All credit for the core dictionary functionality, format support, and UI design goes to the GoldenDict developers and contributors. This fork maintains compatibility with all original dictionary formats and features while modernizing the development infrastructure.
+
+## Features
+
+Silverdict retains all features from GoldenDict:
+
+- **Multiple Dictionary Formats**: StarDict, Babylon, Lingvo, Dictd, AARD, MDict, SDict, ZIM, Slob
+- **Online Dictionaries**: Integration with online dictionary services
+- **Perfect Article Rendering**: Complete markup, illustrations, and content preservation
+- **Flexible Search**: Accent-insensitive and case-insensitive matching
+- **Cross-Platform**: Windows, Linux, macOS
+- **Chinese Support**: Character conversion via OpenCC
+- **Customization**: Multiple UI themes and styles
+- **Multimedia**: Integrated audio players (Qt Multimedia and FFmpeg backends)
 
 ## Requirements
 
-This code has been run and tested on Windows XP/Vista/7, Ubuntu Linux, Mac OS X.
+### Basic Requirements
 
-### External Deps
+- **CMake**: 3.20 or later
+- **C++ Compiler**: GCC 9+, Clang 10+, or MSVC 2019+
+- **Qt Framework**: 6.2+ (Qt 5.15+ also supported)
+- **Git**: For version control
 
-* Make, GCC, Git
-* Qt framework. Minimum required version is 4.6. But Qt 4.7 or 4.8 is recommended.
-* Qt Creator IDE is recommended for development
-* Various libraries on Linux (png, zlib, etc)
-* On Mac and Windows all the libraries are already included in the repository
+### Ubuntu Linux
 
-### Installing External Deps on Ubuntu Linux
+```bash
+sudo apt-get install cmake git build-essential pkg-config \
+    qt6-base-dev qt6-tools-dev \
+    libvorbis-dev zlib1g-dev libhunspell-dev \
+    libqt6core5compat6-dev libqt6webenginewidgets6 \
+    libbz2-dev liblzo2-dev libzstd-dev liblzma-dev \
+    libtiff-dev libao-dev libavutil-dev libavformat-dev libavcodec-dev libswresample-dev
+```
 
-    sudo apt-get install git pkg-config build-essential qt4-qmake \
-         libvorbis-dev zlib1g-dev libhunspell-dev x11proto-record-dev \
-         libqt4-dev libqtwebkit-dev libxtst-dev liblzo2-dev libbz2-dev \
-         libao-dev libavutil-dev libavformat-dev libtiff5-dev libeb16-dev
+### macOS (Homebrew)
 
-#### Installing External Deps on Ubuntu Linux for Qt5
+```bash
+brew install cmake qt6 vorbis hunspell lzo zstd libtiff libao ffmpeg opencc
+```
 
-    sudo apt-get install git pkg-config build-essential qt5-qmake \
-         libvorbis-dev zlib1g-dev libhunspell-dev x11proto-record-dev \
-         qtdeclarative5-dev libxtst-dev liblzo2-dev libbz2-dev \
-         libao-dev libavutil-dev libavformat-dev libtiff5-dev libeb16-dev \
-         libqt5webkit5-dev libqt5svg5-dev libqt5x11extras5-dev qttools5-dev \
-         qttools5-dev-tools qtmultimedia5-dev libqt5multimedia5-plugins
+### Windows
 
-## How to build
+All dependencies are included in `third-party/windows/` or can be installed via vcpkg.
 
-First, clone this repository, e.g.:
+## Building
 
-    git clone https://github.com/goldendict/goldendict.git
+### Quick Start
 
-And then invoke `qmake-qt4` and `make`:
+```bash
+# Clone repository
+git clone https://github.com/yourusername/silverdict.git
+cd silverdict
 
-    cd goldendict && qmake-qt4 && make
+# Create and configure build directory
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
 
-In case when `qmake-qt4` does not exist, try using `qmake` but make sure it is indeed from the Qt 4 installation.
-On the other hand, if you want to use `qt5`, make sure that `qmake` is from Qt 5 installation. If not, you can try
-finding it at a path like `/usr/lib/x86_64-linux-gnu/qt5/bin/qmake`.
-Alternatively, you might want to load `goldendict.pro` file from within Qt Creator, especially on Windows.
+# Build
+cmake --build . -j$(nproc)  # Linux/macOS
+cmake --build . -j%NUMBER_OF_PROCESSORS%  # Windows
+```
 
-Note: To compile with `libhunspell` older than 1.5 pass `"CONFIG+=old_hunspell"` to `qmake`.
+### Build Options
 
-### Building with Chinese conversion support
+Configure optional features during CMake setup:
 
-To add Chinese conversion support you need at first install libopencc-dev package:
+```bash
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DMAKE_QTMULTIMEDIA_PLAYER=ON        # Qt Multimedia audio (default: ON)
+    -DMAKE_FFMPEG_PLAYER=ON              # FFmpeg audio support (default: ON) 
+    -DMAKE_ZIM_SUPPORT=ON                # ZIM/Slob formats (default: ON)
+    -DMAKE_EXTRA_TIFF_HANDLER=ON         # Extra TIFF support (default: ON)
+    -DMAKE_CHINESE_CONVERSION_SUPPORT=ON # Chinese conversion (default: ON)
+```
 
-    sudo apt-get install libopencc-dev
+### Running the Application
 
-Then pass `"CONFIG+=chinese_conversion_support"` to `qmake`
+After building, the executable is located at:
 
-    qmake "CONFIG+=chinese_conversion_support"
+- **macOS**: `build/GoldenDict.app/Contents/MacOS/GoldenDict`
+- **Linux**: `build/GoldenDict` 
+- **Windows**: `build\GoldenDict.exe`
 
-### Building with Zim dictionaries support
+## Project Structure
 
-To add Zim and Slob formats support you need at first install lzma-dev and zstd-dev packages:
+The reorganized structure improves maintainability and scalability:
 
-    sudo apt-get install liblzma-dev libzstd-dev
-
-Then pass `"CONFIG+=zim_support"` to `qmake`
-
-    qmake "CONFIG+=zim_support"
-
-### Building without extra tiff handler
-
-If you have problem building with libtiff5-dev package, you can pass
-`"CONFIG+=no_extra_tiff_handler"` to `qmake` in order to disable extra tiff support
-(without such extra support some b/w tiff images will not be displayed):
-
-    qmake "CONFIG+=no_extra_tiff_handler"
-
-### Building without internal audio players
-
-If you have problem building with FFmpeg/libao (for example, Ubuntu older than 12.04), you can pass
-`"CONFIG+=no_ffmpeg_player"` to `qmake` in order to disable FFmpeg+libao internal audio player back end:
-
-    qmake "CONFIG+=no_ffmpeg_player"
-
-If you have problem building with Qt5 Multimedia or experience GStreamer run-time errors (for example, Ubuntu 14.04), you can pass
-`"CONFIG+=no_qtmultimedia_player"` to `qmake` in order to disable Qt Multimedia internal audio player back end:
-
-    qmake "CONFIG+=no_qtmultimedia_player"
-
-<b>NB:</b> All additional settings for `qmake` that you need must be combined in one `qmake` launch, for example:
-
-    qmake "CONFIG+=zim_support" "CONFIG+=no_extra_tiff_handler" "CONFIG+=no_ffmpeg_player"
-
-
-Then, invoke `make clean` before `make` because the setting change:
-
-    make clean && make
-
-### Building under Windows with MS Visual Studio
-
-To build GoldenDict with Visual Studio take one of next library packs and unpack it to `"winlibs/lib/msvc"` folder in GoldenDict sources folder.  
-[GoldenDict_libs_VS2013_x86_v4.7z](http://www.mediafire.com/file/3il4vr1l8299nxn/GoldenDict_libs_VS2013_x86_v4.7z) - for MS Visual Studio 2013, 32 bit  
-[GoldenDict_libs_VS2013_x64_v4.7z](http://www.mediafire.com/file/2itgg8bafppg6lw/GoldenDict_libs_VS2013_x64_v4.7z) - for MS Visual Studio 2013, 64 bit  
-[GoldenDict_libs_VS2015_x86_v4.7z](http://www.mediafire.com/file/0a7ygy9rn99oevm/GoldenDict_libs_VS2015_x86_v4.7z) - for MS Visual Studio 2015, 32 bit  
-[GoldenDict_libs_VS2015_x64_v4.7z](http://www.mediafire.com/file/yoy2q8af0s1467m/GoldenDict_libs_VS2015_x64_v4.7z) - for MS Visual Studio 2015, 64 bit  
-
-To create project files for Visual Studio you can pass `"-tp vc"` option to `qmake`.
-
-Note: In Qt 5.6.0 and later the `Webkit` module was removed from official release builds. You should build it from sources to compile GoldenDict.
-
+```
+silverdict/
+├── CMakeLists.txt                 # Main build configuration
+├── goldendict.rc                  # Windows resource file
+├── README.md, LICENSE.txt          # Documentation and license
+│
+├── src/                           # Source code
+│   ├── core/                      # Core application logic
+│   ├── dictionary/                # Dictionary management
+│   ├── formats/                   # Dictionary format handlers
+│   ├── ui/                        # User interface
+│   ├── audio/                     # Audio/sound handling
+│   ├── text/                      # Text processing
+│   ├── network/                   # Online dictionaries
+│   ├── util/                      # Utility functions
+│   ├── platform/                  # Platform-specific code
+│   └── about/                     # About dialog
+│
+├── resources/                     # All application resources
+│   ├── styles/                    # CSS stylesheets (article, UI themes)
+│   ├── icons/                     # UI icons and graphics
+│   ├── locale/                    # Translation files (.ts source)
+│   ├── help/                      # Qt Help documentation
+│   ├── flags/                     # Country flag icons
+│   └── macos/                     # macOS-specific resources
+│
+├── third-party/                   # External dependencies
+│   ├── qtsingleapplication/       # Qt Single Application library
+│   ├── opencc/                    # Chinese conversion library
+│   ├── macos/                     # Pre-built macOS dependencies
+│   └── windows/                   # Windows libraries
+│
+├── packaging/                     # Distribution and installation
+│   ├── windows/                   # NSIS installer scripts
+│   ├── linux/                     # Desktop and AppStream files
+│   └── macos/                     # macOS packaging config
+│
+├── tools/                         # Build utilities and scripts
+│   ├── generators/                # Code and data generators
+│   └── scripts/                   # Build helpers
+│
+├── docs/                          # Project documentation
+├── .ci/                           # CI/CD configuration
+└── .git/                          # Git repository metadata
+```
 
 ## Installation
 
-Installation is an optional step since the built binary can be used as-is without installation. But you can properly install via:
+Installation is optional—the built binary can run standalone.
 
-    make install
+### Linux/macOS
 
-<b>NB:</b> Don't do that on Windows!
+```bash
+cd build
+make install  # Install to /usr/local by default
+```
 
-You can uninstall via:
+### Windows
 
-    make uninstall
+Do not use `make install` on Windows. Either:
+1. Run `GoldenDict.exe` directly from the build folder
+2. Use the NSIS installer from `packaging/windows/`
+
+## Code Quality
+
+The project enforces strict compiler standards:
+
+```bash
+# Build with pedantic warnings
+cmake .. -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wdeprecated -Wpedantic"
+cmake --build .
+```
+
+### Development Standards
+
+- **C++17 required** - No exceptions, use modern language features
+- **No deprecated patterns** - Dynamic exception specs, old-style casts removed
+- **Compiler warnings** - Pedantic build flags must not produce warnings
+- **Consistent style** - Match existing code conventions
+
+## Contributing
+
+Contributions are welcome! When contributing:
+
+1. Follow C++17 standards and avoid deprecated features
+2. Build with pedantic compiler flags: `-Wall -Wextra -Wdeprecated -Wpedantic`
+3. Test on multiple platforms if possible
+4. Submit clear pull requests with detailed descriptions
+5. Reference related issues in commit messages
 
 ## License
 
-This project is licensed under the <b>GNU GPLv3+</b> license, a copy of which can be found in the `LICENSE.txt` file.
+This project is licensed under **GNU GPLv3+**. See `LICENSE.txt` for the full license text.
 
-## Support
+This fork maintains the original license to honor the GoldenDict project's contributions.
 
-Users looking for support should file an issue in the official [GoldenDict issue tracker](https://github.com/goldendict/goldendict/issues),
-or even better: submit a [pull request](https://github.com/goldendict/goldendict/pulls) if you have a fix available.
-General questions should be asked on the [official GoldenDict forum](http://goldendict.org/forum/).
+## Support and Issues
+
+### For Silverdict
+
+- **Bug Reports & Features**: This repository's [issue tracker](../../issues)
+- **Pull Requests**: Contributions welcome via [pull requests](../../pulls)
+
+### For GoldenDict
+
+- **Official Repository**: https://github.com/goldendict/goldendict
+- **Issue Tracker**: https://github.com/goldendict/goldendict/issues  
+- **Forum**: http://goldendict.org/forum/
+- **Website**: http://goldendict.org/
+
+## Credits
+
+- **Original GoldenDict**: Igor Ivoylev and contributors
+- **Silverdict Fork**: Modern refactoring and CMake migration
+- **Qt Foundation**: Qt framework
+- **Open Source Community**: All third-party libraries and components
+
+## Related Links
+
+- **GoldenDict Project**: http://goldendict.org
+- **Official Repository**: https://github.com/goldendict/goldendict
+- **Qt Project**: https://www.qt.io/
