@@ -787,7 +787,7 @@ QString ArticleView::getCurrentArticle()
 {
   QVariant v = evaluateJavaScriptVariableSafe( ui.definition->page(), "gdCurrentArticle" );
 
-  if ( v.type() == QVariant::String )
+  if ( v.typeId() == QMetaType::QString )
     return v.toString();
   else
     return QString();
@@ -863,7 +863,7 @@ void ArticleView::tryMangleWebsiteClickedUrl( QUrl & url, Contexts & contexts )
     {
       QVariant result = evaluateJavaScriptVariableSafe( ui.definition->page(), "gdLastUrlText" );
 
-      if ( result.type() == QVariant::String )
+      if ( result.typeId() == QMetaType::QString )
       {
         // Looks this way
         contexts[ dictionaryIdFromScrollTo( ca ) ] = QString::fromLatin1( url.toEncoded() );
@@ -1765,7 +1765,7 @@ void ArticleView::reload()
 bool ArticleView::hasSound()
 {
   QVariant v = runJavaScriptSync( ui.definition->page(), "gdAudioLinks.first" );
-  if ( v.type() == QVariant::String )
+  if ( v.typeId() == QMetaType::QString )
     return !v.toString().isEmpty();
   return false;
 }
@@ -1777,14 +1777,14 @@ void ArticleView::playSound()
 
   v = runJavaScriptSync( ui.definition->page(), "gdAudioLinks[gdAudioLinks.current]" );
 
-  if ( v.type() == QVariant::String )
+  if ( v.typeId() == QMetaType::QString )
     soundScript = v.toString();
 
   // fallback to the first one
   if ( soundScript.isEmpty() )
   {
     v = runJavaScriptSync( ui.definition->page(), "gdAudioLinks.first" );
-    if ( v.type() == QVariant::String )
+    if ( v.typeId() == QMetaType::QString )
       soundScript = v.toString();
   }
 
@@ -2630,8 +2630,9 @@ void ArticleView::highlightFTSResults()
 
     if( matched > FTS::MaxMatchLengthForHighlightResults )
     {
-      gdWarning( "ArticleView::highlightFTSResults(): Too long match - skipped (matched length %i, allowed %i)",
-                 match.capturedLength(), FTS::MaxMatchLengthForHighlightResults );
+      gdWarning( "ArticleView::highlightFTSResults(): Too long match - skipped (matched length %lld, allowed %i)",
+             static_cast<long long>( match.capturedLength() ),
+             FTS::MaxMatchLengthForHighlightResults );
     }
     else
       allMatches.append( pageText.mid( spos, matched ) );

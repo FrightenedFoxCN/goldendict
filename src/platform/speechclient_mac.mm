@@ -7,6 +7,9 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSAutoreleasePool.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 static QString NSStringToQString(const NSString * nsstr )
 {
   return QString::fromUtf8( [ nsstr UTF8String ] );
@@ -189,3 +192,5 @@ void SpeechClient::timerEvent( QTimerEvent * evt )
     emit finished();
   }
 }
+
+#pragma clang diagnostic pop
