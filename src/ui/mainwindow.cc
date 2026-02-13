@@ -1656,7 +1656,7 @@ vector< sptr< Dictionary::Class > > const & MainWindow::getActiveDicts()
 
 void MainWindow::createTabList()
 {
-  tabListMenu->setIcon(QIcon(":/icons/windows-list.png"));
+  tabListMenu->setIcon(QIcon(":/icons/windows-list.svg"));
   connect(tabListMenu, SIGNAL(aboutToShow()), this, SLOT(fillWindowsMenu()));
   connect(tabListMenu, SIGNAL(triggered(QAction*)), this, SLOT(switchToWindow(QAction*)));
 
