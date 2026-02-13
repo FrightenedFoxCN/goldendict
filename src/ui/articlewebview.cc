@@ -4,7 +4,9 @@
 #include "articlewebview.hh"
 #include <QMouseEvent>
 #include <QApplication>
-#include <QDebug>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
+#include <cstdio>
 #include "articleinspector.hh"
 #include "qt4x5.hh"
 
@@ -28,6 +30,22 @@ bool ArticleWebPage::acceptNavigationRequest( QUrl const & url, NavigationType t
   return QWebEnginePage::acceptNavigationRequest( url, type, isMainFrame );
 }
 
+void ArticleWebPage::javaScriptConsoleMessage( JavaScriptConsoleMessageLevel level, QString const & message,
+                                              int lineNumber, QString const & sourceID )
+{
+  // Check if this is a double-click message from injected JavaScript
+  if ( message.startsWith( "SILVERDICT_DOUBLECLICK:" ) )
+  {
+    QString selectedText = message.mid( 23 ); // Remove "SILVERDICT_DOUBLECLICK:"
+    fprintf(stderr, "[JS_SIGNAL] Received double-click from JavaScript with text: '%s'\n", qPrintable(selectedText));
+    emit doubleClickDetected( selectedText );
+  }
+  else
+  {
+    fprintf(stderr, "[JS] %s\n", qPrintable(message));
+  }
+}
+
 ArticleWebView::ArticleWebView( QWidget *parent ):
   QWebEngineView( parent ),
   inspector( NULL ),
@@ -38,6 +56,22 @@ ArticleWebView::ArticleWebView( QWidget *parent ):
 {
   setPage( webPage );
   connect( webPage, SIGNAL( linkClicked( QUrl const & ) ), this, SIGNAL( linkClicked( QUrl const & ) ) );
+  connect( webPage, SIGNAL( doubleClickDetected( QString const & ) ), this, SLOT( onDoubleClickDetected( QString const & ) ) );
+  
+  // Inject JavaScript to detect double-clicks and send them to C++
+  QWebEngineScript script;
+  script.setSourceCode(
+    "document.addEventListener('dblclick', function(event) {"
+    "  var selectedText = window.getSelection().toString();"
+    "  if (selectedText.length > 0 && selectedText.length < 60) {"
+    "    console.log('SILVERDICT_DOUBLECLICK:' + selectedText);"
+    "  }"
+    "}, false);"
+  );
+  script.setWorldId(QWebEngineScript::MainWorld);
+  script.setInjectionPoint(QWebEngineScript::DocumentReady);
+  script.setRunsOnSubFrames(true);
+  page()->scripts().insert(script);
 }
 
 ArticleWebView::~ArticleWebView()
@@ -129,7 +163,6 @@ void ArticleWebView::mouseReleaseEvent( QMouseEvent * event )
 
 void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
 {
-  qDebug() << "ArticleWebView::mouseDoubleClickEvent CALLED";
   QWebEngineView::mouseDoubleClickEvent( event );
   int scrollBarWidth = 0;
   int scrollBarHeight = 0;
@@ -138,10 +171,17 @@ void ArticleWebView::mouseDoubleClickEvent( QMouseEvent * event )
     if ( ( event->position().x() < width() - scrollBarWidth ) &&
       ( event->position().y() < height() - scrollBarHeight ) )
   {
-    qDebug() << "ArticleWebView::mouseDoubleClickEvent emitting doubleClicked signal";
     emit doubleClicked( event->pos() );
   }
 
+}
+
+void ArticleWebView::onDoubleClickDetected( QString const & selectedText )
+{
+  fprintf(stderr, "[SLOT] onDoubleClickDetected called with text: '%s'\n", qPrintable(selectedText));
+  // Emit the doubleClicked signal with a dummy position (0,0)
+  // The articleview.cc doubleClicked slot will use ui.definition->selectedText() instead
+  emit doubleClicked( QPoint(0, 0) );
 }
 
 void ArticleWebView::focusInEvent( QFocusEvent * event )
