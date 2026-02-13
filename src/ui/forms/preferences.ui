@@ -66,33 +66,7 @@
          </layout>
         </widget>
        </item>
-       <item row="8" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="addonStylesLabel">
-           <property name="text">
-            <string>Add-on style:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="StylesComboBox" name="addonStyles"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
+
        <item row="2" column="0">
         <widget class="QGroupBox" name="enableTrayIcon">
          <property name="toolTip">
@@ -260,32 +234,9 @@ be the last ones.</string>
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Display style:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="displayStyle"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_12">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
           <widget class="QLabel" name="label_16">
            <property name="text">
-            <string>Help language</string>
+            <string>Help language:</string>
            </property>
           </widget>
          </item>
@@ -307,7 +258,147 @@ be the last ones.</string>
          </item>
         </layout>
        </item>
-       <item row="9" column="0" colspan="2">
+       <item row="7" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <widget class="QLabel" name="maxDictsInContextMenuLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Adjust this value to avoid huge context menus.</string>
+           </property>
+           <property name="text">
+            <string>Context menu dictionaries limit:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="maxDictsInContextMenu">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+           <property name="value">
+            <number>20</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="0" colspan="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_display">
+      <attribute name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/icons/style.svg</normaloff>:/icons/style.svg</iconset>
+      </attribute>
+      <attribute name="title">
+       <string>&amp;Display</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_display">
+       <item row="0" column="0" colspan="2">
+        <spacer name="verticalSpacer_display">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_displaystyle">
+         <item>
+          <widget class="QLabel" name="label_displayStyle">
+           <property name="text">
+            <string>Display style:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="displayStyle"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_displayStyle">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_addonstyle">
+         <item>
+          <widget class="QLabel" name="addonStylesLabel">
+           <property name="text">
+            <string>Add-on style:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="StylesComboBox" name="addonStyles"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="themeOverridesGroup">
          <property name="title">
           <string>Theme overrides</string>
@@ -606,8 +697,8 @@ be the last ones.</string>
          </layout>
         </widget>
        </item>
-       <item row="10" column="0" colspan="2">
-        <spacer name="verticalSpacer">
+       <item row="4" column="0" colspan="2">
+        <spacer name="verticalSpacer_display_bottom">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -618,55 +709,6 @@ be the last ones.</string>
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="3" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
-         <item>
-          <widget class="QLabel" name="maxDictsInContextMenuLabel">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Adjust this value to avoid huge context menus.</string>
-           </property>
-           <property name="text">
-            <string>Context menu dictionaries limit:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="maxDictsInContextMenu">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximum">
-            <number>9999</number>
-           </property>
-           <property name="value">
-            <number>20</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_12">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>

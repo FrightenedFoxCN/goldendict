@@ -2298,7 +2298,7 @@ void MainWindow::editPreferences()
          || cfg.preferences.uiBackgroundColor != p.uiBackgroundColor )
     {
       // Write theme overrides to CSS files
-      cfg.writeUserThemeOverrides( p );
+      Config::writeUserThemeOverrides( p );
       // Reload styles to apply theme changes
       applyQtStyleSheet( p.displayStyle, p.addonStyle );
       articleMaker.setDisplayStyle( p.displayStyle, p.addonStyle );
