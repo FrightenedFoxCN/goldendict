@@ -6,6 +6,9 @@
 #include "helpwindow.hh"
 #include "ui_preferences.h"
 
+class QLineEdit;
+class QSpinBox;
+
 /// Preferences dialog -- allows changing various program options.
 class Preferences: public QDialog
 {
@@ -28,6 +31,12 @@ public:
 private:
 
   Ui::Preferences ui;
+
+  void setColorField( QLineEdit * lineEdit, QString const & colorText );
+  void pickColor( QLineEdit * lineEdit, QString const & title );
+  void clearColor( QLineEdit * lineEdit );
+  void pickFont( QLineEdit * lineEdit, QSpinBox * sizeSpin, QString const & title );
+  void clearFont( QLineEdit * lineEdit, QSpinBox * sizeSpin );
 
 private slots:
 
@@ -56,6 +65,21 @@ private slots:
 
   void on_collapseBigArticles_toggled( bool checked );
   void on_limitInputPhraseLength_toggled( bool checked );
+
+  void on_articleFontPick_clicked();
+  void on_articleFontClear_clicked();
+  void on_articleTextColorPick_clicked();
+  void on_articleTextColorClear_clicked();
+  void on_articleBackgroundColorPick_clicked();
+  void on_articleBackgroundColorClear_clicked();
+  void on_articleLinkColorPick_clicked();
+  void on_articleLinkColorClear_clicked();
+  void on_uiFontPick_clicked();
+  void on_uiFontClear_clicked();
+  void on_uiTextColorPick_clicked();
+  void on_uiTextColorClear_clicked();
+  void on_uiBackgroundColorPick_clicked();
+  void on_uiBackgroundColorClear_clicked();
 
   void helpRequested();
   void closeHelp();

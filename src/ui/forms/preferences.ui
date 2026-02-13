@@ -307,6 +307,305 @@ be the last ones.</string>
          </item>
         </layout>
        </item>
+          <item row="9" column="0" colspan="2">
+           <widget class="QGroupBox" name="themeOverridesGroup">
+            <property name="title">
+             <string>Theme overrides</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_themeOverrides">
+             <item>
+              <widget class="QLabel" name="themeOverridesHint">
+               <property name="text">
+            <string>Leave fields empty (or size set to Default) to keep the selected theme defaults.</string>
+               </property>
+               <property name="wordWrap">
+            <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="articleThemeGroup">
+               <property name="title">
+            <string>Article</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_articleTheme">
+            <item row="0" column="0">
+             <widget class="QLabel" name="articleFontFamilyLabel">
+              <property name="text">
+               <string>Font family:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="articleFontFamily">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="articleFontPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QPushButton" name="articleFontClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="articleFontSizeLabel">
+              <property name="text">
+               <string>Font size:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="articleFontSize">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>72</number>
+              </property>
+              <property name="specialValueText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" colspan="2">
+             <spacer name="horizontalSpacer_articleFontSize">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="articleTextColorLabel">
+              <property name="text">
+               <string>Text color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="articleTextColor">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QPushButton" name="articleTextColorPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QPushButton" name="articleTextColorClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="articleBackgroundColorLabel">
+              <property name="text">
+               <string>Background color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="articleBackgroundColor">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QPushButton" name="articleBackgroundColorPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QPushButton" name="articleBackgroundColorClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="articleLinkColorLabel">
+              <property name="text">
+               <string>Link color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLineEdit" name="articleLinkColor">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QPushButton" name="articleLinkColorPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QPushButton" name="articleLinkColorClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="uiThemeGroup">
+               <property name="title">
+            <string>Interface</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_uiTheme">
+            <item row="0" column="0">
+             <widget class="QLabel" name="uiFontFamilyLabel">
+              <property name="text">
+               <string>Font family:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="uiFontFamily">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="uiFontPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QPushButton" name="uiFontClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="uiFontSizeLabel">
+              <property name="text">
+               <string>Font size:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="uiFontSize">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>72</number>
+              </property>
+              <property name="specialValueText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" colspan="2">
+             <spacer name="horizontalSpacer_uiFontSize">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="uiTextColorLabel">
+              <property name="text">
+               <string>Text color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="uiTextColor">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QPushButton" name="uiTextColorPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QPushButton" name="uiTextColorClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="uiBackgroundColorLabel">
+              <property name="text">
+               <string>Background color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="uiBackgroundColor">
+              <property name="placeholderText">
+               <string>Default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QPushButton" name="uiBackgroundColorPick">
+              <property name="text">
+               <string>Pick...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QPushButton" name="uiBackgroundColorClear">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
        <item row="10" column="0" colspan="2">
         <spacer name="verticalSpacer">
          <property name="orientation">

@@ -3,6 +3,8 @@
 #include "language.hh"
 #include "langcoder.hh"
 #include <QMessageBox>
+#include <QColorDialog>
+#include <QFontDialog>
 #include "broken_xrecord.hh"
 #include "mainwindow.hh"
 
@@ -357,6 +359,17 @@ Preferences::Preferences( QWidget * parent, Config::Class & cfg_ ):
   ui.addonStylesLabel->setVisible( ui.addonStyles->count() > 1 );
   ui.addonStyles->setCurrentStyle( p.addonStyle );
 
+  ui.articleFontFamily->setText( p.articleFontFamily );
+  ui.articleFontSize->setValue( p.articleFontSize );
+  setColorField( ui.articleTextColor, p.articleTextColor );
+  setColorField( ui.articleBackgroundColor, p.articleBackgroundColor );
+  setColorField( ui.articleLinkColor, p.articleLinkColor );
+
+  ui.uiFontFamily->setText( p.uiFontFamily );
+  ui.uiFontSize->setValue( p.uiFontSize );
+  setColorField( ui.uiTextColor, p.uiTextColor );
+  setColorField( ui.uiBackgroundColor, p.uiBackgroundColor );
+
   // Full-text search parameters
   ui.ftsGroupBox->setChecked( p.fts.enabled );
 
@@ -484,6 +497,17 @@ Config::Preferences Preferences::getPreferences()
   p.clearNetworkCacheOnExit = ui.clearNetworkCacheOnExit->isChecked();
 
   p.addonStyle = ui.addonStyles->getCurrentStyle();
+
+  p.articleFontFamily = ui.articleFontFamily->text().trimmed();
+  p.articleFontSize = ui.articleFontSize->value();
+  p.articleTextColor = ui.articleTextColor->text().trimmed();
+  p.articleBackgroundColor = ui.articleBackgroundColor->text().trimmed();
+  p.articleLinkColor = ui.articleLinkColor->text().trimmed();
+
+  p.uiFontFamily = ui.uiFontFamily->text().trimmed();
+  p.uiFontSize = ui.uiFontSize->value();
+  p.uiTextColor = ui.uiTextColor->text().trimmed();
+  p.uiBackgroundColor = ui.uiBackgroundColor->text().trimmed();
 
   p.fts.enabled = ui.ftsGroupBox->isChecked();
   p.fts.maxDictionarySize = ui.maxDictionarySize->value();
@@ -678,6 +702,126 @@ void Preferences::on_collapseBigArticles_toggled( bool checked )
 void Preferences::on_limitInputPhraseLength_toggled( bool checked )
 {
   ui.inputPhraseLengthLimit->setEnabled( checked );
+}
+
+void Preferences::setColorField( QLineEdit * lineEdit, QString const & colorText )
+{
+  QString trimmed = colorText.trimmed();
+  lineEdit->setText( trimmed );
+
+  QColor color( trimmed );
+  if ( color.isValid() )
+    lineEdit->setStyleSheet( QString( "QLineEdit { background-color: %1; }" ).arg( color.name() ) );
+  else
+    lineEdit->setStyleSheet( QString() );
+}
+
+void Preferences::pickColor( QLineEdit * lineEdit, QString const & title )
+{
+  QColor initial( lineEdit->text().trimmed() );
+  QColor chosen = QColorDialog::getColor( initial.isValid() ? initial : QColor(), this, title );
+  if ( chosen.isValid() )
+    setColorField( lineEdit, chosen.name() );
+}
+
+void Preferences::clearColor( QLineEdit * lineEdit )
+{
+  setColorField( lineEdit, QString() );
+}
+
+void Preferences::pickFont( QLineEdit * lineEdit, QSpinBox * sizeSpin, QString const & title )
+{
+  bool ok = false;
+  QFont initial;
+  QString family = lineEdit->text().trimmed();
+  if ( !family.isEmpty() )
+    initial.setFamily( family );
+  if ( sizeSpin->value() > 0 )
+    initial.setPointSize( sizeSpin->value() );
+
+  QFont font = QFontDialog::getFont( &ok, initial, this, title );
+  if ( ok )
+  {
+    lineEdit->setText( font.family() );
+    if ( font.pointSize() > 0 )
+      sizeSpin->setValue( font.pointSize() );
+  }
+}
+
+void Preferences::clearFont( QLineEdit * lineEdit, QSpinBox * sizeSpin )
+{
+  lineEdit->clear();
+  sizeSpin->setValue( 0 );
+}
+
+void Preferences::on_articleFontPick_clicked()
+{
+  pickFont( ui.articleFontFamily, ui.articleFontSize, tr( "Select article font" ) );
+}
+
+void Preferences::on_articleFontClear_clicked()
+{
+  clearFont( ui.articleFontFamily, ui.articleFontSize );
+}
+
+void Preferences::on_articleTextColorPick_clicked()
+{
+  pickColor( ui.articleTextColor, tr( "Select article text color" ) );
+}
+
+void Preferences::on_articleTextColorClear_clicked()
+{
+  clearColor( ui.articleTextColor );
+}
+
+void Preferences::on_articleBackgroundColorPick_clicked()
+{
+  pickColor( ui.articleBackgroundColor, tr( "Select article background color" ) );
+}
+
+void Preferences::on_articleBackgroundColorClear_clicked()
+{
+  clearColor( ui.articleBackgroundColor );
+}
+
+void Preferences::on_articleLinkColorPick_clicked()
+{
+  pickColor( ui.articleLinkColor, tr( "Select article link color" ) );
+}
+
+void Preferences::on_articleLinkColorClear_clicked()
+{
+  clearColor( ui.articleLinkColor );
+}
+
+void Preferences::on_uiFontPick_clicked()
+{
+  pickFont( ui.uiFontFamily, ui.uiFontSize, tr( "Select interface font" ) );
+}
+
+void Preferences::on_uiFontClear_clicked()
+{
+  clearFont( ui.uiFontFamily, ui.uiFontSize );
+}
+
+void Preferences::on_uiTextColorPick_clicked()
+{
+  pickColor( ui.uiTextColor, tr( "Select interface text color" ) );
+}
+
+void Preferences::on_uiTextColorClear_clicked()
+{
+  clearColor( ui.uiTextColor );
+}
+
+void Preferences::on_uiBackgroundColorPick_clicked()
+{
+  pickColor( ui.uiBackgroundColor, tr( "Select interface background color" ) );
+}
+
+void Preferences::on_uiBackgroundColorClear_clicked()
+{
+  clearColor( ui.uiBackgroundColor );
 }
 
 void Preferences::helpRequested()

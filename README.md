@@ -10,6 +10,8 @@
 - **Qt 6 support** - Full compatibility with Qt 6 alongside Qt 5
 - **Cleaner codebase** - Comprehensive warning fixes and code quality improvements
 
+WARNING: This is still in a very primitive state, only macOS compilation is tested.
+
 ### Acknowledgements
 
 Silverdict is built upon the excellent work of the original **GoldenDict** project. All credit for the core dictionary functionality, format support, and UI design goes to the GoldenDict developers and contributors. This fork maintains compatibility with all original dictionary formats and features while modernizing the development infrastructure.
