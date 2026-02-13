@@ -9,6 +9,8 @@
 #include <algorithm>
 
 #include <QMenu>
+#include <QInputDialog>
+#include <QSet>
 #include <QPair>
 
 using std::vector;
@@ -80,14 +82,34 @@ bool dictLessThan( sptr< Dictionary::Class > const & dict1,
   return str1.localeAwareCompare( str2 ) < 0;
 }
 
+QStringList parseLabelsText( QString const & text )
+{
+  QStringList result;
+  QSet< QString > seen;
+  QStringList parts = text.split( ",", Qt::SkipEmptyParts );
+  for( QStringList::const_iterator it = parts.begin(); it != parts.end(); ++it )
+  {
+    QString label = it->trimmed();
+    if ( label.isEmpty() )
+      continue;
+    if ( seen.contains( label ) )
+      continue;
+    seen.insert( label );
+    result.push_back( label );
+  }
+  return result;
+}
+
 } // namespace
 
 OrderAndProps::OrderAndProps( QWidget * parent,
+                              Config::Class & cfg_,
                               Config::Group const & dictionaryOrder,
                               Config::Group const & inactiveDictionaries,
                               std::vector< sptr< Dictionary::Class > > const &
                               allDictionaries ):
-  QWidget( parent )
+  QWidget( parent ),
+  cfg( cfg_ )
 {
   ui.setupUi( this );
 
@@ -98,6 +120,9 @@ OrderAndProps::OrderAndProps( QWidget * parent,
 
   ui.dictionaryOrder->populate( order.dictionaries, allDictionaries );
   ui.inactiveDictionaries->populate( inactive.dictionaries, allDictionaries );
+
+  ui.dictionaryOrder->setDictionaryLabels( &cfg.dictionaryLabels );
+  ui.inactiveDictionaries->setDictionaryLabels( &cfg.dictionaryLabels );
 
   ui.searchLine->applyTo( ui.dictionaryOrder );
   addAction( ui.searchLine->getFocusAction() );
@@ -120,6 +145,12 @@ OrderAndProps::OrderAndProps( QWidget * parent,
 
   connect (ui.searchLine, SIGNAL( filterChanged( QString const & ) ),
       this, SLOT( filterChanged( QString const &) ) );
+
+  ui.searchLine->setDictionaryLabels( &cfg.dictionaryLabels );
+
+  updateLabelFilterOptions();
+  connect( ui.labelFilter, SIGNAL( currentIndexChanged( int ) ),
+           this, SLOT( labelFilterChanged( int ) ) );
 
   connect( ui.dictionaryOrder->getModel(), SIGNAL( contentChanged() ),
            this, SLOT( showDictNumbers() ) );
@@ -152,6 +183,13 @@ void OrderAndProps::filterChanged( QString const & filterText)
   // when the filter is active, disable the possibility
   // to drop dictionaries to this filtered list
   ui.dictionaryOrder->setAcceptDrops(filterText.isEmpty());
+}
+
+void OrderAndProps::labelFilterChanged( int index )
+{
+  QVariant data = ui.labelFilter->itemData( index );
+  QString label = data.isValid() ? data.toString() : QString();
+  ui.searchLine->setLabelFilter( label );
 }
 
 void OrderAndProps::dictListFocused()
@@ -254,6 +292,7 @@ void OrderAndProps::contextMenuRequested( const QPoint & pos )
   QMenu menu( this );
 
   QAction * showHeadwordsAction = NULL;
+  QAction * editLabelsAction = NULL;
   QModelIndex idx = ui.searchLine->mapToSource( ui.dictionaryOrder->indexAt( pos ) );
   sptr< Dictionary::Class > dict;
   if( idx.isValid() && (unsigned)idx.row() < ui.dictionaryOrder->getCurrentDictionaries().size() )
@@ -268,6 +307,12 @@ void OrderAndProps::contextMenuRequested( const QPoint & pos )
   menu.addAction( sortNameAction );
   QAction * sortLangAction = new QAction( tr( "Sort by languages" ), &menu );
   menu.addAction( sortLangAction );
+
+  if ( dict )
+  {
+    editLabelsAction = new QAction( tr( "Edit labels..." ), &menu );
+    menu.addAction( editLabelsAction );
+  }
 
   QAction * result = menu.exec( ui.dictionaryOrder->mapToGlobal( pos ) );
 
@@ -285,6 +330,95 @@ void OrderAndProps::contextMenuRequested( const QPoint & pos )
   {
     emit showDictionaryHeadwords( QString::fromUtf8( dict->getId().c_str() ) );
   }
+
+  if ( result && result == editLabelsAction && dict )
+  {
+    QString dictId = QString::fromUtf8( dict->getId().c_str() );
+    QStringList existing = cfg.dictionaryLabels.value( dictId );
+    QString initialText = existing.join( ", " );
+
+    bool ok = false;
+    QString text = QInputDialog::getText( this,
+                                          tr( "Dictionary labels" ),
+                                          tr( "Labels (comma-separated):" ),
+                                          QLineEdit::Normal,
+                                          initialText,
+                                          &ok );
+    if ( ok )
+    {
+      QStringList labels = parseLabelsText( text );
+      if ( labels.isEmpty() )
+        cfg.dictionaryLabels.remove( dictId );
+      else
+        cfg.dictionaryLabels.insert( dictId, labels );
+
+      updateLabelFilterOptions();
+      updateDictionaryLabelsDisplay( dictId );
+    }
+  }
+}
+
+void OrderAndProps::updateDictionaryLabelsDisplay( QString const & dictId )
+{
+  DictListModel * orderModel = ui.dictionaryOrder->getModel();
+  DictListModel * inactiveModel = ui.inactiveDictionaries->getModel();
+
+  std::vector< sptr< Dictionary::Class > > const & orderDicts =
+    ui.dictionaryOrder->getCurrentDictionaries();
+  for( unsigned i = 0; i < orderDicts.size(); ++i )
+  {
+    if ( dictId == QString::fromUtf8( orderDicts[ i ]->getId().c_str() ) )
+    {
+      QModelIndex idx = orderModel->index( static_cast<int>( i ), 0 );
+      emit orderModel->dataChanged( idx, idx );
+    }
+  }
+
+  std::vector< sptr< Dictionary::Class > > const & inactiveDicts =
+    ui.inactiveDictionaries->getCurrentDictionaries();
+  for( unsigned i = 0; i < inactiveDicts.size(); ++i )
+  {
+    if ( dictId == QString::fromUtf8( inactiveDicts[ i ]->getId().c_str() ) )
+    {
+      QModelIndex idx = inactiveModel->index( static_cast<int>( i ), 0 );
+      emit inactiveModel->dataChanged( idx, idx );
+    }
+  }
+}
+
+void OrderAndProps::updateLabelFilterOptions()
+{
+  QString current = ui.labelFilter->currentData().toString();
+
+  QSet< QString > labelSet;
+  for( Config::DictionaryLabels::const_iterator it = cfg.dictionaryLabels.begin();
+       it != cfg.dictionaryLabels.end(); ++it )
+  {
+    for( QStringList::const_iterator labelIt = it.value().begin();
+         labelIt != it.value().end(); ++labelIt )
+    {
+      if ( !labelIt->isEmpty() )
+        labelSet.insert( *labelIt );
+    }
+  }
+
+  QStringList labels = labelSet.values();
+  std::sort( labels.begin(), labels.end(),
+             []( const QString & a, const QString & b ) {
+               return a.localeAwareCompare( b ) < 0;
+             } );
+
+  ui.labelFilter->clear();
+  ui.labelFilter->addItem( tr( "All labels" ), QString() );
+  ui.labelFilter->addItem( tr( "Untagged" ), QString( "__untagged__" ) );
+
+  for( QStringList::const_iterator it = labels.begin(); it != labels.end(); ++it )
+    ui.labelFilter->addItem( *it, *it );
+
+  int idx = ui.labelFilter->findData( current );
+  if ( idx < 0 )
+    idx = 0;
+  ui.labelFilter->setCurrentIndex( idx );
 }
 
 void OrderAndProps::showDictNumbers()

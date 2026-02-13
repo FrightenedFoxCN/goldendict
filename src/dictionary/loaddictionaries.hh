@@ -10,6 +10,7 @@
 
 #include <QThread>
 #include <QNetworkAccessManager>
+#include <set>
 
 /// Use loadDictionaries() function below -- this is a helper thread class
 class LoadDictionaries: public QThread, public Dictionary::Initializing
@@ -18,6 +19,7 @@ class LoadDictionaries: public QThread, public Dictionary::Initializing
 
   QStringList nameFilters;
   Config::Paths const & paths;
+  Config::DictionaryFiles const & dictionaryFiles;
   Config::SoundDirs const & soundDirs;
   Config::Hunspell const & hunspell;
   Config::Transliteration const & transliteration;
@@ -51,6 +53,9 @@ public:
 private:
 
   void handlePath( Config::Path const & );
+  void handleFiles( std::vector< std::string > const & files );
+  void createDictionaries( std::vector< std::string > const & files );
+  std::set< std::string > explicitFiles;
 };
 
 /// Loads all dictionaries mentioned in the configuration passed, into the

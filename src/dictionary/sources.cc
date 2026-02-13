@@ -27,6 +27,7 @@ Sources::Sources( QWidget * parent, Config::Class const & cfg):
   dictServersModel( this, cfg.dictServers ),
   programsModel( this, cfg.programs ),
   pathsModel( this, cfg.paths ),
+  dictionaryFilesModel( this, cfg.dictionaryFiles ),
   soundDirsModel( this, cfg.soundDirs ),
   hunspellDictsModel( this, cfg.hunspell )
 {
@@ -85,6 +86,9 @@ Sources::Sources( QWidget * parent, Config::Class const & cfg):
   ui.paths->setModel( &pathsModel );
 
   fitPathsColumns();
+
+  ui.dictionaryFiles->setModel( &dictionaryFilesModel );
+  fitDictionaryFilesColumns();
 
   ui.soundDirs->setTabKeyNavigation( true );
   ui.soundDirs->setModel( &soundDirsModel );
@@ -160,6 +164,11 @@ void Sources::fitPathsColumns()
   ui.paths->resizeColumnToContents( 1 );
 }
 
+void Sources::fitDictionaryFilesColumns()
+{
+  ui.dictionaryFiles->resizeColumnToContents( 0 );
+}
+
 void Sources::fitSoundDirsColumns()
 {
   ui.soundDirs->resizeColumnToContents( 0 );
@@ -197,6 +206,46 @@ void Sources::on_removePath_clicked()
   {
     pathsModel.removePath( current.row() );
     fitPathsColumns();
+  }
+}
+
+void Sources::on_addDictionaryFile_clicked()
+{
+  QStringList patterns;
+  patterns << "*.bgl" << "*.ifo" << "*.lsa" << "*.dat"
+           << "*.dsl" << "*.dsl.dz" << "*.index" << "*.xdxf"
+           << "*.xdxf.dz" << "*.dct" << "*.aar" << "*.zips"
+           << "*.mdx" << "*.gls" << "*.gls.dz";
+#ifdef MAKE_ZIM_SUPPORT
+  patterns << "*.zim" << "*.zimaa" << "*.slob";
+#endif
+
+  QString filter = tr( "Dictionary files (%1);;All files (*.*)" )
+                      .arg( patterns.join( " " ) );
+  QString filePath = QFileDialog::getOpenFileName( this,
+                                                   tr( "Import dictionary" ),
+                                                   QString(),
+                                                   filter );
+  if ( filePath.isEmpty() )
+    return;
+
+  filePath = QDir::cleanPath( filePath );
+  dictionaryFilesModel.addNewFile( filePath );
+  fitDictionaryFilesColumns();
+}
+
+void Sources::on_removeDictionaryFile_clicked()
+{
+  QModelIndex current = ui.dictionaryFiles->currentIndex();
+
+  if ( current.isValid() &&
+      QMessageBox::question( this, tr( "Confirm removal" ),
+                             tr( "Remove dictionary file <b>%1</b> from the list?" )
+                               .arg( dictionaryFilesModel.getCurrentFiles()[ current.row() ] ),
+                             QMessageBox::Ok,
+                             QMessageBox::Cancel ) == QMessageBox::Ok )
+  {
+    dictionaryFilesModel.removeFile( current.row() );
   }
 }
 
@@ -1208,6 +1257,81 @@ bool PathsModel::setData( QModelIndex const & index, const QVariant & /*value*/,
   }
 
   return false;
+}
+
+////////// DictionaryFilesModel
+
+void DictionaryFilesModel::removeFile( int index )
+{
+  beginRemoveRows( QModelIndex(), index, index );
+  files.erase( files.begin() + index );
+  endRemoveRows();
+}
+
+void DictionaryFilesModel::addNewFile( QString const & filePath )
+{
+  if ( files.contains( filePath ) )
+    return;
+
+  beginInsertRows( QModelIndex(), files.size(), files.size() );
+  files.push_back( filePath );
+  endInsertRows();
+}
+
+QModelIndex DictionaryFilesModel::index( int row, int column, QModelIndex const & /*parent*/ ) const
+{
+  return createIndex( row, column );
+}
+
+QModelIndex DictionaryFilesModel::parent( QModelIndex const & /*parent*/ ) const
+{
+  return QModelIndex();
+}
+
+Qt::ItemFlags DictionaryFilesModel::flags( QModelIndex const & index ) const
+{
+  return QAbstractItemModel::flags( index );
+}
+
+int DictionaryFilesModel::rowCount( QModelIndex const & parent ) const
+{
+  if ( parent.isValid() )
+    return 0;
+  else
+    return files.size();
+}
+
+int DictionaryFilesModel::columnCount( QModelIndex const & parent ) const
+{
+  if ( parent.isValid() )
+    return 0;
+  else
+    return 1;
+}
+
+QVariant DictionaryFilesModel::headerData( int section, Qt::Orientation /*orientation*/, int role ) const
+{
+  if ( role == Qt::DisplayRole )
+    switch( section )
+    {
+      case 0:
+        return tr( "File" );
+      default:
+        return QVariant();
+    }
+
+  return QVariant();
+}
+
+QVariant DictionaryFilesModel::data( QModelIndex const & index, int role ) const
+{
+  if ( index.row() >= files.size() )
+    return QVariant();
+
+  if ( role == Qt::DisplayRole || role == Qt::EditRole )
+    return files[ index.row() ];
+
+  return QVariant();
 }
 
 

@@ -187,6 +187,36 @@ private:
   Config::Paths paths;
 };
 
+/// A model to be projected into the dictionary files view, according to Qt's MVC model
+class DictionaryFilesModel: public QAbstractItemModel
+{
+  Q_OBJECT
+
+public:
+
+  DictionaryFilesModel( QWidget * parent, Config::DictionaryFiles const & files_ ):
+    QAbstractItemModel( parent ), files( files_ )
+  {}
+
+  void removeFile( int index );
+  void addNewFile( QString const & filePath );
+
+  Config::DictionaryFiles const & getCurrentFiles() const
+  { return files; }
+
+  QModelIndex index( int row, int column, QModelIndex const & parent ) const;
+  QModelIndex parent( QModelIndex const & parent ) const;
+  Qt::ItemFlags flags( QModelIndex const & index ) const;
+  int rowCount( QModelIndex const & parent ) const;
+  int columnCount( QModelIndex const & parent ) const;
+  QVariant headerData( int section, Qt::Orientation orientation, int role ) const;
+  QVariant data( QModelIndex const & index, int role ) const;
+
+private:
+
+  Config::DictionaryFiles files;
+};
+
 /// A model to be projected into the soundDirs view, according to Qt's MVC model
 class SoundDirsModel: public QAbstractItemModel
 {
@@ -258,6 +288,9 @@ public:
   Config::Paths const & getPaths() const
   { return pathsModel.getCurrentPaths(); }
 
+  Config::DictionaryFiles const & getDictionaryFiles() const
+  { return dictionaryFilesModel.getCurrentFiles(); }
+
   Config::SoundDirs const & getSoundDirs() const
   { return soundDirsModel.getCurrentSoundDirs(); }
 
@@ -305,10 +338,12 @@ private:
   DictServersModel dictServersModel;
   ProgramsModel programsModel;
   PathsModel pathsModel;
+  DictionaryFilesModel dictionaryFilesModel;
   SoundDirsModel soundDirsModel;
   HunspellDictsModel hunspellDictsModel;
 
   void fitPathsColumns();
+  void fitDictionaryFilesColumns();
   void fitSoundDirsColumns();
   void fitHunspellDictsColumns();
 
@@ -316,6 +351,9 @@ private slots:
 
   void on_addPath_clicked();
   void on_removePath_clicked();
+
+  void on_addDictionaryFile_clicked();
+  void on_removeDictionaryFile_clicked();
 
   void on_addSoundDir_clicked();
   void on_removeSoundDir_clicked();

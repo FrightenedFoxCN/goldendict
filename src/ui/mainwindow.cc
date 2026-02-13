@@ -3857,6 +3857,33 @@ void MainWindow::on_saveArticle_triggered()
   }
 }
 
+void MainWindow::on_importDictionary_triggered()
+{
+  QStringList patterns;
+  patterns << "*.bgl" << "*.ifo" << "*.lsa" << "*.dat"
+           << "*.dsl" << "*.dsl.dz" << "*.index" << "*.xdxf"
+           << "*.xdxf.dz" << "*.dct" << "*.aar" << "*.zips"
+           << "*.mdx" << "*.gls" << "*.gls.dz";
+#ifdef MAKE_ZIM_SUPPORT
+  patterns << "*.zim" << "*.zimaa" << "*.slob";
+#endif
+
+  QString filter = tr( "Dictionary files (%1);;All files (*.*)" )
+                      .arg( patterns.join( " " ) );
+  QString filePath = QFileDialog::getOpenFileName( this,
+                                                   tr( "Import dictionary" ),
+                                                   QString(),
+                                                   filter );
+  if ( filePath.isEmpty() )
+    return;
+
+  filePath = QDir::cleanPath( filePath );
+  if ( !cfg.dictionaryFiles.contains( filePath ) )
+    cfg.dictionaryFiles.push_back( filePath );
+
+  on_rescanFiles_triggered();
+}
+
 void MainWindow::on_rescanFiles_triggered()
 {
   hotkeyWrapper.reset(); // No hotkeys while we're editing dictionaries

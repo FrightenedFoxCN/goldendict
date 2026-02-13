@@ -7,10 +7,12 @@
 #include <QObject>
 #include <QVector>
 #include <QString>
+#include <QStringList>
 #include <QSize>
 #include <QDateTime>
 #include <QKeySequence>
 #include <QSet>
+#include <QMap>
 #include <QMetaType>
 #include "cpp_features.hh"
 #include "ex.hh"
@@ -45,6 +47,12 @@ struct Path
 
 /// A list of paths where to search for the dictionaries
 typedef QVector< Path > Paths;
+
+/// A list of dictionary files to load explicitly
+typedef QVector< QString > DictionaryFiles;
+
+/// Dictionary labels keyed by dictionary id
+typedef QMap< QString, QStringList > DictionaryLabels;
 
 /// A directory holding bunches of audiofiles, which is indexed into a separate
 /// dictionary.
@@ -664,10 +672,12 @@ struct HeadwordsDialog
 struct Class
 {
   Paths paths;
+  DictionaryFiles dictionaryFiles;
   SoundDirs soundDirs;
   Group dictionaryOrder;
   Group inactiveDictionaries;
   Groups groups;
+  DictionaryLabels dictionaryLabels;
   Preferences preferences;
   MediaWikis mediawikis;
   WebSites webSites;

@@ -606,6 +606,20 @@ Class load() THROW_SPEC( exError )
               nl.item( x ).toElement().attribute( "recursive" ) == "1" ) );
   }
 
+  QDomNode dictionaryFiles = root.namedItem( "dictionaryFiles" );
+
+  if ( !dictionaryFiles.isNull() )
+  {
+    QDomNodeList nl = dictionaryFiles.toElement().elementsByTagName( "file" );
+
+    for( Qt4x5::Dom::size_type x = 0; x < nl.length(); ++x )
+    {
+      QString filePath = nl.item( x ).toElement().text();
+      if ( !filePath.isEmpty() )
+        c.dictionaryFiles.push_back( filePath );
+    }
+  }
+
   QDomNode soundDirs = root.namedItem( "sounddirs" );
 
   if ( !soundDirs.isNull() )
@@ -642,6 +656,33 @@ Class load() THROW_SPEC( exError )
       QDomElement grp = nl.item( x ).toElement();
 
       c.groups.push_back( loadGroup( grp, &c.groups.nextId ) );
+    }
+  }
+
+  QDomNode dictionaryLabels = root.namedItem( "dictionaryLabels" );
+
+  if ( !dictionaryLabels.isNull() )
+  {
+    QDomNodeList nl = dictionaryLabels.toElement().elementsByTagName( "dictionary" );
+
+    for( Qt4x5::Dom::size_type x = 0; x < nl.length(); ++x )
+    {
+      QDomElement dict = nl.item( x ).toElement();
+      QString id = dict.attribute( "id" );
+      if ( id.isEmpty() )
+        continue;
+
+      QStringList labels;
+      QDomNodeList labelNodes = dict.elementsByTagName( "label" );
+      for( Qt4x5::Dom::size_type y = 0; y < labelNodes.length(); ++y )
+      {
+        QString label = labelNodes.item( y ).toElement().text();
+        if ( !label.isEmpty() )
+          labels.push_back( label );
+      }
+
+      if ( !labels.isEmpty() )
+        c.dictionaryLabels.insert( id, labels );
     }
   }
 
@@ -1381,6 +1422,24 @@ void save( Class const & c ) THROW_SPEC( exError )
   }
 
   {
+    QDomElement dictionaryFiles = dd.createElement( "dictionaryFiles" );
+    root.appendChild( dictionaryFiles );
+
+    for( DictionaryFiles::const_iterator i = c.dictionaryFiles.begin();
+         i != c.dictionaryFiles.end(); ++i )
+    {
+      if ( i->isEmpty() )
+        continue;
+
+      QDomElement file = dd.createElement( "file" );
+      dictionaryFiles.appendChild( file );
+
+      QDomText value = dd.createTextNode( *i );
+      file.appendChild( value );
+    }
+  }
+
+  {
     QDomElement dictionaryOrder = dd.createElement( "dictionaryOrder" );
     root.appendChild( dictionaryOrder );
     saveGroup( c.dictionaryOrder, dictionaryOrder );
@@ -1406,6 +1465,38 @@ void save( Class const & c ) THROW_SPEC( exError )
       groups.appendChild( group );
 
       saveGroup( *i, group );
+    }
+  }
+
+  {
+    QDomElement dictionaryLabels = dd.createElement( "dictionaryLabels" );
+    root.appendChild( dictionaryLabels );
+
+    for( DictionaryLabels::const_iterator i = c.dictionaryLabels.begin();
+         i != c.dictionaryLabels.end(); ++i )
+    {
+      if ( i.value().isEmpty() )
+        continue;
+
+      QDomElement dict = dd.createElement( "dictionary" );
+      dictionaryLabels.appendChild( dict );
+
+      QDomAttr id = dd.createAttribute( "id" );
+      id.setValue( i.key() );
+      dict.setAttributeNode( id );
+
+      for( QStringList::const_iterator labelIt = i.value().begin();
+           labelIt != i.value().end(); ++labelIt )
+      {
+        if ( labelIt->isEmpty() )
+          continue;
+
+        QDomElement label = dd.createElement( "label" );
+        dict.appendChild( label );
+
+        QDomText value = dd.createTextNode( *labelIt );
+        label.appendChild( value );
+      }
     }
   }
 

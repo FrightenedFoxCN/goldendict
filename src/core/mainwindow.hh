@@ -472,6 +472,7 @@ private slots:
   void on_saveArticle_triggered();
 
   void on_rescanFiles_triggered();
+  void on_importDictionary_triggered();
 
   void on_showHideFavorites_triggered();
   void on_showHideHistory_triggered();

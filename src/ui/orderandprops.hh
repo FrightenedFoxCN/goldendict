@@ -14,7 +14,8 @@ class OrderAndProps: public QWidget
 
 public:
 
-  OrderAndProps( QWidget * parent, Config::Group const & dictionaryOrder,
+  OrderAndProps( QWidget * parent, Config::Class & cfg,
+                 Config::Group const & dictionaryOrder,
                  Config::Group const & inactiveDictionaries,
                  std::vector< sptr< Dictionary::Class > > const & allDictionaries );
 
@@ -27,6 +28,7 @@ private slots:
   void inactiveDictionarySelectionChanged( const QItemSelection &current );
   void contextMenuRequested( const QPoint & pos );
   void filterChanged( QString const & filterText );
+  void labelFilterChanged( int index );
   void dictListFocused();
   void inactiveDictListFocused();
   void showDictNumbers();
@@ -34,9 +36,12 @@ private slots:
 private:
 
   Ui::OrderAndProps ui;
+  Config::Class & cfg;
 
   void disableDictionaryDescription();
   void describeDictionary( DictListWidget *, QModelIndex const & );
+  void updateDictionaryLabelsDisplay( QString const & dictId );
+  void updateLabelFilterOptions();
 
 signals:
   void showDictionaryHeadwords( QString const & dictId );

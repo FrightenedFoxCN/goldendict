@@ -20,7 +20,7 @@ EditDictionaries::EditDictionaries( QWidget * parent, Config::Class & cfg_,
   dictNetMgr( dictNetMgr_ ),
   origCfg( cfg ),
   sources( this, cfg ),
-  orderAndProps( new OrderAndProps( this, cfg.dictionaryOrder, cfg.inactiveDictionaries,
+  orderAndProps( new OrderAndProps( this, cfg, cfg.dictionaryOrder, cfg.inactiveDictionaries,
                                     dictionaries ) ),
   groups( new Groups( this, dictionaries, cfg.groups, orderAndProps->getCurrentDictionaryOrder() ) ),
   dictionariesChanged( false ),
@@ -175,6 +175,7 @@ void EditDictionaries::buttonBoxClicked( QAbstractButton * button )
 bool EditDictionaries::isSourcesChanged() const
 {
   return sources.getPaths() != cfg.paths ||
+         sources.getDictionaryFiles() != cfg.dictionaryFiles ||
          sources.getSoundDirs() != cfg.soundDirs ||
          sources.getHunspell() != cfg.hunspell ||
          sources.getTransliteration() != cfg.transliteration ||
@@ -195,6 +196,7 @@ void EditDictionaries::acceptChangedSources( bool rebuildGroups )
   Config::Group savedInactive = orderAndProps->getCurrentInactiveDictionaries();
 
   cfg.paths = sources.getPaths();
+  cfg.dictionaryFiles = sources.getDictionaryFiles();
   cfg.soundDirs = sources.getSoundDirs();
   cfg.hunspell = sources.getHunspell();
   cfg.transliteration = sources.getTransliteration();
@@ -240,7 +242,7 @@ void EditDictionaries::acceptChangedSources( bool rebuildGroups )
 
   if ( rebuildGroups )
   {
-    orderAndProps = new OrderAndProps( this, savedOrder, savedInactive, dictionaries );
+    orderAndProps = new OrderAndProps( this, cfg, savedOrder, savedInactive, dictionaries );
     ui.tabs->insertTab( 1, orderAndProps.get(), QIcon(":/icons/book.svg"), tr( "&Dictionaries" ) );
 
     groups = new Groups( this, dictionaries, savedGroups, orderAndProps->getCurrentDictionaryOrder() );

@@ -240,6 +240,17 @@ QVariant DictListModel::data( QModelIndex const & index, int role ) const
       if ( entries )
         tt += "<br>" + tr( "%1 entries" ).arg( entries );
 
+      if ( labelsMap )
+      {
+        QString dictId = QString::fromUtf8( item->getId().c_str() );
+        if ( labelsMap->contains( dictId ) )
+        {
+          QString labels = labelsMap->value( dictId ).join( ", " );
+          if ( !labels.isEmpty() )
+            tt += "<br>" + tr( "Labels: %1" ).arg( labels );
+        }
+      }
+
       const std::vector< std::string > & dirs = item->getDictionaryFilenames();
 
       if ( dirs.size() )
@@ -253,7 +264,20 @@ QVariant DictListModel::data( QModelIndex const & index, int role ) const
     }
 
     case Qt::DisplayRole :
-      return QString::fromUtf8( item->getName().c_str() );
+    {
+      QString name = QString::fromUtf8( item->getName().c_str() );
+      if ( labelsMap )
+      {
+        QString dictId = QString::fromUtf8( item->getId().c_str() );
+        if ( labelsMap->contains( dictId ) )
+        {
+          QString labels = labelsMap->value( dictId ).join( ", " );
+          if ( !labels.isEmpty() )
+            name += " [" + labels + "]";
+        }
+      }
+      return name;
+    }
 
     case Qt::EditRole :
       return QString::fromUtf8( item->getId().c_str() );
@@ -1077,8 +1101,18 @@ void QuickFilterLine::filterChangedInternal()
 
 void QuickFilterLine::emitFilterChanged()
 {
-  m_proxyModel.setFilterFixedString(text());
+  m_proxyModel.setFilterText( text() );
   emit filterChanged( text() );
+}
+
+void QuickFilterLine::setLabelFilter( QString const & label )
+{
+  m_proxyModel.setLabelFilter( label );
+}
+
+void QuickFilterLine::setDictionaryLabels( Config::DictionaryLabels const * labels )
+{
+  m_proxyModel.setDictionaryLabels( labels );
 }
 
 void QuickFilterLine::focusFilterLine()
@@ -1101,4 +1135,63 @@ void QuickFilterLine::keyPressEvent( QKeyEvent * event )
     default:
       ExtLineEdit::keyPressEvent( event );
   }
+}
+
+LabelFilterProxyModel::LabelFilterProxyModel():
+  labelsMap( 0 )
+{
+}
+
+void LabelFilterProxyModel::setFilterText( QString const & text )
+{
+  filterText = text;
+  invalidateFilter();
+}
+
+void LabelFilterProxyModel::setLabelFilter( QString const & label )
+{
+  labelFilter = label;
+  invalidateFilter();
+}
+
+void LabelFilterProxyModel::setDictionaryLabels( Config::DictionaryLabels const * labels )
+{
+  labelsMap = labels;
+  invalidateFilter();
+}
+
+bool LabelFilterProxyModel::filterAcceptsRow( int sourceRow, QModelIndex const & sourceParent ) const
+{
+  QModelIndex idx = sourceModel()->index( sourceRow, 0, sourceParent );
+  QString display = sourceModel()->data( idx, Qt::DisplayRole ).toString();
+
+  if ( !filterText.isEmpty() && !display.contains( filterText, Qt::CaseInsensitive ) )
+    return false;
+
+  if ( labelFilter.isEmpty() )
+    return true;
+
+  if ( labelFilter == "__untagged__" )
+  {
+    if ( !labelsMap )
+      return true;
+    QString dictId = sourceModel()->data( idx, Qt::EditRole ).toString();
+    return !labelsMap->contains( dictId ) || labelsMap->value( dictId ).isEmpty();
+  }
+
+  if ( !labelsMap )
+    return false;
+
+  QString dictId = sourceModel()->data( idx, Qt::EditRole ).toString();
+  if ( !labelsMap->contains( dictId ) )
+    return false;
+
+  QStringList labels = labelsMap->value( dictId );
+  for( QStringList::const_iterator it = labels.begin(); it != labels.end(); ++it )
+  {
+    if ( it->compare( labelFilter, Qt::CaseInsensitive ) == 0 )
+      return true;
+  }
+
+  return false;
 }

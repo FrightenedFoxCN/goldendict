@@ -40,6 +40,7 @@
 
 #include <QMessageBox>
 #include <QDir>
+#include <QFileInfo>
 
 #include <set>
 
@@ -49,7 +50,7 @@ using std::string;
 using std::vector;
 
 LoadDictionaries::LoadDictionaries( Config::Class const & cfg ):
-  paths( cfg.paths ), soundDirs( cfg.soundDirs ), hunspell( cfg.hunspell ),
+  paths( cfg.paths ), dictionaryFiles( cfg.dictionaryFiles ), soundDirs( cfg.soundDirs ), hunspell( cfg.hunspell ),
   transliteration( cfg.transliteration ),
   exceptionText( "Load did not finish" ), // Will be cleared upon success
   maxPictureWidth( cfg.maxPictureWidth ),
@@ -72,6 +73,26 @@ void LoadDictionaries::run()
 {
   try
   {
+    std::vector< string > explicitList;
+
+    for( Config::DictionaryFiles::const_iterator i = dictionaryFiles.begin();
+         i != dictionaryFiles.end(); ++i )
+    {
+      if ( i->isEmpty() )
+        continue;
+
+      QFileInfo info( *i );
+      if ( !info.exists() || !info.isFile() )
+        continue;
+
+      string encoded = FsEncoding::encode( QDir::toNativeSeparators( info.absoluteFilePath() ) );
+      if ( explicitFiles.insert( encoded ).second )
+        explicitList.push_back( encoded );
+    }
+
+    if ( !explicitList.empty() )
+      handleFiles( explicitList );
+
     for( Config::Paths::const_iterator i = paths.begin(); i != paths.end(); ++i )
       handlePath( *i );
 
@@ -123,9 +144,24 @@ void LoadDictionaries::handlePath( Config::Path const & path )
     }
 
     if ( !i->isDir() )
-      allFiles.push_back( FsEncoding::encode( QDir::toNativeSeparators( fullName ) ) );
+    {
+      string encoded = FsEncoding::encode( QDir::toNativeSeparators( fullName ) );
+      if ( explicitFiles.find( encoded ) == explicitFiles.end() )
+        allFiles.push_back( encoded );
+    }
   }
 
+  createDictionaries( allFiles );
+
+}
+
+void LoadDictionaries::handleFiles( std::vector< string > const & files )
+{
+  createDictionaries( files );
+}
+
+void LoadDictionaries::createDictionaries( std::vector< string > const & allFiles )
+{
   {
     vector< sptr< Dictionary::Class > > bglDictionaries =
       Bgl::makeDictionaries( allFiles, FsEncoding::encode( Config::getIndexDir() ), *this );
@@ -224,7 +260,6 @@ void LoadDictionaries::handlePath( Config::Path const & path )
                          slobDictionaries.end() );
   }
 #endif
-
 }
 
 void LoadDictionaries::indexingDictionary( string const & dictionaryName ) noexcept
