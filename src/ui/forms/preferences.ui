@@ -178,68 +178,54 @@ With this on however, it will hide the main window.</string>
            </widget>
           </item>
           <item row="3" column="0" colspan="2">
-           <widget class="QCheckBox" name="enableMainWindowHotkey">
-            <property name="text">
-             <string>Use the following hotkey to show or hide the main window:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+             <widget class="QCheckBox" name="enableMainWindowHotkey">
+              <property name="text">
+               <string>Use the following hotkey to show or hide the main window:</string>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
+             </widget>
             </item>
             <item>
              <widget class="HotKeyEdit" name="mainWindowHotkey">
               <property name="enabled">
                <bool>false</bool>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
              </widget>
             </item>
            </layout>
           </item>
-          <item row="5" column="0" colspan="2">
-           <widget class="QCheckBox" name="enableClipboardHotkey">
-            <property name="text">
-             <string>Use the following hotkey to translate a word from clipboard:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0" colspan="2">
+          <item row="4" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+             <widget class="QCheckBox" name="enableClipboardHotkey">
+              <property name="text">
+               <string>Use the following hotkey to translate a word from clipboard:</string>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
+             </widget>
             </item>
             <item>
              <widget class="HotKeyEdit" name="clipboardHotkey">
               <property name="enabled">
                <bool>false</bool>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
              </widget>
             </item>
            </layout>
           </item>
-          <item row="7" column="0" colspan="2">
+          <item row="5" column="0" colspan="2">
            <widget class="QLabel" name="label_8">
             <property name="text">
              <string>The hotkeys are global and work from any program and within any context as long as GoldenDict is running in background.</string>
@@ -249,7 +235,7 @@ With this on however, it will hide the main window.</string>
             </property>
            </widget>
           </item>
-          <item row="8" column="0" colspan="2">
+          <item row="6" column="0" colspan="2">
            <widget class="QLabel" name="brokenXRECORD">
             <property name="text">
              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
