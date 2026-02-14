@@ -192,12 +192,10 @@ void OrderAndProps::filterChanged( QString const & filterText)
 void OrderAndProps::labelFilterChanged( int index )
 {
   QVariant data = ui.labelFilter->itemData( index );
-  QString label;
-  // Index 0 is always "All labels" with empty filter, regardless of data validity
-  if ( index == 0 )
+  QString label = data.isValid() ? data.toString() : QString();
+  // Special markers: empty string shows all, __untagged__ shows only untagged
+  if ( label == "__all__" )
     label = QString();
-  else
-    label = data.isValid() ? data.toString() : QString();
   ui.searchLine->setLabelFilter( label );
 }
 
@@ -446,7 +444,7 @@ void OrderAndProps::updateLabelFilterOptions()
              } );
 
   ui.labelFilter->clear();
-  ui.labelFilter->addItem( tr( "All labels" ), QVariant( QString( "" ) ) );
+  ui.labelFilter->addItem( tr( "All labels" ), QString( "__all__" ) );
   ui.labelFilter->addItem( tr( "Untagged" ), QString( "__untagged__" ) );
 
   for( QStringList::const_iterator it = labels.begin(); it != labels.end(); ++it )
