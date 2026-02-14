@@ -169,6 +169,12 @@ With this on however, it will hide the main window.</string>
             <property name="text">
              <string>Hotkeys</string>
             </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="styleSheet">
+             <string>margin-top: 12px; margin-bottom: 8px;</string>
+            </property>
            </widget>
           </item>
           <item row="3" column="0" colspan="2">
@@ -587,6 +593,12 @@ be the last ones.</string>
             <property name="text">
              <string>Article</string>
             </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="styleSheet">
+             <string>margin-top: 12px; margin-bottom: 8px;</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -749,6 +761,12 @@ be the last ones.</string>
             </property>
             <property name="text">
              <string>Interface</string>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="styleSheet">
+             <string>margin-top: 12px; margin-bottom: 8px;</string>
             </property>
            </widget>
           </item>
