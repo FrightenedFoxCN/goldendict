@@ -334,12 +334,21 @@ Preferences::Preferences( QWidget * parent, Config::Class & cfg_ ):
   if( p.proxyServer.useSystemProxy )
   {
     ui.systemProxy->setChecked( true );
-    ui.customSettingsGroup->setEnabled( false );
+    ui.proxyType->setEnabled( false );
+    ui.proxyHost->setEnabled( false );
+    ui.proxyPort->setEnabled( false );
+    ui.proxyUser->setEnabled( false );
+    ui.proxyPassword->setEnabled( false );
   }
   else
   {
     ui.customProxy->setChecked( true );
-    ui.customSettingsGroup->setEnabled( p.proxyServer.enabled );
+    bool enabled = p.proxyServer.enabled;
+    ui.proxyType->setEnabled( enabled );
+    ui.proxyHost->setEnabled( enabled );
+    ui.proxyPort->setEnabled( enabled );
+    ui.proxyUser->setEnabled( enabled );
+    ui.proxyPassword->setEnabled( enabled );
   }
 
   connect( ui.customProxy, SIGNAL( toggled( bool ) ),
@@ -719,8 +728,12 @@ void Preferences::on_useExternalPlayer_toggled( bool enabled )
 
 void Preferences::customProxyToggled( bool )
 {
-  ui.customSettingsGroup->setEnabled( ui.customProxy->isChecked()
-                                      && ui.useProxyServer->isChecked() );
+  bool enabled = ui.customProxy->isChecked() && ui.useProxyServer->isChecked();
+  ui.proxyType->setEnabled( enabled );
+  ui.proxyHost->setEnabled( enabled );
+  ui.proxyPort->setEnabled( enabled );
+  ui.proxyUser->setEnabled( enabled );
+  ui.proxyPassword->setEnabled( enabled );
 }
 
 void Preferences::on_maxNetworkCacheSize_valueChanged( int value )
