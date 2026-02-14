@@ -9,7 +9,7 @@
 #include "ui_editdictionaries.h"
 #include "sources.hh"
 #include "orderandprops.hh"
-#include "groups.hh"
+#include "labels.hh"
 #include "instances.hh"
 #include "helpwindow.hh"
 #include <QNetworkAccessManager>
@@ -52,6 +52,9 @@ private slots:
 
   void rescanSources();
 
+  void labelsPanelChanged();
+  void orderLabelsChanged();
+
   void helpRequested();
   void closeHelp();
 
@@ -82,8 +85,7 @@ private:
   Ui::EditDictionaries ui;
   Sources sources;
   sptr< OrderAndProps > orderAndProps;
-  sptr< Groups > groups;
-
+  sptr< LabelsWidget > labelsWidget;
   bool dictionariesChanged;
   bool groupsChanged;
   

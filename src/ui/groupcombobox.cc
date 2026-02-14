@@ -11,9 +11,9 @@ GroupComboBox::GroupComboBox( QWidget * parent ): QComboBox( parent ),
   selectPreviousAction( this )
 {
   setSizeAdjustPolicy( AdjustToContents );
-  setToolTip( tr( "Choose a Group (Alt+G)" ) );
+  setToolTip( tr( "Choose a Label (Alt+L)" ) );
 
-  popupAction.setShortcut( QKeySequence( "Alt+G" ) );
+  popupAction.setShortcut( QKeySequence( "Alt+L" ) );
   connect( &popupAction, SIGNAL( triggered() ),
            this, SLOT( popupGroups() ) );
 

@@ -255,8 +255,9 @@
 separate auxiliary dictionary which
 provides stem words for searches and
 spelling suggestions for mistyped words.
-Add appropriate dictionaries to the bottoms
-of the appropriate groups to use them.</string>
+Add appropriate dictionaries to the bottom
+of the dictionary order list and tag them
+with labels to use them.</string>
            </property>
            <property name="textFormat">
             <enum>Qt::PlainText</enum>

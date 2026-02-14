@@ -21,6 +21,7 @@ public:
 
   Config::Group getCurrentDictionaryOrder() const;
   Config::Group getCurrentInactiveDictionaries() const;
+  void refreshLabels();
 
 private slots:
 
@@ -45,6 +46,7 @@ private:
 
 signals:
   void showDictionaryHeadwords( QString const & dictId );
+  void labelsChanged();
 };
 
 #endif

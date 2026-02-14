@@ -9,7 +9,7 @@
 #include "dictionary.hh"
 #include "config.hh"
 
-/// A bar containing dictionary icons of the currently chosen group.
+/// A bar containing dictionary icons of the currently chosen label.
 /// Individual dictionaries can be toggled on and off.
 class DictionaryBar: public QToolBar
 {
@@ -32,7 +32,7 @@ public:
 
 signals:
 
-  /// Signalled when the user decided to edit group the bar currently
+  /// Signalled when the user decided to edit dictionaries the bar currently
   /// shows.
   void editGroupRequested();
 

@@ -220,6 +220,7 @@ protected:
   bool filterAcceptsRow( int sourceRow, QModelIndex const & sourceParent ) const;
 
 private:
+  void refreshFilter();
   QString filterText;
   QString labelFilter;
   Config::DictionaryLabels const * labelsMap;

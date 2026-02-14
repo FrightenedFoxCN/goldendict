@@ -10,7 +10,7 @@
 #include <QList>
 #include "instances.hh"
 
-/// This is a combo box which is for choosing the dictionary group
+/// This is a combo box which is for choosing the dictionary label
 class GroupComboBox: public QComboBox
 {
   Q_OBJECT
@@ -19,22 +19,22 @@ public:
 
   GroupComboBox( QWidget * parent );
 
-  /// Fills combo-box with the given groups
+  /// Fills combo-box with the given labels
   void fill( Instances::Groups const & );
 
-  /// Chooses the given group in the combobox. If there's no such group,
+  /// Chooses the given label in the combobox. If there's no such label,
   /// does nothing.
   void setCurrentGroup( unsigned id );
 
 
-  /// Returns current group.
+  /// Returns current label.
   unsigned getCurrentGroup() const;
 
   /// Return actions which should be accessible from FTS and Headwords dialogs
   QList< QAction * > getExternActions();
 
 signals:
-  /// Signal emitted when the current group changes (with group name)
+  /// Signal emitted when the current label changes (with label name)
   void currentIndexChanged( QString const & );
 
 protected:

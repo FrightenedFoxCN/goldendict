@@ -450,6 +450,30 @@ void saveMutedDictionaries( QDomDocument & dd, QDomElement & muted,
   }
 }
 
+void mergeGroupLabelsIntoDictionaryLabels( Class & c )
+{
+  if ( c.groups.isEmpty() )
+    return;
+
+  for ( Groups::const_iterator it = c.groups.begin(); it != c.groups.end(); ++it )
+  {
+    QString label = it->name.trimmed();
+    if ( label.isEmpty() )
+      continue;
+
+    for ( QVector< DictionaryRef >::const_iterator dictIt = it->dictionaries.begin();
+          dictIt != it->dictionaries.end(); ++dictIt )
+    {
+      if ( dictIt->id.isEmpty() )
+        continue;
+
+      QStringList & labels = c.dictionaryLabels[ dictIt->id ];
+      if ( !labels.contains( label ) )
+        labels.push_back( label );
+    }
+  }
+}
+
 }
 
 Class load() THROW_SPEC( exError )
@@ -685,6 +709,8 @@ Class load() THROW_SPEC( exError )
         c.dictionaryLabels.insert( id, labels );
     }
   }
+
+  mergeGroupLabelsIntoDictionaryLabels( c );
 
   QDomNode hunspell = root.namedItem( "hunspell" );
 
@@ -1123,6 +1149,22 @@ Class load() THROW_SPEC( exError )
 
   c.lastMainGroupId = root.namedItem( "lastMainGroupId" ).toElement().text().toUInt();
   c.lastPopupGroupId = root.namedItem( "lastPopupGroupId" ).toElement().text().toUInt();
+  c.lastMainLabel = root.namedItem( "lastMainLabel" ).toElement().text();
+  c.lastPopupLabel = root.namedItem( "lastPopupLabel" ).toElement().text();
+
+  if ( c.lastMainLabel.isEmpty() )
+  {
+    Group const * grp = c.getGroup( c.lastMainGroupId );
+    if ( grp )
+      c.lastMainLabel = grp->name;
+  }
+
+  if ( c.lastPopupLabel.isEmpty() )
+  {
+    Group const * grp = c.getGroup( c.lastPopupGroupId );
+    if ( grp )
+      c.lastPopupLabel = grp->name;
+  }
 
   QDomNode popupWindowState = root.namedItem( "popupWindowState" );
 
@@ -1449,23 +1491,6 @@ void save( Class const & c ) THROW_SPEC( exError )
     QDomElement inactiveDictionaries = dd.createElement( "inactiveDictionaries" );
     root.appendChild( inactiveDictionaries );
     saveGroup( c.inactiveDictionaries, inactiveDictionaries );
-  }
-
-  {
-    QDomElement groups = dd.createElement( "groups" );
-    root.appendChild( groups );
-
-    QDomAttr nextId = dd.createAttribute( "nextId" );
-    nextId.setValue( QString::number( c.groups.nextId ) );
-    groups.setAttributeNode( nextId );
-
-    for( Groups::const_iterator i = c.groups.begin(); i != c.groups.end(); ++i )
-    {
-      QDomElement group = dd.createElement( "group" );
-      groups.appendChild( group );
-
-      saveGroup( *i, group );
-    }
   }
 
   {
@@ -2201,12 +2226,12 @@ void save( Class const & c ) THROW_SPEC( exError )
   }
 
   {
-    QDomElement opt = dd.createElement( "lastMainGroupId" );
-    opt.appendChild( dd.createTextNode( QString::number( c.lastMainGroupId ) ) );
+    QDomElement opt = dd.createElement( "lastMainLabel" );
+    opt.appendChild( dd.createTextNode( c.lastMainLabel ) );
     root.appendChild( opt );
 
-    opt = dd.createElement( "lastPopupGroupId" );
-    opt.appendChild( dd.createTextNode( QString::number( c.lastPopupGroupId ) ) );
+    opt = dd.createElement( "lastPopupLabel" );
+    opt.appendChild( dd.createTextNode( c.lastPopupLabel ) );
     root.appendChild( opt );
 
     opt = dd.createElement( "popupWindowState" );

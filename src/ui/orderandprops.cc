@@ -10,6 +10,7 @@
 
 #include <QMenu>
 #include <QInputDialog>
+#include <QMap>
 #include <QSet>
 #include <QPair>
 
@@ -85,16 +86,17 @@ bool dictLessThan( sptr< Dictionary::Class > const & dict1,
 QStringList parseLabelsText( QString const & text )
 {
   QStringList result;
-  QSet< QString > seen;
+  QSet< QString > seenKeys;
   QStringList parts = text.split( ",", Qt::SkipEmptyParts );
   for( QStringList::const_iterator it = parts.begin(); it != parts.end(); ++it )
   {
     QString label = it->trimmed();
     if ( label.isEmpty() )
       continue;
-    if ( seen.contains( label ) )
+    QString key = label.toCaseFolded();
+    if ( seenKeys.contains( key ) )
       continue;
-    seen.insert( label );
+    seenKeys.insert( key );
     result.push_back( label );
   }
   return result;
@@ -354,7 +356,31 @@ void OrderAndProps::contextMenuRequested( const QPoint & pos )
 
       updateLabelFilterOptions();
       updateDictionaryLabelsDisplay( dictId );
+      emit labelsChanged();
     }
+  }
+}
+
+void OrderAndProps::refreshLabels()
+{
+  updateLabelFilterOptions();
+
+  DictListModel * orderModel = ui.dictionaryOrder->getModel();
+  int orderRows = orderModel->rowCount( QModelIndex() );
+  if ( orderRows > 0 )
+  {
+    QModelIndex first = orderModel->index( 0, 0 );
+    QModelIndex last = orderModel->index( orderRows - 1, 0 );
+    emit orderModel->dataChanged( first, last );
+  }
+
+  DictListModel * inactiveModel = ui.inactiveDictionaries->getModel();
+  int inactiveRows = inactiveModel->rowCount( QModelIndex() );
+  if ( inactiveRows > 0 )
+  {
+    QModelIndex first = inactiveModel->index( 0, 0 );
+    QModelIndex last = inactiveModel->index( inactiveRows - 1, 0 );
+    emit inactiveModel->dataChanged( first, last );
   }
 }
 
@@ -390,19 +416,23 @@ void OrderAndProps::updateLabelFilterOptions()
 {
   QString current = ui.labelFilter->currentData().toString();
 
-  QSet< QString > labelSet;
+  QMap< QString, QString > labelDisplayByKey;
   for( Config::DictionaryLabels::const_iterator it = cfg.dictionaryLabels.begin();
        it != cfg.dictionaryLabels.end(); ++it )
   {
     for( QStringList::const_iterator labelIt = it.value().begin();
          labelIt != it.value().end(); ++labelIt )
     {
-      if ( !labelIt->isEmpty() )
-        labelSet.insert( *labelIt );
+      QString label = labelIt->trimmed();
+      if ( label.isEmpty() )
+        continue;
+      QString key = label.toCaseFolded();
+      if ( !labelDisplayByKey.contains( key ) )
+        labelDisplayByKey.insert( key, label );
     }
   }
 
-  QStringList labels = labelSet.values();
+  QStringList labels = labelDisplayByKey.values();
   std::sort( labels.begin(), labels.end(),
              []( const QString & a, const QString & b ) {
                return a.localeAwareCompare( b ) < 0;

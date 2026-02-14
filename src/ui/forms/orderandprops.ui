@@ -257,9 +257,9 @@
    </item>
    <item>
     <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Adjust the order by dragging and dropping items in it. Drop dictionaries to the inactive group to disable their use.</string>
-     </property>
+    <property name="text">
+     <string>Adjust the order by dragging and dropping items in it. Drop dictionaries to the inactive list to disable their use.</string>
+    </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>

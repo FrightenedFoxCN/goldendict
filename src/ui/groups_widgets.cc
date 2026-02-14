@@ -19,6 +19,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QtGlobal>
 
 using std::vector;
 
@@ -1145,19 +1146,32 @@ LabelFilterProxyModel::LabelFilterProxyModel():
 void LabelFilterProxyModel::setFilterText( QString const & text )
 {
   filterText = text;
-  invalidateFilter();
+  refreshFilter();
 }
 
 void LabelFilterProxyModel::setLabelFilter( QString const & label )
 {
   labelFilter = label;
-  invalidateFilter();
+  refreshFilter();
 }
 
 void LabelFilterProxyModel::setDictionaryLabels( Config::DictionaryLabels const * labels )
 {
   labelsMap = labels;
+  refreshFilter();
+}
+
+void LabelFilterProxyModel::refreshFilter()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 13, 0)
+  beginFilterChange();
+  endFilterChange();
+#else
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   invalidateFilter();
+  #pragma GCC diagnostic pop
+#endif
 }
 
 bool LabelFilterProxyModel::filterAcceptsRow( int sourceRow, QModelIndex const & sourceParent ) const

@@ -109,8 +109,8 @@ void DictionaryBar::showContextMenu( QContextMenuEvent * event, bool extended )
 {
   QMenu menu( this );
 
-  QAction * editAction =
-      menu.addAction( QIcon( ":/icons/bookcase.svg" ), tr( "Edit this group" ) );
+    QAction * editAction =
+      menu.addAction( QIcon( ":/icons/bookcase.svg" ), tr( "Edit dictionaries" ) );
 
   QAction * infoAction = NULL;
   QAction * headwordsAction = NULL;

@@ -243,12 +243,12 @@ std::string ArticleMaker::makeNotFoundBody( QString const & word,
   }
 
   if ( word.size() )
-    result += tr( "No translation for <b>%1</b> was found in group <b>%2</b>." ).
+    result += tr( "No translation for <b>%1</b> was found in label <b>%2</b>." ).
               arg( QString::fromUtf8( Html::escape( str.toUtf8().data() ).c_str() ) ).
               arg( QString::fromUtf8( Html::escape( group.toUtf8().data() ).c_str() ) ).
                 toUtf8().data();
   else
-    result += tr( "No translation was found in group <b>%1</b>." ).
+    result += tr( "No translation was found in label <b>%1</b>." ).
               arg( QString::fromUtf8( Html::escape( group.toUtf8().data() ).c_str() ) ).
                 toUtf8().data();
 
@@ -301,7 +301,7 @@ sptr< Dictionary::DataRequest > ArticleMaker::makeDefinitionFor(
       result += tr(
 "<h3 align=\"center\">Welcome to <b>GoldenDict</b>!</h3>"
 "<p>To start working with the program, first visit <b>Edit|Dictionaries</b> to add some directory paths where to search "
-"for the dictionary files, set up various Wikipedia sites or other sources, adjust dictionary order or create dictionary groups."
+"for the dictionary files, set up various Wikipedia sites or other sources, adjust dictionary order or assign labels."
 "<p>And then you're ready to look up your words! You can do that in this window "
 "by using a pane to the left, or you can <a href=\"Working with popup\">look up words from other active applications</a>. "
 "<p>To customize program, check out the available preferences at <b>Edit|Preferences</b>. "
