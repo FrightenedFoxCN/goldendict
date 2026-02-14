@@ -1505,6 +1505,9 @@ void MainWindow::updateGroupList()
       QString label = labelIt->trimmed();
       if ( label.isEmpty() )
         continue;
+      // Skip labels named "all" (case-insensitive) to avoid conflict with the special "All" group
+      if ( label.compare( tr( "All" ), Qt::CaseInsensitive ) == 0 )
+        continue;
       Config::Group & group = labelGroups[ label ];
       group.name = label;
       group.dictionaries.push_back( Config::DictionaryRef( dictId, dictName ) );
