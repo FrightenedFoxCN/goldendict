@@ -34,6 +34,8 @@
 #include <QSslConfiguration>
 #include <QRegularExpression>
 
+#include <algorithm>
+
 #include <limits.h>
 #include <set>
 #include <map>
@@ -161,6 +163,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   lastDarkMode( false )
 , wasMaximized( false )
 , blockUpdateWindowTitle( false )
+, tabsInitialized( false )
 , headwordsDlg( 0 )
 , ftsIndexing( dictionaries )
 , ftsDlg( 0 )
@@ -323,7 +326,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   menuButtonAction->setVisible( cfg.preferences.hideMenubar );
 
   // Make the search pane's titlebar
-  groupLabel.setText( tr( "Look up in:" ) );
+  groupLabel.setText( tr( "Label:" ) );
   groupListInDock = new GroupComboBox( &searchPaneTitleBar );
 
   searchPaneTitleBarLayout.setContentsMargins( 8, 5, 8, 4 );
@@ -557,21 +560,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   ui.menuView->addAction( ui.alwaysOnTop );
 
   // Dictionary bar
-
-  Instances::Group const * igrp = groupInstances.findGroup( cfg.lastMainGroupId );
-  if( cfg.lastMainGroupId == Instances::Group::AllGroupId )
-  {
-    if( igrp )
-      igrp->checkMutedDictionaries( &cfg.mutedDictionaries );
-    dictionaryBar.setMutedDictionaries( &cfg.mutedDictionaries );
-  }
-  else
-  {
-    Config::Group * grp = cfg.getGroup( cfg.lastMainGroupId );
-    if( igrp && grp )
-      igrp->checkMutedDictionaries( &grp->mutedDictionaries );
-    dictionaryBar.setMutedDictionaries( grp ? &grp->mutedDictionaries : 0 );
-  }
+  dictionaryBar.setMutedDictionaries( &cfg.mutedDictionaries );
 
   showDictBarNamesTriggered(); // Make update its state according to initial
                                // setting
@@ -823,7 +812,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   // After we have dictionaries and groups, we can populate history
 //  historyChanged();
 
-  setWindowTitle( "Silverdict" );
+  setWindowTitle( "SilverDict" );
 
 #ifdef Q_OS_MAC
   {
@@ -833,26 +822,6 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
       restoreState( cfg.mainWindowState, 1 );
   }
 #endif
-
-  blockUpdateWindowTitle = true;
-  addNewTab();
-
-  // Create tab list menu
-  createTabList();
-
-  // Show the initial welcome text
-
-  {
-    ArticleView *view = getCurrentArticleView();
-
-    history.enableAdd( false );
-
-    blockUpdateWindowTitle = true;
-
-    view->showDefinition( tr( "Welcome!" ), Instances::Group::HelpGroupId );
-
-    history.enableAdd( cfg.preferences.storeHistory );
-  }
 
   translateLine->setFocus();
 
@@ -892,8 +861,12 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   // Only show window initially if it wasn't configured differently
   if ( !cfg.preferences.enableTrayIcon || !cfg.preferences.startToTray )
   {
-    show();
-    focusTranslateLine();
+    // Defer showing to avoid triggering QWidget show logic before the event loop
+    // is ready, which can sporadically crash on some macOS setups.
+    QTimer::singleShot( 0, this, [ this ]() {
+      show();
+      focusTranslateLine();
+    } );
   }
 
   connect( &newReleaseCheckTimer, SIGNAL( timeout() ),
@@ -1256,6 +1229,19 @@ void MainWindow::changeEvent( QEvent * event )
 #endif
 }
 
+void MainWindow::showEvent( QShowEvent * event )
+{
+  QMainWindow::showEvent( event );
+
+  if ( tabsInitialized )
+    return;
+
+  tabsInitialized = true;
+  QTimer::singleShot( 0, this, [ this ]() {
+    initTabs();
+  } );
+}
+
 void MainWindow::updateTrayIcon()
 {
   if ( !trayIcon && cfg.preferences.enableTrayIcon )
@@ -1478,11 +1464,7 @@ void MainWindow::updateStatusLine()
 
 void MainWindow::updateGroupList()
 {
-  bool haveGroups = cfg.groups.size();
-
-  groupList->setVisible( haveGroups );
-
-  groupLabel.setText( haveGroups ? tr( "Look up in:" ) : tr( "Look up:" ) );
+  QStringList labelNames;
 
   // currentIndexChanged() signal is very trigger-happy. To avoid triggering
   // it, we disconnect it while we're clearing and filling back groups.
@@ -1491,32 +1473,96 @@ void MainWindow::updateGroupList()
 
   groupInstances.clear();
 
+  Instances::Group orderGroup( cfg.dictionaryOrder, dictionaries, Config::Group() );
+  Instances::Group inactiveGroup( cfg.inactiveDictionaries, dictionaries, Config::Group() );
+
+  // Add any missing entries to dictionary order
+  Instances::complementDictionaryOrder( orderGroup, inactiveGroup, dictionaries );
+
   // Add dictionaryOrder first, as the 'All' group.
   {
-    Instances::Group g( cfg.dictionaryOrder, dictionaries, Config::Group() );
-
-    // Add any missing entries to dictionary order
-    Instances::complementDictionaryOrder( g,
-                                          Instances::Group( cfg.inactiveDictionaries, dictionaries, Config::Group() ),
-                                          dictionaries );
-
+    Instances::Group g = orderGroup;
     g.name = tr( "All" );
     g.id = Instances::Group::AllGroupId;
     g.icon = "folder.png";
-
     groupInstances.push_back( g );
+    
   }
 
-  for( int x  = 0; x < cfg.groups.size(); ++x )
-    groupInstances.push_back( Instances::Group( cfg.groups[ x ], dictionaries, cfg.inactiveDictionaries ) );
+  QMap< QString, Config::Group > labelGroups;
+  for( std::vector< sptr< Dictionary::Class > >::const_iterator it =
+         orderGroup.dictionaries.begin(); it != orderGroup.dictionaries.end(); ++it )
+  {
+    QString dictId = QString::fromStdString( (*it)->getId() );
+    QStringList labels = cfg.dictionaryLabels.value( dictId );
+    if ( labels.isEmpty() )
+      continue;
+
+    QString dictName = QString::fromUtf8( (*it)->getName().c_str() );
+    for( QStringList::const_iterator labelIt = labels.begin(); labelIt != labels.end(); ++labelIt )
+    {
+      QString label = labelIt->trimmed();
+      if ( label.isEmpty() )
+        continue;
+      // Skip labels named "all" (case-insensitive) to avoid conflict with the special "All" group
+      // Check both literal "all" and translated version in case user created label in their language
+      if ( label.compare( QString( "all" ), Qt::CaseInsensitive ) == 0 ||
+           label.compare( tr( "All" ), Qt::CaseInsensitive ) == 0 )
+        continue;
+      Config::Group & group = labelGroups[ label ];
+      group.name = label;
+      group.dictionaries.push_back( Config::DictionaryRef( dictId, dictName ) );
+    }
+  }
+
+  labelNames = labelGroups.keys();
+  std::sort( labelNames.begin(), labelNames.end(),
+             []( const QString & a, const QString & b ) {
+               return a.localeAwareCompare( b ) < 0;
+             } );
+
+  unsigned nextId = 1;
+  for( QStringList::const_iterator it = labelNames.begin(); it != labelNames.end(); ++it )
+  {
+    Config::Group labelGroup = labelGroups.value( *it );
+    labelGroup.id = nextId++;
+    labelGroup.name = *it;
+    groupInstances.push_back( Instances::Group( labelGroup, dictionaries, cfg.inactiveDictionaries ) );
+  }
 
   // Update names for dictionaries that are present, so that they could be
   // found in case they got moved.
   Instances::updateNames( cfg, dictionaries );
 
   groupList->fill( groupInstances );
-  groupList->setCurrentGroup( cfg.lastMainGroupId );
+  unsigned currentId = Instances::Group::AllGroupId;
+  if ( !cfg.lastMainLabel.isEmpty() )
+  {
+    Instances::Group * grp = groupInstances.findGroup( cfg.lastMainGroupId );
+    if ( !grp || grp->name != cfg.lastMainLabel )
+    {
+      for( unsigned i = 0; i < groupInstances.size(); ++i )
+      {
+        if ( groupInstances[ i ].name == cfg.lastMainLabel )
+        {
+          currentId = groupInstances[ i ].id;
+          break;
+        }
+      }
+    }
+    else
+      currentId = cfg.lastMainGroupId;
+  }
+  cfg.lastMainGroupId = currentId;
+  groupList->setCurrentGroup( currentId );
+  Instances::Group const * selected = groupInstances.findGroup( currentId );
+  cfg.lastMainLabel = ( selected && currentId != Instances::Group::AllGroupId )
+                       ? selected->name : QString();
   updateCurrentGroupProperty();
+
+  bool haveLabels = !labelNames.isEmpty();
+  groupList->setVisible( haveLabels );
+  groupLabel.setText( haveLabels ? tr( "Label:" ) : tr( "Look up:" ) );
 
   updateDictionaryBar();
 
@@ -1544,16 +1590,8 @@ void MainWindow::updateDictionaryBar()
   unsigned currentId = groupList -> getCurrentGroup();
   Instances::Group * grp = groupInstances.findGroup( currentId );
 
-  dictionaryBar.setMutedDictionaries( 0 );
+  dictionaryBar.setMutedDictionaries( &cfg.mutedDictionaries );
   if ( grp ) { // Should always be !0, but check as a safeguard
-    if( currentId == Instances::Group::AllGroupId )
-      dictionaryBar.setMutedDictionaries( &cfg.mutedDictionaries );
-    else
-    {
-      Config::Group * grp = cfg.getGroup( currentId );
-      dictionaryBar.setMutedDictionaries( grp ? &grp->mutedDictionaries : 0 );
-    }
-
     dictionaryBar.setDictionaries( grp->dictionaries );
 
     if ( useSmallIconsInToolbarsAction.isChecked() ) {
@@ -1630,7 +1668,6 @@ vector< sptr< Dictionary::Class > > const & MainWindow::getActiveDicts()
     // This shouldn't ever happen
     return dictionaries;
   }
-
   Config::MutedDictionaries const * mutedDictionaries = dictionaryBar.getMutedDictionaries();
   if ( !dictionaryBar.toggleViewAction()->isChecked() || mutedDictionaries == 0 )
     return groupInstances[ current ].dictionaries;
@@ -1717,6 +1754,31 @@ void MainWindow::switchToWindow(QAction *act)
 {
   int idx = act->data().toInt();
   ui.tabWidget->setCurrentIndex(idx);
+}
+
+void MainWindow::initTabs()
+{
+  if ( ui.tabWidget->count() > 0 )
+    return;
+
+  blockUpdateWindowTitle = true;
+  addNewTab();
+
+  // Create tab list menu
+  createTabList();
+
+  // Show the initial welcome text
+  ArticleView *view = getCurrentArticleView();
+  if ( !view )
+    return;
+
+  history.enableAdd( false );
+
+  blockUpdateWindowTitle = true;
+
+  view->showDefinition( tr( "Welcome!" ), Instances::Group::HelpGroupId );
+
+  history.enableAdd( cfg.preferences.storeHistory );
 }
 
 
@@ -1982,7 +2044,11 @@ void MainWindow::updateWindowTitle()
         str.append( (ushort)0x202C ); // PDF, POP DIRECTIONAL FORMATTING
       }
       if( !blockUpdateWindowTitle )
+<<<<<<< HEAD
         setWindowTitle( tr( "%1 - %2" ).arg( str, "Silverdict" ) );
+=======
+        setWindowTitle( tr( "%1 - %2" ).arg( str, "SilverDict" ) );
+>>>>>>> dev
       blockUpdateWindowTitle = false;
     }
   }
@@ -2188,22 +2254,6 @@ void MainWindow::editDictionaries( unsigned editDictionaryGroup )
 
   if ( dicts.areDictionariesChanged() || dicts.areGroupsChanged() )
   {
-
-    // Set muted dictionaries from old groups
-    for( int x = 0; x < newCfg.groups.size(); x++ )
-    {
-      unsigned id = newCfg.groups[ x ].id;
-      if( id != Instances::Group::NoGroupId )
-      {
-        Config::Group const * grp = cfg.getGroup( id );
-        if( grp )
-        {
-          newCfg.groups[ x ].mutedDictionaries = grp->mutedDictionaries;
-          newCfg.groups[ x ].popupMutedDictionaries = grp->popupMutedDictionaries;
-        }
-      }
-    }
-
     cfg = newCfg;
 
     updateGroupList();
@@ -2230,7 +2280,7 @@ void MainWindow::editDictionaries( unsigned editDictionaryGroup )
 
 void MainWindow::editCurrentGroup()
 {
-  editDictionaries( groupList->getCurrentGroup() );
+  editDictionaries( Instances::Group::NoGroupId );
 }
 
 void MainWindow::editPreferences()
@@ -2403,25 +2453,9 @@ void MainWindow::editPreferences()
 void MainWindow::currentGroupChanged( QString const & )
 {
   cfg.lastMainGroupId = groupList->getCurrentGroup();
-  Instances::Group const * igrp = groupInstances.findGroup( cfg.lastMainGroupId );
-  if( cfg.lastMainGroupId == Instances::Group::AllGroupId )
-  {
-    if( igrp )
-      igrp->checkMutedDictionaries( &cfg.mutedDictionaries );
-    dictionaryBar.setMutedDictionaries( &cfg.mutedDictionaries );
-  }
-  else
-  {
-    Config::Group * grp = cfg.getGroup( cfg.lastMainGroupId );
-    if( grp )
-    {
-      if( igrp )
-        igrp->checkMutedDictionaries( &grp->mutedDictionaries );
-      dictionaryBar.setMutedDictionaries( &grp->mutedDictionaries );
-    }
-    else
-      dictionaryBar.setMutedDictionaries( 0 );
-  }
+  cfg.lastMainLabel = ( cfg.lastMainGroupId == Instances::Group::AllGroupId )
+                       ? QString() : groupList->currentText();
+  dictionaryBar.setMutedDictionaries( &cfg.mutedDictionaries );
 
   updateDictionaryBar();
 
@@ -3872,6 +3906,33 @@ void MainWindow::on_saveArticle_triggered()
   }
 }
 
+void MainWindow::on_importDictionary_triggered()
+{
+  QStringList patterns;
+  patterns << "*.bgl" << "*.ifo" << "*.lsa" << "*.dat"
+           << "*.dsl" << "*.dsl.dz" << "*.index" << "*.xdxf"
+           << "*.xdxf.dz" << "*.dct" << "*.aar" << "*.zips"
+           << "*.mdx" << "*.gls" << "*.gls.dz";
+#ifdef MAKE_ZIM_SUPPORT
+  patterns << "*.zim" << "*.zimaa" << "*.slob";
+#endif
+
+  QString filter = tr( "Dictionary files (%1);;All files (*.*)" )
+                      .arg( patterns.join( " " ) );
+  QString filePath = QFileDialog::getOpenFileName( this,
+                                                   tr( "Import dictionary" ),
+                                                   QString(),
+                                                   filter );
+  if ( filePath.isEmpty() )
+    return;
+
+  filePath = QDir::cleanPath( filePath );
+  if ( !cfg.dictionaryFiles.contains( filePath ) )
+    cfg.dictionaryFiles.push_back( filePath );
+
+  on_rescanFiles_triggered();
+}
+
 void MainWindow::on_rescanFiles_triggered()
 {
   hotkeyWrapper.reset(); // No hotkeys while we're editing dictionaries
@@ -4983,9 +5044,12 @@ QString MainWindow::tabFavoritesFolder( int tabNom )
   if( groupId == 0 )
     groupId = cfg.lastMainGroupId;
 
-  Instances::Group const * igrp = groupInstances.findGroup( groupId );
-  if( igrp )
-    folder = igrp->favoritesFolder;
+  if( groupId != Instances::Group::AllGroupId )
+  {
+    Instances::Group const * igrp = groupInstances.findGroup( groupId );
+    if( igrp )
+      folder = igrp->name;
+  }
 
   return folder;
 }
@@ -5029,9 +5093,12 @@ void MainWindow::handleAddToFavoritesButton()
 void MainWindow::addWordToFavorites( QString const & word, unsigned groupId )
 {
   QString folder;
-  Instances::Group const * igrp = groupInstances.findGroup( groupId );
-  if( igrp )
-    folder = igrp->favoritesFolder;
+  if( groupId != Instances::Group::AllGroupId )
+  {
+    Instances::Group const * igrp = groupInstances.findGroup( groupId );
+    if( igrp )
+      folder = igrp->name;
+  }
 
   ui.favoritesPaneWidget->addHeadword( folder, word );
 }
@@ -5050,9 +5117,12 @@ void MainWindow::addAllTabsToFavorites()
 bool MainWindow::isWordPresentedInFavorites( QString const & word, unsigned groupId )
 {
   QString folder;
-  Instances::Group const * igrp = groupInstances.findGroup( groupId );
-  if( igrp )
-    folder = igrp->favoritesFolder;
+  if( groupId != Instances::Group::AllGroupId )
+  {
+    Instances::Group const * igrp = groupInstances.findGroup( groupId );
+    if( igrp )
+      folder = igrp->name;
+  }
 
   return ui.favoritesPaneWidget->isHeadwordPresent( folder, word );
 }
@@ -5076,7 +5146,7 @@ void MainWindow::setGroupByName( QString const & name, bool main_window )
       }
     }
     if( i >= groupList->count() )
-      gdWarning( "Group \"%s\" for main window is not found\n", name.toUtf8().data() );
+      gdWarning( "Label \"%s\" for main window is not found\n", name.toUtf8().data() );
   }
   else
   {
@@ -5089,21 +5159,13 @@ void MainWindow::headwordFromFavorites( QString const & headword,
 {
   if( !favoritesFolder.isEmpty() )
   {
-    // Find group by it Favorites folder
-    for( Instances::Groups::size_type i = 0; i < groupInstances.size(); i++ )
+    int idx = groupList->findText( favoritesFolder );
+    if( idx >= 0 && groupList->currentIndex() != idx )
     {
-      if( groupInstances[ i ].favoritesFolder == favoritesFolder )
-      {
-        // Group found. Select it and stop search.
-        if( groupList->currentIndex() != (int)i )
-        {
-          groupList->setCurrentIndex( i );
+      groupList->setCurrentIndex( idx );
 
-          // Restore focus on Favorites tree
-          ui.favoritesPaneWidget->setFocusOnTree();
-        }
-        break;
-      }
+      // Restore focus on Favorites tree
+      ui.favoritesPaneWidget->setFocusOnTree();
     }
   }
 

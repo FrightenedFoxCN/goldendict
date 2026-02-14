@@ -634,13 +634,7 @@ void FullTextSearchDialog::updateDictionaries()
 
   // Exclude muted dictionaries
 
-  Config::Group const * grp = cfg.getGroup( group );
-  Config::MutedDictionaries const * mutedDicts;
-
-  if( group == Instances::Group::AllGroupId )
-    mutedDicts = &cfg.mutedDictionaries;
-  else
-    mutedDicts = grp ? &grp->mutedDictionaries : 0;
+  Config::MutedDictionaries const * mutedDicts = &cfg.mutedDictionaries;
 
   if( mutedDicts && !mutedDicts->isEmpty() )
   {

@@ -16,6 +16,7 @@ goldendict
 
 # Build logs
 *.log
+log*
 build.log
 build-chinese.log
 final_build.log

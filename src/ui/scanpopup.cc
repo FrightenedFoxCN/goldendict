@@ -152,24 +152,25 @@ ScanPopup::ScanPopup( QWidget * parent,
   ui.pronounceButton->hide();
 
   ui.groupList->fill( groups );
-  ui.groupList->setCurrentGroup( cfg.lastPopupGroupId );
+  unsigned groupId = Instances::Group::AllGroupId;
+  if ( !cfg.lastPopupLabel.isEmpty() )
+  {
+    for( unsigned i = 0; i < groups.size(); ++i )
+    {
+      if ( groups[ i ].name == cfg.lastPopupLabel )
+      {
+        groupId = groups[ i ].id;
+        break;
+      }
+    }
+  }
+  cfg.lastPopupGroupId = groupId;
+  ui.groupList->setCurrentGroup( groupId );
+  cfg.lastPopupLabel = ( groupId == Instances::Group::AllGroupId )
+                       ? QString() : ui.groupList->currentText();
 
   dictionaryBar.setFloatable( false );
-
-  Instances::Group const * igrp = groups.findGroup( cfg.lastPopupGroupId );
-  if( cfg.lastPopupGroupId == Instances::Group::AllGroupId )
-  {
-    if( igrp )
-      igrp->checkMutedDictionaries( &cfg.popupMutedDictionaries );
-    dictionaryBar.setMutedDictionaries( &cfg.popupMutedDictionaries );
-  }
-  else
-  {
-    Config::Group * grp = cfg.getGroup( cfg.lastPopupGroupId );
-    if( igrp && grp )
-      igrp->checkMutedDictionaries( &grp->popupMutedDictionaries );
-    dictionaryBar.setMutedDictionaries( grp ? &grp->popupMutedDictionaries : 0 );
-  }
+  dictionaryBar.setMutedDictionaries( &cfg.popupMutedDictionaries );
 
   addToolBar( Qt::RightToolBarArea, &dictionaryBar );
 
@@ -734,25 +735,9 @@ QString ScanPopup::elideInputWord()
 void ScanPopup::currentGroupChanged( QString const & )
 {
     cfg.lastPopupGroupId = ui.groupList->getCurrentGroup();
-    Instances::Group const * igrp = groups.findGroup( cfg.lastPopupGroupId );
-    if( cfg.lastPopupGroupId == Instances::Group::AllGroupId )
-    {
-      if( igrp )
-        igrp->checkMutedDictionaries( &cfg.popupMutedDictionaries );
-      dictionaryBar.setMutedDictionaries( &cfg.popupMutedDictionaries );
-    }
-    else
-    {
-      Config::Group * grp = cfg.getGroup( cfg.lastPopupGroupId );
-      if( grp )
-      {
-        if( igrp )
-          igrp->checkMutedDictionaries( &grp->popupMutedDictionaries );
-        dictionaryBar.setMutedDictionaries( &grp->popupMutedDictionaries );
-      }
-      else
-        dictionaryBar.setMutedDictionaries( 0 );
-    }
+    cfg.lastPopupLabel = ( cfg.lastPopupGroupId == Instances::Group::AllGroupId )
+                         ? QString() : ui.groupList->currentText();
+    dictionaryBar.setMutedDictionaries( &cfg.popupMutedDictionaries );
 
   updateDictionaryBar();
 
@@ -1250,13 +1235,7 @@ void ScanPopup::updateDictionaryBar()
   if ( grp ) // Should always be !0, but check as a safeguard
     dictionaryBar.setDictionaries( grp->dictionaries );
 
-  if( currentId == Instances::Group::AllGroupId )
-    dictionaryBar.setMutedDictionaries( &cfg.popupMutedDictionaries );
-  else
-  {
-    Config::Group * grp = cfg.getGroup( currentId );
-    dictionaryBar.setMutedDictionaries( grp ? &grp->popupMutedDictionaries : 0 );
-  }
+  dictionaryBar.setMutedDictionaries( &cfg.popupMutedDictionaries );
 
   setDictionaryIconSize();
 }
@@ -1331,7 +1310,7 @@ void ScanPopup::setGroupByName( QString const & name )
     }
   }
   if( i >= ui.groupList->count() )
-    gdWarning( "Group \"%s\" for popup window is not found\n", name.toUtf8().data() );
+    gdWarning( "Label \"%s\" for popup window is not found\n", name.toUtf8().data() );
 }
 
 void ScanPopup::alwaysOnTopClicked( bool checked )

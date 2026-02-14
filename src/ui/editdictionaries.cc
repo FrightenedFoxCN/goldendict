@@ -20,22 +20,18 @@ EditDictionaries::EditDictionaries( QWidget * parent, Config::Class & cfg_,
   dictNetMgr( dictNetMgr_ ),
   origCfg( cfg ),
   sources( this, cfg ),
-  orderAndProps( new OrderAndProps( this, cfg.dictionaryOrder, cfg.inactiveDictionaries,
+  orderAndProps( new OrderAndProps( this, cfg, cfg.dictionaryOrder, cfg.inactiveDictionaries,
                                     dictionaries ) ),
-  groups( new Groups( this, dictionaries, cfg.groups, orderAndProps->getCurrentDictionaryOrder() ) ),
+  labelsWidget( new LabelsWidget( this, cfg, dictionaries ) ),
   dictionariesChanged( false ),
   groupsChanged( false ),
   lastCurrentTab( 0 )
 , helpWindow( 0 )
 , helpAction( this )
 {
-  // Some groups may have contained links to non-existnent dictionaries. We
-  // would like to preserve them if no edits were done. To that end, we save
-  // the initial group readings so that if no edits were really done, we won't
-  // be changing groups.
-  origCfg.groups = groups->getGroups();
   origCfg.dictionaryOrder = orderAndProps->getCurrentDictionaryOrder();
   origCfg.inactiveDictionaries = orderAndProps->getCurrentInactiveDictionaries();
+  origCfg.dictionaryLabels = cfg.dictionaryLabels;
 
   ui.setupUi( this );
 
@@ -45,18 +41,20 @@ EditDictionaries::EditDictionaries( QWidget * parent, Config::Class & cfg_,
 
   ui.tabs->addTab( &sources, QIcon(":/icons/reload.svg"), tr( "&Sources" ) );
   ui.tabs->addTab( orderAndProps.get(), QIcon(":/icons/book.svg"), tr( "&Dictionaries" ) );
-  ui.tabs->addTab( groups.get(), QIcon(":/icons/bookcase.svg"), tr( "&Groups" ) );
+  ui.tabs->addTab( labelsWidget.get(), QIcon(":/icons/bookcase.svg"), tr( "&Labels" ) );
 
   connect( ui.buttons, SIGNAL( clicked( QAbstractButton * ) ),
            this, SLOT( buttonBoxClicked( QAbstractButton * ) ) );
 
   connect( &sources, SIGNAL( rescan() ), this, SLOT( rescanSources() ) );
 
-  connect( groups.get(), SIGNAL( showDictionaryInfo( QString const & ) ),
-           this, SIGNAL( showDictionaryInfo( QString const & ) ) );
-
   connect( orderAndProps.get(), SIGNAL( showDictionaryHeadwords( QString const & ) ),
            this, SIGNAL( showDictionaryHeadwords( QString const & ) ) );
+
+  connect( labelsWidget.get(), SIGNAL( labelsChanged() ),
+           this, SLOT( labelsPanelChanged() ) );
+  connect( orderAndProps.get(), SIGNAL( labelsChanged() ),
+           this, SLOT( orderLabelsChanged() ) );
 
   connect( ui.buttons, SIGNAL( helpRequested() ),
            this, SLOT( helpRequested() ) );
@@ -73,29 +71,23 @@ EditDictionaries::EditDictionaries( QWidget * parent, Config::Class & cfg_,
 
 void EditDictionaries::editGroup( unsigned id )
 {
-  if ( id == Instances::Group::AllGroupId )
-    ui.tabs->setCurrentIndex( 1 );
-  else
-  {
-    ui.tabs->setCurrentIndex( 2 );
-    groups->editGroup( id );
-  }
+  (void)id;
+  ui.tabs->setCurrentIndex( 1 );
 }
 
 void EditDictionaries::save()
 {
-  Config::Groups newGroups = groups->getGroups();
   Config::Group newOrder = orderAndProps->getCurrentDictionaryOrder();
   Config::Group newInactive = orderAndProps->getCurrentInactiveDictionaries();
+  bool labelsChanged = ( origCfg.dictionaryLabels != cfg.dictionaryLabels );
 
   if ( isSourcesChanged() )
     acceptChangedSources( false );
 
-  if ( origCfg.groups != newGroups || origCfg.dictionaryOrder != newOrder ||
-       origCfg.inactiveDictionaries != newInactive )
+  if ( origCfg.dictionaryOrder != newOrder || origCfg.inactiveDictionaries != newInactive ||
+       labelsChanged )
   {
     groupsChanged = true;
-    cfg.groups = newGroups;
     cfg.dictionaryOrder = newOrder;
     cfg.inactiveDictionaries = newInactive;
   }
@@ -146,20 +138,21 @@ void EditDictionaries::on_tabs_currentChanged( int index )
       }
     }
   }
-  else
-  if ( lastCurrentTab == 1 && index != 1 )
-  {
-    // When switching from the dictionary order, we need to propagate any
-    // changes to the groups.
-    groups->updateDictionaryOrder( orderAndProps->getCurrentDictionaryOrder() );
-  }
-
   lastCurrentTab = index;
 }
-
 void EditDictionaries::rescanSources()
 {
   acceptChangedSources( true );
+}
+
+void EditDictionaries::labelsPanelChanged()
+{
+  orderAndProps->refreshLabels();
+}
+
+void EditDictionaries::orderLabelsChanged()
+{
+  labelsWidget->refreshFromConfig();
 }
 
 void EditDictionaries::buttonBoxClicked( QAbstractButton * button )
@@ -175,6 +168,7 @@ void EditDictionaries::buttonBoxClicked( QAbstractButton * button )
 bool EditDictionaries::isSourcesChanged() const
 {
   return sources.getPaths() != cfg.paths ||
+         sources.getDictionaryFiles() != cfg.dictionaryFiles ||
          sources.getSoundDirs() != cfg.soundDirs ||
          sources.getHunspell() != cfg.hunspell ||
          sources.getTransliteration() != cfg.transliteration ||
@@ -189,12 +183,11 @@ bool EditDictionaries::isSourcesChanged() const
 void EditDictionaries::acceptChangedSources( bool rebuildGroups )
 {
   dictionariesChanged = true;
-
-  Config::Groups savedGroups = groups->getGroups();
   Config::Group savedOrder = orderAndProps->getCurrentDictionaryOrder();
   Config::Group savedInactive = orderAndProps->getCurrentInactiveDictionaries();
 
   cfg.paths = sources.getPaths();
+  cfg.dictionaryFiles = sources.getDictionaryFiles();
   cfg.soundDirs = sources.getSoundDirs();
   cfg.hunspell = sources.getHunspell();
   cfg.transliteration = sources.getTransliteration();
@@ -210,19 +203,9 @@ void EditDictionaries::acceptChangedSources( bool rebuildGroups )
 
   ui.tabs->setUpdatesEnabled( false );
   ui.tabs->removeTab( 1 );
-  ui.tabs->removeTab( 1 );
-  groups.reset();
   orderAndProps.reset();
 
   loadDictionaries( this, true, cfg, dictionaries, dictNetMgr );
-
-  // If no changes to groups were made, update the original data
-  bool noGroupEdits = ( origCfg.groups == savedGroups );
-
-  if ( noGroupEdits )
-    savedGroups = cfg.groups;
-
-  Instances::updateNames( savedGroups, dictionaries );
 
   bool noOrderEdits = ( origCfg.dictionaryOrder == savedOrder );
 
@@ -240,23 +223,23 @@ void EditDictionaries::acceptChangedSources( bool rebuildGroups )
 
   if ( rebuildGroups )
   {
-    orderAndProps = new OrderAndProps( this, savedOrder, savedInactive, dictionaries );
+    orderAndProps = new OrderAndProps( this, cfg, savedOrder, savedInactive, dictionaries );
     ui.tabs->insertTab( 1, orderAndProps.get(), QIcon(":/icons/book.svg"), tr( "&Dictionaries" ) );
-
-    groups = new Groups( this, dictionaries, savedGroups, orderAndProps->getCurrentDictionaryOrder() );
-    ui.tabs->insertTab( 2, groups.get(), QIcon(":/icons/bookcase.svg"), tr( "&Groups" ) );
-
     ui.tabs->setUpdatesEnabled( true );
 
-    if ( noGroupEdits )
-      origCfg.groups = groups->getGroups();
+    connect( orderAndProps.get(), SIGNAL( labelsChanged() ),
+             this, SLOT( orderLabelsChanged() ) );
 
     if ( noOrderEdits )
       origCfg.dictionaryOrder = orderAndProps->getCurrentDictionaryOrder();
 
     if ( noInactiveEdits )
       origCfg.inactiveDictionaries = orderAndProps->getCurrentInactiveDictionaries();
+
+    origCfg.dictionaryLabels = cfg.dictionaryLabels;
   }
+
+  labelsWidget->refreshFromConfig();
 }
 
 void EditDictionaries::helpRequested()

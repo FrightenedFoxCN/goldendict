@@ -24,7 +24,7 @@ class DictListModel: public QAbstractListModel
 public:
 
   DictListModel( QWidget * parent ):
-    QAbstractListModel( parent ), isSource( false ), allDicts( 0 )
+    QAbstractListModel( parent ), isSource( false ), allDicts( 0 ), labelsMap( 0 )
   {}
 
   /// Populates the current model with the given dictionaries. This is
@@ -56,11 +56,15 @@ public:
 
   void filterDuplicates();
 
+  void setDictionaryLabels( Config::DictionaryLabels const * labels )
+  { labelsMap = labels; }
+
 private:
 
   bool isSource;
   std::vector< sptr< Dictionary::Class > > dictionaries;
   std::vector< sptr< Dictionary::Class > > const * allDicts;
+  Config::DictionaryLabels const * labelsMap;
 
 signals:
   void contentChanged();
@@ -88,6 +92,9 @@ public:
 
   DictListModel * getModel()
   { return & model; }
+
+  void setDictionaryLabels( Config::DictionaryLabels const * labels )
+  { model.setDictionaryLabels( labels ); }
 
 signals:
   void gotFocus();
@@ -200,6 +207,25 @@ signals:
   void showDictionaryInfo( QString const & id );
 };
 
+class LabelFilterProxyModel: public QSortFilterProxyModel
+{
+public:
+  LabelFilterProxyModel();
+
+  void setFilterText( QString const & text );
+  void setLabelFilter( QString const & label );
+  void setDictionaryLabels( Config::DictionaryLabels const * labels );
+
+protected:
+  bool filterAcceptsRow( int sourceRow, QModelIndex const & sourceParent ) const;
+
+private:
+  void refreshFilter();
+  QString filterText;
+  QString labelFilter;
+  Config::DictionaryLabels const * labelsMap;
+};
+
 class QuickFilterLine: public ExtLineEdit
 {
   Q_OBJECT
@@ -216,11 +242,14 @@ public:
 
   QModelIndex mapToSource( QModelIndex const & idx );
 
+  void setLabelFilter( QString const & label );
+  void setDictionaryLabels( Config::DictionaryLabels const * labels );
+
 protected:
   virtual void keyPressEvent( QKeyEvent * event );
 
 private:
-  QSortFilterProxyModel m_proxyModel;
+  LabelFilterProxyModel m_proxyModel;
   QAction m_focusAction;
   QAbstractItemView * m_source;
 

@@ -38,6 +38,13 @@
            </property>
           </widget>
          </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="labelFilterLabel">
+          <property name="text">
+           <string>Label filter:</string>
+          </property>
+         </widget>
+        </item>
          <item row="2" column="0">
           <widget class="DictListWidget" name="dictionaryOrder"/>
          </item>
@@ -57,6 +64,9 @@
          <item row="1" column="0">
           <widget class="QuickFilterLine" name="searchLine"/>
          </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="labelFilter"/>
+        </item>
         </layout>
        </item>
       </layout>
@@ -168,43 +178,6 @@
         </item>
         <item>
          <widget class="QPlainTextEdit" name="dictionaryDescription">
-          <property name="palette">
-           <palette>
-            <active>
-             <colorrole role="Base">
-              <brush brushstyle="SolidPattern">
-               <color alpha="255">
-                <red>224</red>
-                <green>223</green>
-                <blue>223</blue>
-               </color>
-              </brush>
-             </colorrole>
-            </active>
-            <inactive>
-             <colorrole role="Base">
-              <brush brushstyle="SolidPattern">
-               <color alpha="255">
-                <red>224</red>
-                <green>223</green>
-                <blue>223</blue>
-               </color>
-              </brush>
-             </colorrole>
-            </inactive>
-            <disabled>
-             <colorrole role="Base">
-              <brush brushstyle="SolidPattern">
-               <color alpha="255">
-                <red>212</red>
-                <green>208</green>
-                <blue>200</blue>
-               </color>
-              </brush>
-             </colorrole>
-            </disabled>
-           </palette>
-          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -266,43 +239,6 @@
             <height>65</height>
            </size>
           </property>
-          <property name="palette">
-           <palette>
-            <active>
-             <colorrole role="Base">
-              <brush brushstyle="SolidPattern">
-               <color alpha="255">
-                <red>224</red>
-                <green>223</green>
-                <blue>222</blue>
-               </color>
-              </brush>
-             </colorrole>
-            </active>
-            <inactive>
-             <colorrole role="Base">
-              <brush brushstyle="SolidPattern">
-               <color alpha="255">
-                <red>224</red>
-                <green>223</green>
-                <blue>222</blue>
-               </color>
-              </brush>
-             </colorrole>
-            </inactive>
-            <disabled>
-             <colorrole role="Base">
-              <brush brushstyle="SolidPattern">
-               <color alpha="255">
-                <red>224</red>
-                <green>223</green>
-                <blue>222</blue>
-               </color>
-              </brush>
-             </colorrole>
-            </disabled>
-           </palette>
-          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -321,9 +257,9 @@
    </item>
    <item>
     <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Adjust the order by dragging and dropping items in it. Drop dictionaries to the inactive group to disable their use.</string>
-     </property>
+    <property name="text">
+     <string>Adjust the order by dragging and dropping items in it. Drop dictionaries to the inactive list to disable their use.</string>
+    </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>

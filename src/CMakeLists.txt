@@ -20,6 +20,7 @@ set(UI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ui)
 file(GLOB UI_SOURCES "${UI_DIR}/*.cc")
 file(GLOB UI_HEADERS "${UI_DIR}/*.hh")
 file(GLOB UI_FORMS "${UI_DIR}/forms/*.ui")
+list(APPEND UI_FORMS "${UI_DIR}/forms/labels.ui")
 file(GLOB UI_RESOURCES "${UI_DIR}/*.qrc")
 
 # Audio players and sound handlers

@@ -7,7 +7,6 @@
 #include "gddebug.hh"
 #include "fsencoding.hh"
 #include "qt4x5.hh"
-#include <QDebug>
 
 using std::vector;
 
@@ -48,6 +47,14 @@ static QString elideDictName( QString const & name )
   return name.left( pieceSize ) + QChar( 0x2026 ) + name.right( pieceSize );
 }
 
+static QString makeDictTooltip( QString const & name, bool isMuted )
+{
+  if ( isMuted )
+    return name + "\nMuted";
+
+  return name;
+}
+
 void DictionaryBar::setDictionaries( vector< sptr< Dictionary::Class > >
                                      const & dictionaries )
 {
@@ -70,15 +77,16 @@ void DictionaryBar::setDictionaries( vector< sptr< Dictionary::Class > >
 
     QAction * action = addAction( icon, elideDictName( dictName ) );
 
-    action->setToolTip( dictName ); // Tooltip need not be shortened
-
     QString id = QString::fromStdString( dictionaries[ x ]->getId() );
 
     action->setData( id );
 
     action->setCheckable( true );
 
-    action->setChecked( mutedDictionaries ? !mutedDictionaries->contains( id ) : true );
+    bool isMuted = mutedDictionaries ? mutedDictionaries->contains( id ) : false;
+    action->setChecked( !isMuted );
+    action->setProperty( "dictName", dictName );
+    action->setToolTip( makeDictTooltip( dictName, isMuted ) );
 
     QList< QSize > sizes = icon.availableSizes();
 
@@ -109,8 +117,8 @@ void DictionaryBar::showContextMenu( QContextMenuEvent * event, bool extended )
 {
   QMenu menu( this );
 
-  QAction * editAction =
-      menu.addAction( QIcon( ":/icons/bookcase.svg" ), tr( "Edit this group" ) );
+    QAction * editAction =
+      menu.addAction( QIcon( ":/icons/bookcase.svg" ), tr( "Edit dictionaries" ) );
 
   QAction * infoAction = NULL;
   QAction * headwordsAction = NULL;
@@ -244,10 +252,16 @@ void DictionaryBar::mutedDictionariesChanged()
   for( QList< QAction * >::iterator i = dictActions.begin();
        i != dictActions.end(); ++i )
   {
-    bool isUnmuted = !mutedDictionaries->contains( (*i)->data().toString() );
+    QString dictId = (*i)->data().toString();
+    bool isMuted = mutedDictionaries->contains( dictId );
+    bool isUnmuted = !isMuted;
 
     if ( isUnmuted != (*i)->isChecked() )
       (*i)->setChecked( isUnmuted );
+
+    QString dictName = (*i)->property( "dictName" ).toString();
+    if ( !dictName.isEmpty() )
+      (*i)->setToolTip( makeDictTooltip( dictName, isMuted ) );
   }
 
   setUpdatesEnabled( true );

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LabelsWidget</class>
+ <widget class="QWidget" name="LabelsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Labels</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,1">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="leftLayout">
+     <item>
+      <widget class="QLabel" name="availableLabel">
+       <property name="text">
+        <string>Dictionaries available:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QuickFilterLine" name="searchLine"/>
+     </item>
+     <item>
+      <widget class="DictListWidget" name="availableDictionaries"/>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <layout class="QVBoxLayout" name="middleLayout">
+     <item>
+      <spacer name="middleTopSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addDictsToLabel">
+       <property name="minimumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Add selected dictionaries to label (Ins)</string>
+       </property>
+       <property name="text">
+        <string>&gt;</string>
+       </property>
+       <property name="shortcut">
+        <string>Ins</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeDictsFromLabel">
+       <property name="minimumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Remove selected dictionaries from label (Del)</string>
+       </property>
+       <property name="text">
+        <string>&lt;</string>
+       </property>
+       <property name="shortcut">
+        <string>Del</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="middleBottomSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="2">
+    <layout class="QVBoxLayout" name="rightLayout">
+     <item>
+      <widget class="QLabel" name="labelsLabel">
+       <property name="text">
+        <string>Labels:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="labelsList"/>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="labelsButtons">
+       <item>
+        <widget class="QPushButton" name="addLabel">
+         <property name="toolTip">
+          <string>Create new label</string>
+         </property>
+         <property name="text">
+          <string>&amp;Add label</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="renameLabel">
+         <property name="toolTip">
+          <string>Rename current label</string>
+         </property>
+         <property name="text">
+          <string>Re&amp;name label</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="removeLabel">
+         <property name="toolTip">
+          <string>Remove current label</string>
+         </property>
+         <property name="text">
+          <string>&amp;Remove label</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="assignedLabel">
+       <property name="text">
+        <string>Dictionaries in label:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="DictListWidget" name="assignedDictionaries"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DictListWidget</class>
+   <extends>QListWidget</extends>
+   <header>groups_widgets.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>QuickFilterLine</class>
+   <extends>QLineEdit</extends>
+   <header>groups_widgets.hh</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -16,6 +16,10 @@
 	<string>@SHORT_VERSION@</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.goldendict</string>	
+	<key>CFBundleName</key>
+	<string>SilverDict</string>
+	<key>CFBundleDisplayName</key>
+	<string>SilverDict</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

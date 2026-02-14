@@ -98,3 +98,40 @@ a, .mwiki a
 	color: #0066CC;
 }
 
+@media (prefers-color-scheme: dark) {
+	html,
+	body,
+	.gdarticle {
+		background: #1f2024;
+		color: #e6e6e6;
+	}
+
+	.gddictname {
+		background: #2a2b2f;
+		color: #e6e6e6;
+	}
+
+	.bglpos {
+		color: #e6e6e6;
+		background: #2a2b2f;
+	}
+
+	.bgltrn {
+		color: #b0b0b0;
+	}
+
+	a,
+	.mwiki a {
+		color: #8ab4f8;
+	}
+
+	a:hover {
+		color: #a8c7ff;
+	}
+
+	::selection {
+		background: rgba(138, 180, 248, 0.35);
+		color: #e6e6e6;
+	}
+}
+

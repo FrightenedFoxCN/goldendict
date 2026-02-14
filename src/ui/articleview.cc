@@ -1183,8 +1183,10 @@ QString ArticleView::getMutedForGroup( unsigned group )
     Config::MutedDictionaries const * mutedDictionaries;
     if( group == Instances::Group::AllGroupId )
       mutedDictionaries = popupView ? &cfg.popupMutedDictionaries : &cfg.mutedDictionaries;
+    else if( grp )
+      mutedDictionaries = popupView ? &grp->popupMutedDictionaries : &grp->mutedDictionaries;
     else
-        mutedDictionaries = grp ? ( popupView ? &grp->popupMutedDictionaries : &grp->mutedDictionaries ) : 0;
+      mutedDictionaries = popupView ? &cfg.popupMutedDictionaries : &cfg.mutedDictionaries;
     if( !mutedDictionaries )
       return QString();
 

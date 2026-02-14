@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">GoldenDict</string>
+   <string notr="true">SilverDict</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -85,6 +85,7 @@
     <addaction name="separator"/>
     <addaction name="saveArticle"/>
     <addaction name="separator"/>
+    <addaction name="importDictionary"/>
     <addaction name="rescanFiles"/>
     <addaction name="separator"/>
     <addaction name="actionCloseToTray"/>
@@ -378,6 +379,18 @@
    </property>
    <property name="shortcut">
     <string>F3</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="importDictionary">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import &amp;Dictionary...</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

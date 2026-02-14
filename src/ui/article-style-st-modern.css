@@ -179,3 +179,53 @@ a:hover
 code::selection {
   background: #333333;
 }
+
+@media (prefers-color-scheme: dark) {
+	html,
+	body {
+		background: #1f2024;
+		color: #e6e6e6;
+	}
+
+	.gdarticle {
+		background: #24262b;
+		border: 1px solid #3a3b40;
+	}
+
+	.gdactivearticle {
+		border: 1px solid #4a7fbf;
+	}
+
+	.gdarticleseparator + script + .gdactivearticle .gddictname {
+		border-top: 1px solid #4a7fbf;
+	}
+
+	.gddictname {
+		background: #2a2b2f;
+		border-color: #3a3b40;
+		color: #e6e6e6;
+	}
+
+	.gdactivearticle .gddictname {
+		background: #2a3545;
+		border-color: #4a7fbf;
+		color: #8ab4f8;
+	}
+
+	a {
+		color: #8ab4f8;
+	}
+
+	a:hover {
+		color: #a8c7ff;
+	}
+
+	::selection {
+		background: rgba(204, 0, 0, 0.5);
+		color: #fff;
+	}
+
+	code::selection {
+		background: #555;
+	}
+}
