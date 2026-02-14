@@ -153,6 +153,8 @@ OrderAndProps::OrderAndProps( QWidget * parent,
   updateLabelFilterOptions();
   connect( ui.labelFilter, SIGNAL( currentIndexChanged( int ) ),
            this, SLOT( labelFilterChanged( int ) ) );
+  // Initialize the label filter based on current dropdown selection
+  labelFilterChanged( ui.labelFilter->currentIndex() );
 
   connect( ui.dictionaryOrder->getModel(), SIGNAL( contentChanged() ),
            this, SLOT( showDictNumbers() ) );
