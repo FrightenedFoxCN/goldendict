@@ -367,3 +367,56 @@ h3 {
 	background-color:#eeeeee;
 	padding: 8px 8px 8px 8px;
 } 
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background: #1a1f28;
+		color: #e6e6e6;
+	}
+
+	.gdarticle {
+		background: #24262b;
+		border: 1px solid #3a3b40;
+	}
+
+	.gdactivearticle {
+		background: #24262b;
+		border: 1px solid #4a6b9f;
+	}
+
+	.gdarticleseparator + script + .gdactivearticle .gddictname {
+		border-top: 1px solid #4a6b9f;
+		border-right: 1px solid #4a6b9f;
+	}
+
+	.gddictname {
+		background: #2a3040;
+		border-top: 1px solid #3a3b40;
+		border-right: 1px solid #3a3b40;
+		color: #9ab4d8;
+	}
+
+	.gdactivearticle .gddictname {
+		background: #2a3a50;
+		border-top: 1px solid #4a6b9f;
+		border-right: 1px solid #4a6b9f;
+		color: #8ab4f8;
+	}
+
+	.gdcollapsedarticle {
+		background-image: -webkit-linear-gradient(left top, #333 0%, #333 25%, #2a2a2a 25%, #2a2a2a 50%, #333 50%, #333 75%, #2a2a2a 75%);
+	}
+
+	.sdct_h div.float250color {
+		border-color: #4a6b9f;
+		background-color: #2a2b2f;
+	}
+
+	a {
+		color: #8ab4f8;
+	}
+
+	a:hover {
+		color: #a8c7ff;
+	}
+}

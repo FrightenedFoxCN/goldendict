@@ -3028,4 +3028,40 @@ in bg url to hide it from iemac */
 	.xdxf_ex {
 		color: #b0b0b0;
 	}
+
+	/* Override black text used for emphasis in dictionaries */
+	.xdxf_ex .xdxf_ex_markd,
+	.xdxf_ex_old .xdxf_ex_markd {
+		color: #e6e6e6;
+		background-color: #3a3b40;
+	}
+
+	/* MediaWiki styles */
+	.mwiki .os-suggest-result,
+	.mwiki td.os-suggest-result {
+		background-color: #2a2b2f;
+		color: #e6e6e6;
+	}
+
+	.mwiki #content {
+		background: #24262b;
+		color: #e6e6e6;
+		border: 1px solid #3a3b40;
+	}
+
+	/* Override any remaining black text for visibility */
+	[style*="color:black"],
+	[style*="color: black"],
+	[style*="color:#000"],
+	[style*="color: #000"] {
+		color: #e6e6e6 !important;
+	}
+
+	/* Override black borders to be visible */
+	[style*="border-color:black"],
+	[style*="border-color: black"],
+	[style*="border-color:#000"],
+	[style*="border-color: #000"] {
+		border-color: #4a4b50 !important;
+	}
 }

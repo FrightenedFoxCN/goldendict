@@ -98,3 +98,45 @@ a:hover
 {
   color: black;
 }
+
+@media (prefers-color-scheme: dark) {
+	html,
+	body,
+	.gdarticle {
+		background: #1f2024;
+		color: #e6e6e6;
+	}
+
+	.gddictname {
+		background: #2a2b2f;
+		border: 1px dotted #4a4b50;
+		color: #e6e6e6;
+	}
+
+	.gdactivearticle .gddictname {
+		background: #2a3a4a;
+		border: 1px solid #4a5b6b;
+		color: #8ab4f8;
+	}
+
+	.gdarticleseparator {
+		border-bottom: 1px solid #3a3b40;
+	}
+
+	.dsl_com {
+		color: #e6e6e6;
+	}
+
+	a {
+		color: #8ab4f8;
+	}
+
+	a:hover {
+		color: #a8c7ff;
+	}
+
+	::selection {
+		background: rgba(138, 180, 248, 0.35);
+		color: #e6e6e6;
+	}
+}
