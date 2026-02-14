@@ -60,6 +60,9 @@
           <string>Startup &amp; Window Behavior</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_startup">
+          <property name="verticalSpacing">
+           <number>6</number>
+          </property>
           <item row="0" column="0">
            <widget class="QCheckBox" name="cbAutostart">
             <property name="toolTip">
@@ -129,6 +132,9 @@ the application.</string>
           <string>Interaction</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_interaction">
+          <property name="verticalSpacing">
+           <number>6</number>
+          </property>
           <item row="0" column="0">
            <widget class="QCheckBox" name="doubleClickTranslates">
             <property name="text">
@@ -173,7 +179,7 @@ With this on however, it will hide the main window.</string>
              <number>0</number>
             </property>
             <property name="styleSheet">
-             <string>margin-top: 12px; margin-bottom: 8px;</string>
+             <string>margin-top: 16px; margin-bottom: 4px;</string>
             </property>
            </widget>
           </item>
@@ -284,6 +290,9 @@ p, li { white-space: pre-wrap; }
           <string>Tabbed browsing</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
+          <property name="verticalSpacing">
+           <number>6</number>
+          </property>
           <item row="0" column="0">
            <widget class="QCheckBox" name="newTabsOpenInBackground">
             <property name="toolTip">
@@ -583,12 +592,15 @@ be the last ones.</string>
              <number>0</number>
             </property>
             <property name="styleSheet">
-             <string>margin-top: 12px; margin-bottom: 8px;</string>
+             <string>margin-top: 8px; margin-bottom: 4px;</string>
             </property>
            </widget>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_articleTheme">
+            <property name="verticalSpacing">
+             <number>6</number>
+            </property>
              <item row="0" column="0">
               <widget class="QLabel" name="articleFontFamilyLabel">
                <property name="text">
@@ -752,12 +764,15 @@ be the last ones.</string>
              <number>0</number>
             </property>
             <property name="styleSheet">
-             <string>margin-top: 12px; margin-bottom: 8px;</string>
+             <string>margin-top: 8px; margin-bottom: 4px;</string>
             </property>
            </widget>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_uiTheme">
+            <property name="verticalSpacing">
+             <number>6</number>
+            </property>
              <item row="0" column="0">
               <widget class="QLabel" name="uiFontFamilyLabel">
                <property name="text">
