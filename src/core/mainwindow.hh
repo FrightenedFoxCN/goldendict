@@ -47,6 +47,7 @@ using std::string;
 using std::vector;
 
 class QEvent;
+class QShowEvent;
 
 class ExpandableToolBar : public QToolBar
 {
@@ -77,7 +78,7 @@ public:
   MainWindow( Config::Class & cfg );
   ~MainWindow();
 
-  virtual void commitData( QSessionManager & );
+  void commitData( QSessionManager & ) override;
 
   void showGDHelpForID( QString const & id );
   void closeGDHelp();
@@ -90,7 +91,8 @@ public:
   void setGroupByName( QString const & name, bool main_window );
 
 protected:
-  void changeEvent( QEvent * event );
+  void changeEvent( QEvent * event ) override;
+  void showEvent( QShowEvent * event ) override;
 
 public slots:
 
@@ -196,6 +198,7 @@ private:
   bool wasMaximized; // Window state before minimization
 
   bool blockUpdateWindowTitle;
+  bool tabsInitialized;
 
   QPrinter & getPrinter(); // Creates a printer if it's not there and returns it
 
@@ -216,8 +219,8 @@ private:
   /// current configuration and situation.
   void updateTrayIcon();
 
-  void wheelEvent( QWheelEvent * );
-  void closeEvent( QCloseEvent * );
+  void wheelEvent( QWheelEvent * ) override;
+  void closeEvent( QCloseEvent * ) override;
 
   void applyProxySettings();
   void applyWebSettings();
@@ -236,11 +239,13 @@ private:
 
   void updateWindowTitle();
 
+  void initTabs();
+
   /// Updates word search request and active article view in response to
   /// muting or unmuting dictionaries, or showing/hiding dictionary bar.
   void applyMutedDictionariesState();
 
-  virtual bool eventFilter( QObject *, QEvent * );
+  bool eventFilter( QObject *, QEvent * ) override;
 
   /// Returns the reference to dictionaries stored in the currently active
   /// group, or to all dictionaries if there are no groups.
@@ -260,7 +265,7 @@ private:
   void applyZoomFactor();
   void adjustCurrentZoomFactor();
 
-  void mousePressEvent ( QMouseEvent * event );
+  void mousePressEvent ( QMouseEvent * event ) override;
 
   void updateCurrentGroupProperty();
 

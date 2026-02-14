@@ -163,6 +163,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   lastDarkMode( false )
 , wasMaximized( false )
 , blockUpdateWindowTitle( false )
+, tabsInitialized( false )
 , headwordsDlg( 0 )
 , ftsIndexing( dictionaries )
 , ftsDlg( 0 )
@@ -811,7 +812,7 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   // After we have dictionaries and groups, we can populate history
 //  historyChanged();
 
-  setWindowTitle( "GoldenDict" );
+  setWindowTitle( "SilverDict" );
 
 #ifdef Q_OS_MAC
   {
@@ -821,26 +822,6 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
       restoreState( cfg.mainWindowState, 1 );
   }
 #endif
-
-  blockUpdateWindowTitle = true;
-  addNewTab();
-
-  // Create tab list menu
-  createTabList();
-
-  // Show the initial welcome text
-
-  {
-    ArticleView *view = getCurrentArticleView();
-
-    history.enableAdd( false );
-
-    blockUpdateWindowTitle = true;
-
-    view->showDefinition( tr( "Welcome!" ), Instances::Group::HelpGroupId );
-
-    history.enableAdd( cfg.preferences.storeHistory );
-  }
 
   translateLine->setFocus();
 
@@ -880,8 +861,12 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   // Only show window initially if it wasn't configured differently
   if ( !cfg.preferences.enableTrayIcon || !cfg.preferences.startToTray )
   {
-    show();
-    focusTranslateLine();
+    // Defer showing to avoid triggering QWidget show logic before the event loop
+    // is ready, which can sporadically crash on some macOS setups.
+    QTimer::singleShot( 0, this, [ this ]() {
+      show();
+      focusTranslateLine();
+    } );
   }
 
   connect( &newReleaseCheckTimer, SIGNAL( timeout() ),
@@ -1244,6 +1229,19 @@ void MainWindow::changeEvent( QEvent * event )
 #endif
 }
 
+void MainWindow::showEvent( QShowEvent * event )
+{
+  QMainWindow::showEvent( event );
+
+  if ( tabsInitialized )
+    return;
+
+  tabsInitialized = true;
+  QTimer::singleShot( 0, this, [ this ]() {
+    initTabs();
+  } );
+}
+
 void MainWindow::updateTrayIcon()
 {
   if ( !trayIcon && cfg.preferences.enableTrayIcon )
@@ -1488,6 +1486,7 @@ void MainWindow::updateGroupList()
     g.id = Instances::Group::AllGroupId;
     g.icon = "folder.png";
     groupInstances.push_back( g );
+    
   }
 
   QMap< QString, Config::Group > labelGroups;
@@ -1669,7 +1668,6 @@ vector< sptr< Dictionary::Class > > const & MainWindow::getActiveDicts()
     // This shouldn't ever happen
     return dictionaries;
   }
-
   Config::MutedDictionaries const * mutedDictionaries = dictionaryBar.getMutedDictionaries();
   if ( !dictionaryBar.toggleViewAction()->isChecked() || mutedDictionaries == 0 )
     return groupInstances[ current ].dictionaries;
@@ -1756,6 +1754,31 @@ void MainWindow::switchToWindow(QAction *act)
 {
   int idx = act->data().toInt();
   ui.tabWidget->setCurrentIndex(idx);
+}
+
+void MainWindow::initTabs()
+{
+  if ( ui.tabWidget->count() > 0 )
+    return;
+
+  blockUpdateWindowTitle = true;
+  addNewTab();
+
+  // Create tab list menu
+  createTabList();
+
+  // Show the initial welcome text
+  ArticleView *view = getCurrentArticleView();
+  if ( !view )
+    return;
+
+  history.enableAdd( false );
+
+  blockUpdateWindowTitle = true;
+
+  view->showDefinition( tr( "Welcome!" ), Instances::Group::HelpGroupId );
+
+  history.enableAdd( cfg.preferences.storeHistory );
 }
 
 
@@ -2021,7 +2044,7 @@ void MainWindow::updateWindowTitle()
         str.append( (ushort)0x202C ); // PDF, POP DIRECTIONAL FORMATTING
       }
       if( !blockUpdateWindowTitle )
-        setWindowTitle( tr( "%1 - %2" ).arg( str, "GoldenDict" ) );
+        setWindowTitle( tr( "%1 - %2" ).arg( str, "SilverDict" ) );
       blockUpdateWindowTitle = false;
     }
   }
