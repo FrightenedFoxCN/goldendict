@@ -1506,7 +1506,9 @@ void MainWindow::updateGroupList()
       if ( label.isEmpty() )
         continue;
       // Skip labels named "all" (case-insensitive) to avoid conflict with the special "All" group
-      if ( label.compare( tr( "All" ), Qt::CaseInsensitive ) == 0 )
+      // Check both literal "all" and translated version in case user created label in their language
+      if ( label.compare( QString( "all" ), Qt::CaseInsensitive ) == 0 ||
+           label.compare( tr( "All" ), Qt::CaseInsensitive ) == 0 )
         continue;
       Config::Group & group = labelGroups[ label ];
       group.name = label;
