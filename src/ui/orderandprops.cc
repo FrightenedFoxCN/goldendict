@@ -193,9 +193,11 @@ void OrderAndProps::labelFilterChanged( int index )
 {
   QVariant data = ui.labelFilter->itemData( index );
   QString label = data.isValid() ? data.toString() : QString();
+  qDebug() << "labelFilterChanged: index=" << index << "data=" << data << "label before conversion=" << label;
   // Special markers: empty string shows all, __untagged__ shows only untagged
   if ( label == "__all__" )
     label = QString();
+  qDebug() << "labelFilterChanged: final label=" << label << "(empty=" << label.isEmpty() << ")";
   ui.searchLine->setLabelFilter( label );
 }
 

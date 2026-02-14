@@ -1151,6 +1151,7 @@ void LabelFilterProxyModel::setFilterText( QString const & text )
 
 void LabelFilterProxyModel::setLabelFilter( QString const & label )
 {
+  qDebug() << "LabelFilterProxyModel::setLabelFilter: label=" << label << "(empty=" << label.isEmpty() << ")";
   labelFilter = label;
   refreshFilter();
 }
@@ -1178,34 +1179,49 @@ bool LabelFilterProxyModel::filterAcceptsRow( int sourceRow, QModelIndex const &
 {
   QModelIndex idx = sourceModel()->index( sourceRow, 0, sourceParent );
   QString display = sourceModel()->data( idx, Qt::DisplayRole ).toString();
+  QString dictId = sourceModel()->data( idx, Qt::EditRole ).toString();
 
   if ( !filterText.isEmpty() && !display.contains( filterText, Qt::CaseInsensitive ) )
     return false;
 
   if ( labelFilter.isEmpty() )
+  {
+    qDebug() << "  filterAcceptsRow: ACCEPT (labelFilter is empty) dict=" << display;
     return true;
+  }
 
   if ( labelFilter == "__untagged__" )
   {
     if ( !labelsMap )
       return true;
-    QString dictId = sourceModel()->data( idx, Qt::EditRole ).toString();
-    return !labelsMap->contains( dictId ) || labelsMap->value( dictId ).isEmpty();
+    bool accept = !labelsMap->contains( dictId ) || labelsMap->value( dictId ).isEmpty();
+    qDebug() << "  filterAcceptsRow: untagged check, dict=" << display << "accept=" << accept;
+    return accept;
   }
 
   if ( !labelsMap )
+  {
+    qDebug() << "  filterAcceptsRow: REJECT (no labelsMap) dict=" << display;
     return false;
+  }
 
-  QString dictId = sourceModel()->data( idx, Qt::EditRole ).toString();
   if ( !labelsMap->contains( dictId ) )
+  {
+    qDebug() << "  filterAcceptsRow: REJECT (dict not in labelsMap) dict=" << display;
     return false;
+  }
 
   QStringList labels = labelsMap->value( dictId );
+  qDebug() << "  filterAcceptsRow: checking dict=" << display << "labels=" << labels << "against filter=" << labelFilter;
   for( QStringList::const_iterator it = labels.begin(); it != labels.end(); ++it )
   {
     if ( it->compare( labelFilter, Qt::CaseInsensitive ) == 0 )
+    {
+      qDebug() << "    ACCEPT (label match)";
       return true;
+    }
   }
 
+  qDebug() << "  REJECT (no label match)";
   return false;
 }
