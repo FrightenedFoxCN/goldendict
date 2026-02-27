@@ -72,13 +72,15 @@ Q_OBJECT
   QAtomicInt & isCancelled;
   std::vector< sptr< Dictionary::Class > > const & dictionaries;
   QSemaphore & hasExited;
+  int maxWorkers;
 
 public:
   Indexing( QAtomicInt & cancelled, std::vector< sptr< Dictionary::Class > > const & dicts,
-            QSemaphore & hasExited_):
+            QSemaphore & hasExited_, int maxWorkers_ ):
     isCancelled( cancelled ),
     dictionaries( dicts ),
-    hasExited( hasExited_ )
+    hasExited( hasExited_ ),
+    maxWorkers( maxWorkers_ )
   {}
 
   ~Indexing()

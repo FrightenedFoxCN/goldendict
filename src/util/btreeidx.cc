@@ -7,6 +7,7 @@
 #include <QRunnable>
 #include <QThreadPool>
 #include <QSemaphore>
+#include <QElapsedTimer>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1227,6 +1228,9 @@ void IndexedWords::addSingleWord( wstring const & word, uint32_t articleOffset )
 
 IndexInfo buildIndex( IndexedWords const & indexedWords, File::Class & file )
 {
+  QElapsedTimer timer;
+  timer.start();
+
   size_t indexSize = indexedWords.size();
   IndexedWords::const_iterator nextIndex = indexedWords.begin();
 
@@ -1257,6 +1261,12 @@ IndexInfo buildIndex( IndexedWords const & indexedWords, File::Class & file )
   uint32_t rootOffset = buildBtreeNode( nextIndex, indexSize,
                                         file, btreeMaxElements,
                                         lastLeafOffset );
+
+  gdDebug( "BtreeIndexing::buildIndex: %u keys, fanout=%u, root=%u, elapsed=%lld ms\n",
+           static_cast< unsigned >( indexSize ),
+           static_cast< unsigned >( btreeMaxElements ),
+           static_cast< unsigned >( rootOffset ),
+           static_cast< long long >( timer.elapsed() ) );
 
   return IndexInfo( btreeMaxElements, rootOffset );
 }

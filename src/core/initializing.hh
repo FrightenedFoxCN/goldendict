@@ -5,6 +5,7 @@
 #define __INITIALIZING_HH_INCLUDED__
 
 #include <QDialog>
+#include <QVector>
 #include "ui_initializing.h"
 
 #if defined( Q_OS_WIN32 )
@@ -41,13 +42,27 @@ public:
 public slots:
 
   void indexing( QString const & dictionaryName );
+  void indexingProgress( QString const & dictionaryName, int count );
+  void indexingCandidates( int totalCandidates );
+  void indexingWorkers( int active, int total );
+  void indexingWorkerTask( int worker, int total, QString const & taskName, bool active );
+  void deferredInitializing( QString const & dictionaryName, int current, int total );
 
 private:
 
+  void updateIndexingOperationText();
+  void updateWorkerTasksText();
+
   virtual void closeEvent( QCloseEvent * );
   virtual void reject();
+  int indexingWorkersActive;
+  int indexingWorkersTotal;
+  int indexingCompletedCount;
+  int indexingCandidatesTotal;
+  QVector< QString > workerTasks;
 #if defined( Q_OS_WIN32 )
   QStyle * oldBarStyle;
+  QStyle * oldDeferredBarStyle;
 #endif
 
   Ui::Initializing ui;

@@ -893,9 +893,6 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
 
   prepareNewReleaseChecks();
 
-  // makeDictionaries() didn't do deferred init - we do it here, at the end.
-  doDeferredInit( dictionaries );
-
   updateStatusLine();
 
 #ifdef Q_OS_MAC
@@ -1434,7 +1431,7 @@ void MainWindow::makeDictionaries()
   ftsIndexing.stopIndexing();
   ftsIndexing.clearDictionaries();
 
-  loadDictionaries( this, isVisible(), cfg, dictionaries, dictNetMgr, false );
+  loadDictionaries( this, isVisible(), cfg, dictionaries, dictNetMgr, true );
 
   for( unsigned x = 0; x < dictionaries.size(); x++ )
   {

@@ -10,6 +10,7 @@
 
 #include <QThread>
 #include <QNetworkAccessManager>
+#include <QMutex>
 #include <set>
 
 /// Use loadDictionaries() function below -- this is a helper thread class
@@ -28,6 +29,9 @@ class LoadDictionaries: public QThread, public Dictionary::Initializing
   int maxPictureWidth;
   unsigned int maxHeadwordSize;
   unsigned int maxHeadwordToExpand;
+  std::set< std::string > queuedFiles;
+  QMutex indexingCountMutex;
+  int indexingCount;
 
 public:
 
@@ -45,15 +49,26 @@ public:
 signals:
 
   void indexingDictionarySignal( QString const & dictionaryName );
+  void indexingProgressSignal( QString const & dictionaryName, int count );
+  void indexingCandidatesSignal( int totalCandidates );
+  void indexingWorkersSignal( int active, int total );
+  void indexingWorkerTaskSignal( int worker, int total, QString const & taskName, bool active );
+  void deferredInitializingSignal( QString const & dictionaryName, int current, int total );
 
 public:
 
   virtual void indexingDictionary( std::string const & dictionaryName ) noexcept;
+  void indexingProgress( QString const & dictionaryName, int count ) noexcept;
+  void indexingCandidates( int totalCandidates ) noexcept;
+  void indexingWorkers( int active, int total ) noexcept;
+  void indexingWorkerTask( int worker, int total, QString const & taskName, bool active ) noexcept;
+  void deferredInitializing( QString const & dictionaryName, int current, int total ) noexcept;
 
 private:
 
   void handlePath( Config::Path const & );
   void handleFiles( std::vector< std::string > const & files );
+  void queueDiscoveredFile( std::string const & fileName );
   void createDictionaries( std::vector< std::string > const & files );
   std::set< std::string > explicitFiles;
 };

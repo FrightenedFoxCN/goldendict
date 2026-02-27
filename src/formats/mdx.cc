@@ -36,10 +36,13 @@
 #include <QString>
 #include <QSemaphore>
 #include <QThreadPool>
+#include <QThread>
 #include <QAtomicInt>
 #include <QTextDocument>
 #include <QCryptographicHash>
 #include <QRegularExpression>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "qt4x5.hh"
 
@@ -1434,21 +1437,29 @@ static void findResourceFiles( string const & mdx, vector< string > & dictFiles 
   }
 }
 
-vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & fileNames,
-                                                      string const & indicesDir,
-                                                      Dictionary::Initializing & initializing ) THROW_SPEC( std::exception )
+static int buildWorkerCount()
 {
-  vector< sptr< Dictionary::Class > > dictionaries;
+  int idealThreads = QThread::idealThreadCount();
+  if( idealThreads < 1 )
+    idealThreads = 4;
 
-  for ( vector< string >::const_iterator i = fileNames.begin(); i != fileNames.end(); ++i )
+  if( idealThreads == 1 )
+    return 1;
+
+  if( idealThreads == 2 )
+    return 2;
+
+  return qMin( 8, idealThreads - 1 );
+}
+
+static sptr< Dictionary::Class > buildMdxDictionary( string const & fileName,
+                                                     string const & indicesDir,
+                                                     Dictionary::Initializing & initializing )
+{
+  try
   {
-    // Skip files with the extensions different to .mdx to speed up the
-    // scanning
-    if ( i->size() < 4 || strcasecmp( i->c_str() + ( i->size() - 4 ), ".mdx" ) != 0 )
-      continue;
-
-    vector< string > dictFiles( 1, *i );
-    findResourceFiles( *i, dictFiles );
+    vector< string > dictFiles( 1, fileName );
+    findResourceFiles( fileName, dictFiles );
 
     string dictId = Dictionary::makeDictionaryId( dictFiles );
     string indexFile = indicesDir + dictId;
@@ -1456,15 +1467,13 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
     if ( Dictionary::needToRebuildIndex( dictFiles, indexFile ) ||
          indexIsOldOrBad( dictFiles, indexFile ) )
     {
-      // Building the index
-
-      gdDebug( "MDict: Building the index for dictionary: %s\n", i->c_str() );
+      gdDebug( "MDict: Building the index for dictionary: %s\n", fileName.c_str() );
 
       MdictParser parser;
       list< sptr< MdictParser > > mddParsers;
 
-      if ( !parser.open( i->c_str() ) )
-        continue;
+      if ( !parser.open( fileName.c_str() ) )
+        return sptr< Dictionary::Class >();
 
       string title = string( parser.title().toUtf8().constData() );
       initializing.indexingDictionary( title );
@@ -1487,32 +1496,22 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
       File::Class idx( indexFile, "wb" );
       IdxHeader idxHeader;
       memset( &idxHeader, 0, sizeof( idxHeader ) );
-      // We write a dummy header first. At the end of the process the header
-      // will be rewritten with the right values.
       idx.write( idxHeader );
 
-      // Write the title first
       idx.write< uint32_t >( title.size() );
       idx.write( title.data(), title.size() );
 
-      // then the encoding
       {
         string encoding = string( parser.encoding().toUtf8().constData() );
         idx.write< uint32_t >( encoding.size() );
         idx.write( encoding.data(), encoding.size() );
       }
 
-      // This is our index data that we accumulate during the loading process.
-      // For each new word encountered, we emit the article's body to the file
-      // immediately, inserting the word itself and its offset in this map.
-      // This map maps folded words to the original words and the corresponding
-      // articles' offsets.
       IndexedWords indexedWords;
       ChunkedStorage::Writer chunks( idx );
 
       idxHeader.isRightToLeft = parser.isRightToLeft();
 
-      // Save dictionary description if there's one
       {
         string description = string( parser.description().toUtf8().constData() );
         idxHeader.descriptionAddress = chunks.startNewBlock();
@@ -1523,13 +1522,11 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
       ArticleHandler articleHandler( chunks, indexedWords );
       MdictParser::HeadWordIndex headWordIndex;
 
-      // enumerating word and its definition
       while ( parser.readNextHeadWordIndex( headWordIndex ) )
       {
         parser.readRecordBlock( headWordIndex, articleHandler );
       }
 
-      // enumerating resources if there's any
       vector< sptr< IndexedWords > > mddIndices;
       vector< string > mddFileNames;
       while ( !mddParsers.empty() )
@@ -1546,23 +1543,19 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
         mddParser->readRecordBlock( resourcesIndex, resourceHandler );
 
         mddIndices.push_back( mddIndexedWords );
-        // Save filename for .mdd files only
         QFileInfo fi( mddParser->filename() );
         mddFileNames.push_back( string( fi.fileName().toUtf8().constData() ) );
         mddParsers.pop_front();
       }
 
-      // Finish with the chunks
       idxHeader.chunksOffset = chunks.finish();
 
       GD_DPRINTF( "Writing index...\n" );
 
-      // Good. Now build the index
       IndexInfo idxInfo = BtreeIndexing::buildIndex( indexedWords, idx );
       idxHeader.indexBtreeMaxElements = idxInfo.btreeMaxElements;
       idxHeader.indexRootOffset = idxInfo.rootOffset;
 
-      // Save dictionary stylesheets
       {
         MdictParser::StyleSheets const & styleSheets = parser.styleSheets();
         idxHeader.styleSheetAddress = idx.tell();
@@ -1574,21 +1567,16 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
           string styleBegin( iter->second.first.toUtf8().constData() );
           string styleEnd( iter->second.second.toUtf8().constData() );
 
-          // key
           idx.write<qint32>( iter->first );
-          // styleBegin
           idx.write<quint32>( ( quint32 )styleBegin.size() + 1 );
           idx.write( styleBegin.c_str(), styleBegin.size() + 1 );
-          // styleEnd
           idx.write<quint32>( ( quint32 )styleEnd.size() + 1 );
           idx.write( styleEnd.c_str(), styleEnd.size() + 1 );
         }
       }
 
-      // read languages
-      QPair<quint32, quint32> langs = LangCoder::findIdsForFilename( QString::fromStdString( *i ) );
+      QPair<quint32, quint32> langs = LangCoder::findIdsForFilename( QString::fromStdString( fileName ) );
 
-      // if no languages found, try dictionary's name
       if ( langs.first == 0 || langs.second == 0 )
       {
         langs = LangCoder::findIdsForFilename( parser.title() );
@@ -1597,7 +1585,6 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
       idxHeader.langFrom = langs.first;
       idxHeader.langTo = langs.second;
 
-      // Build index info for each mdd file
       vector< IndexInfo > mddIndexInfos;
       for ( vector< sptr< IndexedWords > >::const_iterator mddIndexIter = mddIndices.begin();
             mddIndexIter != mddIndices.end(); ++mddIndexIter )
@@ -1606,7 +1593,6 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
         mddIndexInfos.push_back( resourceIdxInfo );
       }
 
-      // Save address of IndexInfos for resource files
       idxHeader.mddIndexInfosOffset = idx.tell();
       idxHeader.mddIndexInfosCount = mddIndexInfos.size();
       for ( uint32_t mi = 0; mi < mddIndexInfos.size(); mi++ )
@@ -1619,7 +1605,6 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
         idx.write<uint32_t>( mddIndexInfos[ mi ].rootOffset );
       }
 
-      // That concludes it. Update the header.
       idxHeader.signature = kSignature;
       idxHeader.formatVersion = kCurrentFormatVersion;
       idxHeader.parserVersion = MdictParser::kParserVersion;
@@ -1631,8 +1616,79 @@ vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & f
       idx.write( &idxHeader, sizeof( idxHeader ) );
     }
 
-    dictionaries.push_back( new MdxDictionary( dictId, indexFile, dictFiles ) );
+    return new MdxDictionary( dictId, indexFile, dictFiles );
   }
+  catch( std::exception & e )
+  {
+    gdWarning( "MDict dictionary initializing failed: %s, error: %s\n",
+               fileName.c_str(), e.what() );
+  }
+
+  return sptr< Dictionary::Class >();
+}
+
+class MdxBuildTask: public QRunnable
+{
+  string fileName;
+  string indicesDir;
+  Dictionary::Initializing & initializing;
+  vector< sptr< Dictionary::Class > > & dictionaries;
+  QMutex & dictionariesMutex;
+  QSemaphore & done;
+
+public:
+  MdxBuildTask( string const & fileName_,
+                string const & indicesDir_,
+                Dictionary::Initializing & initializing_,
+                vector< sptr< Dictionary::Class > > & dictionaries_,
+                QMutex & dictionariesMutex_,
+                QSemaphore & done_ ):
+    fileName( fileName_ ),
+    indicesDir( indicesDir_ ),
+    initializing( initializing_ ),
+    dictionaries( dictionaries_ ),
+    dictionariesMutex( dictionariesMutex_ ),
+    done( done_ )
+  {}
+
+  virtual void run()
+  {
+    sptr< Dictionary::Class > dict = buildMdxDictionary( fileName, indicesDir, initializing );
+    if( dict )
+    {
+      QMutexLocker locker( &dictionariesMutex );
+      dictionaries.push_back( dict );
+    }
+    done.release();
+  }
+};
+
+vector< sptr< Dictionary::Class > > makeDictionaries( vector< string > const & fileNames,
+                                                      string const & indicesDir,
+                                                      Dictionary::Initializing & initializing ) THROW_SPEC( std::exception )
+{
+  vector< sptr< Dictionary::Class > > dictionaries;
+
+  vector< string > mdxFiles;
+  for ( vector< string >::const_iterator i = fileNames.begin(); i != fileNames.end(); ++i )
+  {
+    if ( i->size() < 4 || strcasecmp( i->c_str() + ( i->size() - 4 ), ".mdx" ) != 0 )
+      continue;
+    mdxFiles.push_back( *i );
+  }
+
+  if( mdxFiles.empty() )
+    return dictionaries;
+
+  QThreadPool pool;
+  pool.setMaxThreadCount( buildWorkerCount() );
+  QSemaphore done;
+  QMutex dictionariesMutex;
+
+  for( vector< string >::const_iterator i = mdxFiles.begin(); i != mdxFiles.end(); ++i )
+    pool.start( new MdxBuildTask( *i, indicesDir, initializing, dictionaries, dictionariesMutex, done ) );
+
+  done.acquire( mdxFiles.size() );
 
   return dictionaries;
 }

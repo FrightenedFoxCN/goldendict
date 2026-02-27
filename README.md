@@ -97,6 +97,49 @@ After building, the executable is located at:
 - **Linux**: `build/GoldenDict` 
 - **Windows**: `build\GoldenDict.exe`
 
+## Index Cache Location
+
+Silverdict stores dictionary index files (including FTS indexes) in the `index` subdirectory returned by `Config::getIndexDir()`.
+
+- **Portable mode**: `<app-dir>/portable/index/`
+- **Linux/X11 (XDG mode)**:
+    - If `~/.goldendict/index/` already exists, it is used.
+    - Otherwise, it uses `QStandardPaths::GenericCacheLocation + "/goldendict/index/"`.
+- **macOS**: `~/.goldendict/index/`
+- **Windows**: `%APPDATA%/GoldenDict/index/` (with legacy fallback under home profile paths handled by the app)
+
+Notes:
+- FTS index files are stored next to regular indexes, with `_FTS` suffix.
+- Network cache is separate and comes from `Config::getNetworkCacheDir()` (`Config::getCacheDir() + "/network"`).
+
+### Clear/Rebuild Index Cache Safely
+
+1. **Exit Silverdict completely**.
+2. **Remove only the index directory contents** (not your dictionary source files).
+3. **Start Silverdict** and let it rebuild indexes.
+
+Examples:
+
+- **macOS / Linux**
+
+```bash
+rm -rf ~/.goldendict/index/*
+```
+
+- **Portable mode**
+
+```bash
+rm -rf <app-dir>/portable/index/*
+```
+
+- **Windows (PowerShell)**
+
+```powershell
+Remove-Item "$env:APPDATA\GoldenDict\index\*" -Recurse -Force
+```
+
+Tip: if you only want to force full-text-search rebuilds, remove files ending with `_FTS` in the index directory instead of deleting everything.
+
 ## Project Structure
 
 The reorganized structure improves maintainability and scalability:

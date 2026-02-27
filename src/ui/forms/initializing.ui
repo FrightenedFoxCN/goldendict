@@ -9,7 +9,7 @@
     <x>0</x>
     <y>0</y>
     <width>326</width>
-    <height>84</height>
+        <height>164</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -34,12 +34,6 @@
    </item>
    <item>
     <widget class="QLabel" name="dictionary" >
-     <property name="font" >
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="text" >
       <string>Dictionary Name</string>
      </property>
@@ -67,6 +61,70 @@
      </property>
     </widget>
    </item>
+    <item>
+     <widget class="QLabel" name="workerTasks" >
+       <property name="font" >
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+      <property name="text" >
+      <string>Workers: idle</string>
+      </property>
+      <property name="alignment" >
+      <set>Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+      <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="deferredOperation" >
+      <property name="text" >
+        <string>Please wait while initializing dictionaries</string>
+      </property>
+      <property name="alignment" >
+        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="deferredDictionary" >
+      <property name="font" >
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+      </property>
+      <property name="text" >
+        <string>Preparing...</string>
+      </property>
+      <property name="scaledContents" >
+        <bool>false</bool>
+      </property>
+      <property name="alignment" >
+        <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="deferredProgressBar" >
+      <property name="maximum" >
+        <number>0</number>
+      </property>
+      <property name="value" >
+        <number>-1</number>
+      </property>
+      <property name="alignment">
+        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
   </layout>
  </widget>
  <resources/>

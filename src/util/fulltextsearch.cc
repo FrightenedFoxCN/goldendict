@@ -8,6 +8,9 @@
 #include "qt4x5.hh"
 
 #include <QThreadPool>
+#include <QThread>
+#include <QSemaphore>
+#include <QElapsedTimer>
 #include <QIntValidator>
 #include <QMessageBox>
 #include <qalgorithms.h>
@@ -23,6 +26,61 @@
 namespace FTS
 {
 
+namespace
+{
+
+int indexingWorkerCount()
+{
+  int idealThreads = QThread::idealThreadCount();
+  if( idealThreads < 1 )
+    idealThreads = 4;
+
+  if( idealThreads == 1 )
+    return 1;
+
+  if( idealThreads == 2 )
+    return 2;
+
+  return qMin( 8, idealThreads - 1 );
+}
+
+class DictionaryIndexingTask: public QRunnable
+{
+  QAtomicInt & isCancelled;
+  sptr< Dictionary::Class > dictionary;
+  bool firstIteration;
+  QSemaphore & done;
+
+public:
+  DictionaryIndexingTask( QAtomicInt & cancelled,
+                          sptr< Dictionary::Class > const & dictionary_,
+                          bool firstIteration_,
+                          QSemaphore & done_ ):
+    isCancelled( cancelled ),
+    dictionary( dictionary_ ),
+    firstIteration( firstIteration_ ),
+    done( done_ )
+  {}
+
+  virtual void run()
+  {
+    if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+    {
+      done.release();
+      return;
+    }
+
+    if( dictionary->canFTS() && !dictionary->haveFTSIndex() )
+    {
+      dictionary->makeFTSIndex( isCancelled, firstIteration );
+    }
+
+    done.release();
+  }
+};
+
+}
+
 enum
 {
   MinDistanceBetweenWords = 0,
@@ -33,9 +91,18 @@ enum
 
 void Indexing::run()
 {
+  QElapsedTimer timer;
+  timer.start();
+
   try
   {
+    QThreadPool pool;
+    pool.setMaxThreadCount( maxWorkers );
+
     // First iteration - dictionaries with no more MaxDictionarySizeForFastSearch articles
+    QSemaphore firstPassDone;
+    int firstPassTasks = 0;
+
     for( size_t x = 0; x < dictionaries.size(); x++ )
     {
       if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
@@ -45,11 +112,25 @@ void Indexing::run()
           &&!dictionaries.at( x )->haveFTSIndex() )
       {
         emit sendNowIndexingName( QString::fromUtf8( dictionaries.at( x )->getName().c_str() ) );
-        dictionaries.at( x )->makeFTSIndex( isCancelled, true );
+        pool.start( new DictionaryIndexingTask( isCancelled, dictionaries.at( x ), true,
+                                                firstPassDone ) );
+        firstPassTasks++;
       }
+    }
+
+    if( firstPassTasks )
+      firstPassDone.acquire( firstPassTasks );
+
+    if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+    {
+      emit sendNowIndexingName( QString() );
+      return;
     }
 
     // Second iteration - all remaining dictionaries
+    QSemaphore secondPassDone;
+    int secondPassTasks = 0;
+
     for( size_t x = 0; x < dictionaries.size(); x++ )
     {
       if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
@@ -59,14 +140,23 @@ void Indexing::run()
           &&!dictionaries.at( x )->haveFTSIndex() )
       {
         emit sendNowIndexingName( QString::fromUtf8( dictionaries.at( x )->getName().c_str() ) );
-        dictionaries.at( x )->makeFTSIndex( isCancelled, false );
+        pool.start( new DictionaryIndexingTask( isCancelled, dictionaries.at( x ), false,
+                                                secondPassDone ) );
+        secondPassTasks++;
       }
     }
+
+    if( secondPassTasks )
+      secondPassDone.acquire( secondPassTasks );
   }
   catch( std::exception &ex )
   {
     gdWarning( "Exception occured while full-text search: %s", ex.what() );
   }
+
+  gdDebug( "FTS indexing run finished in %lld ms\n",
+           static_cast< long long >( timer.elapsed() ) );
+
   emit sendNowIndexingName( QString() );
 }
 
@@ -87,7 +177,8 @@ void FtsIndexing::doIndexing()
     while( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
       isCancelled.deref();
 
-    Indexing *idx = new Indexing( isCancelled, dictionaries, indexingExited );
+    Indexing *idx = new Indexing( isCancelled, dictionaries, indexingExited,
+                    indexingWorkerCount() );
 
     connect( idx, SIGNAL( sendNowIndexingName( QString ) ), this, SLOT( setNowIndexedName( QString ) ) );
 

@@ -8,11 +8,15 @@
 #include "gddebug.hh"
 #include "folding.hh"
 #include "qt4x5.hh"
+#include "atomic_rename.hh"
+#include "fsencoding.hh"
 
 #include <vector>
 #include <string>
 
 #include <QVector>
+#include <QDir>
+#include <QFile>
 
 #include <QRegularExpression>
 #include "wildcard.hh"
@@ -291,139 +295,157 @@ void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancell
   if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
     throw exUserAbort();
 
-  File::Class ftsIdx( dict->ftsIndexName(), "wb" );
+  QString finalIndexFile = FsEncoding::decode( dict->ftsIndexName().c_str() );
+  QString tempIndexFile = finalIndexFile + ".tmp";
+  string tempIndexFileName = FsEncoding::encode( QDir::toNativeSeparators( tempIndexFile ) );
 
-  FtsIdxHeader ftsIdxHeader;
-  memset( &ftsIdxHeader, 0, sizeof( ftsIdxHeader ) );
+  QFile::remove( tempIndexFile );
 
-  // We write a dummy header first. At the end of the process the header
-  // will be rewritten with the right values.
-
-  ftsIdx.write( ftsIdxHeader );
-
-  ChunkedStorage::Writer chunks( ftsIdx );
-
-  BtreeIndexing::IndexedWords indexedWords;
-
-  QSet< uint32_t > setOfOffsets;
-  setOfOffsets.reserve( dict->getArticleCount() );
-
-  dict->findArticleLinks( 0, &setOfOffsets, 0, &isCancelled );
-
-  if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
-    throw exUserAbort();
-
-  QVector< uint32_t > offsets;
-  offsets.resize( setOfOffsets.size() );
-  uint32_t * ptr = &offsets.front();
-
-  for( QSet< uint32_t >::ConstIterator it = setOfOffsets.constBegin();
-       it != setOfOffsets.constEnd(); ++it )
+  try
   {
-    *ptr = *it;
-    ptr++;
-  }
+    File::Class ftsIdx( tempIndexFileName, "wb" );
 
-  // Free memory
-  setOfOffsets.clear();
-  setOfOffsets.squeeze();
+    FtsIdxHeader ftsIdxHeader;
+    memset( &ftsIdxHeader, 0, sizeof( ftsIdxHeader ) );
 
-  if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
-    throw exUserAbort();
+    // We write a dummy header first. At the end of the process the header
+    // will be rewritten with the right values.
 
-  dict->sortArticlesOffsetsForFTS( offsets, isCancelled );
+    ftsIdx.write( ftsIdxHeader );
 
-  QMap< QString, QVector< uint32_t > > ftsWords;
+    ChunkedStorage::Writer chunks( ftsIdx );
 
-  bool needHandleBrackets;
-  {
-    QString name = QString::fromUtf8( dict->getDictionaryFilenames()[ 0 ].c_str() ).toLower();
-    needHandleBrackets = name.endsWith( ".dsl" ) || name.endsWith( "dsl.dz" );
-  }
+    BtreeIndexing::IndexedWords indexedWords;
 
-  // index articles for full-text search
-  for( int i = 0; i < offsets.size(); i++ )
-  {
+    QSet< uint32_t > setOfOffsets;
+    setOfOffsets.reserve( dict->getArticleCount() );
+
+    dict->findArticleLinks( 0, &setOfOffsets, 0, &isCancelled );
+
     if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
       throw exUserAbort();
 
-    QString headword, articleStr;
+    QVector< uint32_t > offsets;
+    offsets.resize( setOfOffsets.size() );
+    uint32_t * ptr = &offsets.front();
 
-    dict->getArticleText( offsets.at( i ), headword, articleStr );
+    for( QSet< uint32_t >::ConstIterator it = setOfOffsets.constBegin();
+         it != setOfOffsets.constEnd(); ++it )
+    {
+      *ptr = *it;
+      ptr++;
+    }
 
-    parseArticleForFts( offsets.at( i ), articleStr, ftsWords, needHandleBrackets );
-  }
+    // Free memory
+    setOfOffsets.clear();
+    setOfOffsets.squeeze();
 
-  // Free memory
-  offsets.clear();
-  offsets.squeeze();
+    if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+      throw exUserAbort();
+
+    dict->sortArticlesOffsetsForFTS( offsets, isCancelled );
+
+    QMap< QString, QVector< uint32_t > > ftsWords;
+
+    bool needHandleBrackets;
+    {
+      QString name = QString::fromUtf8( dict->getDictionaryFilenames()[ 0 ].c_str() ).toLower();
+      needHandleBrackets = name.endsWith( ".dsl" ) || name.endsWith( "dsl.dz" );
+    }
+
+    // index articles for full-text search
+    for( int i = 0; i < offsets.size(); i++ )
+    {
+      if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+        throw exUserAbort();
+
+      QString headword, articleStr;
+
+      dict->getArticleText( offsets.at( i ), headword, articleStr );
+
+      parseArticleForFts( offsets.at( i ), articleStr, ftsWords, needHandleBrackets );
+    }
+
+    // Free memory
+    offsets.clear();
+    offsets.squeeze();
 
 # define BUF_SIZE 20000
-  QVector< QPair< gd::wstring, uint32_t > > wordsWithOffsets;
-  wordsWithOffsets.reserve( BUF_SIZE );
+    QVector< QPair< gd::wstring, uint32_t > > wordsWithOffsets;
+    wordsWithOffsets.reserve( BUF_SIZE );
 
-  QMap< QString, QVector< uint32_t > >::iterator it = ftsWords.begin();
-  while( it != ftsWords.end() )
-  {
-    if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
-      throw exUserAbort();
-
-    uint32_t offset = chunks.startNewBlock();
-    uint32_t size = it.value().size();
-
-    chunks.addToBlock( &size, sizeof(uint32_t) );
-    chunks.addToBlock( it.value().data(), size * sizeof(uint32_t) );
-
-    wordsWithOffsets.append( QPair< gd::wstring, uint32_t >( gd::toWString( it.key() ), offset ) );
-
-    it = ftsWords.erase( it );
-
-    if( wordsWithOffsets.size() >= BUF_SIZE )
+    QMap< QString, QVector< uint32_t > >::iterator it = ftsWords.begin();
+    while( it != ftsWords.end() )
     {
-      for( int i = 0; i < wordsWithOffsets.size(); i++ )
+      if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+        throw exUserAbort();
+
+      uint32_t offset = chunks.startNewBlock();
+      uint32_t size = it.value().size();
+
+      chunks.addToBlock( &size, sizeof(uint32_t) );
+      chunks.addToBlock( it.value().data(), size * sizeof(uint32_t) );
+
+      wordsWithOffsets.append( QPair< gd::wstring, uint32_t >( gd::toWString( it.key() ), offset ) );
+
+      it = ftsWords.erase( it );
+
+      if( wordsWithOffsets.size() >= BUF_SIZE )
       {
-        if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
-          throw exUserAbort();
-        indexedWords.addSingleWord( wordsWithOffsets[ i ].first, wordsWithOffsets[ i ].second );
+        for( int i = 0; i < wordsWithOffsets.size(); i++ )
+        {
+          if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+            throw exUserAbort();
+          indexedWords.addSingleWord( wordsWithOffsets[ i ].first, wordsWithOffsets[ i ].second );
+        }
+        wordsWithOffsets.clear();
       }
-      wordsWithOffsets.clear();
     }
-  }
 
-  // Free memory
-  ftsWords.clear();
+    // Free memory
+    ftsWords.clear();
 
-  for( int i = 0; i < wordsWithOffsets.size(); i++ )
-  {
-    if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
-      throw exUserAbort();
-    indexedWords.addSingleWord( wordsWithOffsets[ i ].first, wordsWithOffsets[ i ].second );
-  }
+    for( int i = 0; i < wordsWithOffsets.size(); i++ )
+    {
+      if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+        throw exUserAbort();
+      indexedWords.addSingleWord( wordsWithOffsets[ i ].first, wordsWithOffsets[ i ].second );
+    }
 #undef BUF_SIZE
 
-  // Free memory
-  wordsWithOffsets.clear();
-  wordsWithOffsets.squeeze();
+    // Free memory
+    wordsWithOffsets.clear();
+    wordsWithOffsets.squeeze();
 
-  ftsIdxHeader.chunksOffset = chunks.finish();
-  ftsIdxHeader.wordCount = indexedWords.size();
+    ftsIdxHeader.chunksOffset = chunks.finish();
+    ftsIdxHeader.wordCount = indexedWords.size();
 
-  if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
-    throw exUserAbort();
+    if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+      throw exUserAbort();
 
-  BtreeIndexing::IndexInfo ftsIdxInfo = BtreeIndexing::buildIndex( indexedWords, ftsIdx );
+    BtreeIndexing::IndexInfo ftsIdxInfo = BtreeIndexing::buildIndex( indexedWords, ftsIdx );
 
-  // Free memory
-  indexedWords.clear();
+    // Free memory
+    indexedWords.clear();
 
-  ftsIdxHeader.indexBtreeMaxElements = ftsIdxInfo.btreeMaxElements;
-  ftsIdxHeader.indexRootOffset = ftsIdxInfo.rootOffset;
+    ftsIdxHeader.indexBtreeMaxElements = ftsIdxInfo.btreeMaxElements;
+    ftsIdxHeader.indexRootOffset = ftsIdxInfo.rootOffset;
 
-  ftsIdxHeader.signature = FtsHelpers::FtsSignature;
-  ftsIdxHeader.formatVersion = FtsHelpers::CurrentFtsFormatVersion + dict->getFtsIndexVersion();
+    ftsIdxHeader.signature = FtsHelpers::FtsSignature;
+    ftsIdxHeader.formatVersion = FtsHelpers::CurrentFtsFormatVersion + dict->getFtsIndexVersion();
 
-  ftsIdx.rewind();
-  ftsIdx.writeRecords( &ftsIdxHeader, sizeof(ftsIdxHeader), 1 );
+    ftsIdx.rewind();
+    ftsIdx.writeRecords( &ftsIdxHeader, sizeof(ftsIdxHeader), 1 );
+    ftsIdx.close();
+
+    if( !renameAtomically( tempIndexFile, finalIndexFile ) )
+      throw File::exWriteError();
+  }
+  catch( ... )
+  {
+    QFile::remove( tempIndexFile );
+    throw;
+  }
 }
 
 bool isCJKChar( ushort ch )
