@@ -17,6 +17,12 @@
 #include <QVector>
 #include <QDir>
 #include <QFile>
+#include <QElapsedTimer>
+#include <QThread>
+#include <QThreadPool>
+#include <QSemaphore>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include <QRegularExpression>
 #include "wildcard.hh"
@@ -288,9 +294,170 @@ void parseArticleForFts( uint32_t articleAddress, QString & articleText,
   }
 }
 
+static int ftsBuildWorkerCount()
+{
+  int idealThreads = QThread::idealThreadCount();
+  if( idealThreads < 1 )
+    idealThreads = 4;
+
+  if( idealThreads == 1 )
+    return 1;
+
+  if( idealThreads == 2 )
+    return 2;
+
+  return qMin( 8, idealThreads - 1 );
+}
+
+class FtsParseChunkTask: public QRunnable
+{
+  BtreeIndexing::BtreeDictionary * dict;
+  QVector< uint32_t > const & offsets;
+  int begin;
+  int end;
+  bool needHandleBrackets;
+  QAtomicInt & isCancelled;
+  QVector< QMap< QString, QVector< uint32_t > > > & partialMaps;
+  QMutex & partialMapsMutex;
+  std::exception_ptr & firstException;
+  QMutex & exceptionMutex;
+  QSemaphore & done;
+
+public:
+  FtsParseChunkTask( BtreeIndexing::BtreeDictionary * dict_,
+                     QVector< uint32_t > const & offsets_,
+                     int begin_,
+                     int end_,
+                     bool needHandleBrackets_,
+                     QAtomicInt & isCancelled_,
+                     QVector< QMap< QString, QVector< uint32_t > > > & partialMaps_,
+                     QMutex & partialMapsMutex_,
+                     std::exception_ptr & firstException_,
+                     QMutex & exceptionMutex_,
+                     QSemaphore & done_ ):
+    dict( dict_ ),
+    offsets( offsets_ ),
+    begin( begin_ ),
+    end( end_ ),
+    needHandleBrackets( needHandleBrackets_ ),
+    isCancelled( isCancelled_ ),
+    partialMaps( partialMaps_ ),
+    partialMapsMutex( partialMapsMutex_ ),
+    firstException( firstException_ ),
+    exceptionMutex( exceptionMutex_ ),
+    done( done_ )
+  {}
+
+  virtual void run()
+  {
+    try
+    {
+      QMap< QString, QVector< uint32_t > > localWords;
+
+      for( int i = begin; i < end; ++i )
+      {
+        if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+          break;
+
+        QString headword;
+        QString articleStr;
+        dict->getArticleText( offsets.at( i ), headword, articleStr );
+        parseArticleForFts( offsets.at( i ), articleStr, localWords, needHandleBrackets );
+      }
+
+      if( !localWords.isEmpty() )
+      {
+        QMutexLocker lock( &partialMapsMutex );
+        partialMaps.append( QMap< QString, QVector< uint32_t > >() );
+        partialMaps.last().swap( localWords );
+      }
+    }
+    catch( ... )
+    {
+      QMutexLocker lock( &exceptionMutex );
+      if( !firstException )
+        firstException = std::current_exception();
+    }
+
+    done.release();
+  }
+};
+
+class FtsMergeMapsTask: public QRunnable
+{
+  QVector< QMap< QString, QVector< uint32_t > > > const & partialMaps;
+  int begin;
+  int end;
+  QMap< QString, QVector< uint32_t > > & mergedWords;
+  QMutex & mergedWordsMutex;
+  std::exception_ptr & firstException;
+  QMutex & exceptionMutex;
+  QSemaphore & done;
+
+public:
+  FtsMergeMapsTask( QVector< QMap< QString, QVector< uint32_t > > > const & partialMaps_,
+                    int begin_,
+                    int end_,
+                    QMap< QString, QVector< uint32_t > > & mergedWords_,
+                    QMutex & mergedWordsMutex_,
+                    std::exception_ptr & firstException_,
+                    QMutex & exceptionMutex_,
+                    QSemaphore & done_ ):
+    partialMaps( partialMaps_ ),
+    begin( begin_ ),
+    end( end_ ),
+    mergedWords( mergedWords_ ),
+    mergedWordsMutex( mergedWordsMutex_ ),
+    firstException( firstException_ ),
+    exceptionMutex( exceptionMutex_ ),
+    done( done_ )
+  {}
+
+  virtual void run()
+  {
+    try
+    {
+      QMap< QString, QVector< uint32_t > > localMerged;
+
+      for( int i = begin; i < end; ++i )
+      {
+        QMap< QString, QVector< uint32_t > > const & part = partialMaps.at( i );
+        for( QMap< QString, QVector< uint32_t > >::const_iterator it = part.constBegin();
+             it != part.constEnd(); ++it )
+        {
+          QVector< uint32_t > & target = localMerged[ it.key() ];
+          target += it.value();
+        }
+      }
+
+      if( !localMerged.isEmpty() )
+      {
+        QMutexLocker lock( &mergedWordsMutex );
+        for( QMap< QString, QVector< uint32_t > >::iterator it = localMerged.begin();
+             it != localMerged.end(); ++it )
+        {
+          QVector< uint32_t > & target = mergedWords[ it.key() ];
+          target += it.value();
+        }
+      }
+    }
+    catch( ... )
+    {
+      QMutexLocker lock( &exceptionMutex );
+      if( !firstException )
+        firstException = std::current_exception();
+    }
+
+    done.release();
+  }
+};
+
 void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancelled )
 {
   Mutex::Lock _( dict->getFtsMutex() );
+
+  QElapsedTimer totalTimer;
+  totalTimer.start();
 
   if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
     throw exUserAbort();
@@ -320,6 +487,9 @@ void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancell
     QSet< uint32_t > setOfOffsets;
     setOfOffsets.reserve( dict->getArticleCount() );
 
+    QElapsedTimer offsetsTimer;
+    offsetsTimer.start();
+
     dict->findArticleLinks( 0, &setOfOffsets, 0, &isCancelled );
 
     if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
@@ -343,9 +513,19 @@ void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancell
     if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
       throw exUserAbort();
 
+    qint64 offsetCollectMs = offsetsTimer.elapsed();
+
+    QElapsedTimer sortTimer;
+    sortTimer.start();
     dict->sortArticlesOffsetsForFTS( offsets, isCancelled );
+    qint64 offsetSortMs = sortTimer.elapsed();
 
     QMap< QString, QVector< uint32_t > > ftsWords;
+    qint64 parseMs = 0;
+    qint64 mergeMs = 0;
+    bool usedParallelParse = false;
+    int parseTasks = 0;
+    int mergeTasksStarted = 0;
 
     bool needHandleBrackets;
     {
@@ -353,17 +533,117 @@ void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancell
       needHandleBrackets = name.endsWith( ".dsl" ) || name.endsWith( "dsl.dz" );
     }
 
-    // index articles for full-text search
-    for( int i = 0; i < offsets.size(); i++ )
+    int workerCount = ftsBuildWorkerCount();
+    if( workerCount > 1 && offsets.size() >= 256 )
     {
+      usedParallelParse = true;
+      QElapsedTimer parseTimer;
+      parseTimer.start();
+
+      QThreadPool pool;
+      pool.setMaxThreadCount( workerCount );
+
+      QSemaphore done;
+      QMutex partialMapsMutex;
+      QMutex exceptionMutex;
+      std::exception_ptr firstException;
+      QVector< QMap< QString, QVector< uint32_t > > > partialMaps;
+
+      int chunkSize = offsets.size() / ( workerCount * 4 );
+      if( chunkSize < 64 )
+        chunkSize = 64;
+
+      int taskCount = 0;
+      for( int begin = 0; begin < offsets.size(); begin += chunkSize )
+      {
+        int end = qMin( begin + chunkSize, offsets.size() );
+        pool.start( new FtsParseChunkTask( dict, offsets, begin, end,
+                                           needHandleBrackets, isCancelled,
+                                           partialMaps, partialMapsMutex,
+                                           firstException, exceptionMutex, done ) );
+        taskCount++;
+      }
+      parseTasks = taskCount;
+
+      if( taskCount )
+        done.acquire( taskCount );
+
+      if( firstException )
+        std::rethrow_exception( firstException );
+
       if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
         throw exUserAbort();
 
-      QString headword, articleStr;
+      parseMs = parseTimer.elapsed();
 
-      dict->getArticleText( offsets.at( i ), headword, articleStr );
+      if( partialMaps.size() == 1 )
+      {
+        ftsWords.swap( partialMaps[ 0 ] );
+      }
+      else if( partialMaps.size() > 1 )
+      {
+        QElapsedTimer mergeTimer;
+        mergeTimer.start();
 
-      parseArticleForFts( offsets.at( i ), articleStr, ftsWords, needHandleBrackets );
+        QThreadPool mergePool;
+        mergePool.setMaxThreadCount( workerCount );
+
+        QSemaphore mergeDone;
+        QMutex mergedWordsMutex;
+        QMutex mergeExceptionMutex;
+        std::exception_ptr mergeException;
+
+        int mergeTasks = qMin( partialMaps.size(), workerCount );
+        int block = partialMaps.size() / mergeTasks;
+        if( block < 1 )
+          block = 1;
+
+        int begin = 0;
+        int startedMergeTasks = 0;
+        while( begin < partialMaps.size() )
+        {
+          int end = qMin( begin + block, partialMaps.size() );
+          mergePool.start( new FtsMergeMapsTask( partialMaps,
+                                                 begin,
+                                                 end,
+                                                 ftsWords,
+                                                 mergedWordsMutex,
+                                                 mergeException,
+                                                 mergeExceptionMutex,
+                                                 mergeDone ) );
+          startedMergeTasks++;
+          begin = end;
+        }
+        mergeTasksStarted = startedMergeTasks;
+
+        if( startedMergeTasks )
+          mergeDone.acquire( startedMergeTasks );
+
+        if( mergeException )
+          std::rethrow_exception( mergeException );
+
+        mergeMs = mergeTimer.elapsed();
+      }
+    }
+    else
+    {
+      QElapsedTimer parseTimer;
+      parseTimer.start();
+
+      // index articles for full-text search
+      for( int i = 0; i < offsets.size(); i++ )
+      {
+        if( Qt4x5::AtomicInt::loadAcquire( isCancelled ) )
+          throw exUserAbort();
+
+        QString headword, articleStr;
+
+        dict->getArticleText( offsets.at( i ), headword, articleStr );
+
+        parseArticleForFts( offsets.at( i ), articleStr, ftsWords, needHandleBrackets );
+      }
+
+      parseMs = parseTimer.elapsed();
     }
 
     // Free memory
@@ -417,6 +697,9 @@ void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancell
     wordsWithOffsets.clear();
     wordsWithOffsets.squeeze();
 
+    QElapsedTimer finalizeTimer;
+    finalizeTimer.start();
+
     ftsIdxHeader.chunksOffset = chunks.finish();
     ftsIdxHeader.wordCount = indexedWords.size();
 
@@ -440,6 +723,21 @@ void makeFTSIndex( BtreeIndexing::BtreeDictionary * dict, QAtomicInt & isCancell
 
     if( !renameAtomically( tempIndexFile, finalIndexFile ) )
       throw File::exWriteError();
+
+    qint64 finalizeMs = finalizeTimer.elapsed();
+
+    gdDebug( "FTS makeFTSIndex: dict='%s', articles=%u, mode=%s, parseTasks=%d, mergeTasks=%d, offsets=%lld ms, sort=%lld ms, parse=%lld ms, merge=%lld ms, finalize=%lld ms, total=%lld ms\n",
+             dict->getName().c_str(),
+             static_cast< unsigned >( dict->getArticleCount() ),
+             usedParallelParse ? "parallel" : "sequential",
+             parseTasks,
+             mergeTasksStarted,
+             static_cast< long long >( offsetCollectMs ),
+             static_cast< long long >( offsetSortMs ),
+             static_cast< long long >( parseMs ),
+             static_cast< long long >( mergeMs ),
+             static_cast< long long >( finalizeMs ),
+             static_cast< long long >( totalTimer.elapsed() ) );
   }
   catch( ... )
   {
