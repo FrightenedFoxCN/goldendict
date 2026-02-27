@@ -4,6 +4,7 @@
 #include <QIcon>
 #include "initializing.hh"
 #include <QCloseEvent>
+#include <QFontMetrics>
 
 #if defined( Q_OS_WIN32 )
 #include <qt_windows.h>
@@ -235,6 +236,13 @@ void Initializing::updateWorkerTasksText()
     return;
   }
 
+  ui.workerTasks->setTextFormat( Qt::PlainText );
+
+  QFontMetrics fm( ui.workerTasks->font() );
+  int availableWidth = ui.workerTasks->width() - 12;
+  if( availableWidth < 80 )
+    availableWidth = 80;
+
   QStringList lines;
   for( int i = 0; i < workerTasks.size(); ++i )
   {
@@ -242,15 +250,16 @@ void Initializing::updateWorkerTasksText()
     if( task.isEmpty() )
       task = tr( "idle" );
 
-    lines << tr( "Worker %1: %2" ).arg( i + 1 ).arg( task ).toHtmlEscaped();
+    QString prefix = tr( "Worker %1: " ).arg( i + 1 );
+    int taskWidth = availableWidth - fm.horizontalAdvance( prefix );
+    if( taskWidth < 20 )
+      taskWidth = 20;
+
+    QString elidedTask = fm.elidedText( task, Qt::ElideMiddle, taskWidth );
+    lines << prefix + elidedTask;
   }
 
-  QString html = QString::fromLatin1( "<div style=\"line-height:1.45;\">" );
-  for( QStringList::const_iterator it = lines.constBegin(); it != lines.constEnd(); ++it )
-    html += QString::fromLatin1( "<div style=\"margin:3px 0;\">%1</div>" ).arg( *it );
-  html += QString::fromLatin1( "</div>" );
-
-  ui.workerTasks->setText( html );
+  ui.workerTasks->setText( lines.join( "\n\n" ) );
 }
 
 void Initializing::closeEvent( QCloseEvent * ev )
