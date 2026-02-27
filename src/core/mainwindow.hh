@@ -11,6 +11,7 @@
 #include <QNetworkAccessManager>
 #include <QProgressDialog>
 #include <QRegularExpression>
+#include <QElapsedTimer>
 #include "ui_mainwindow.h"
 #include "folding.hh"
 #include "config.hh"
@@ -199,6 +200,8 @@ private:
 
   bool blockUpdateWindowTitle;
   bool tabsInitialized;
+  QString lastHistoryNavigationWord;
+  QElapsedTimer lastHistoryNavigationTime;
 
   QPrinter & getPrinter(); // Creates a printer if it's not there and returns it
 

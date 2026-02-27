@@ -21,8 +21,7 @@ class HistoryPaneWidget : public QWidget
 {
   Q_OBJECT
 public:
-  explicit HistoryPaneWidget( QWidget * parent = 0 ): QWidget( parent ),
-    itemSelectionChanged( false )
+  explicit HistoryPaneWidget( QWidget * parent = 0 ): QWidget( parent )
   , listItemDelegate( 0 )
   {}
   virtual ~HistoryPaneWidget();
@@ -40,8 +39,8 @@ public slots:
 
 private slots:
   void emitHistoryItemRequested(QModelIndex const &);
-  void onSelectionChanged(QItemSelection const & selection);
   void onItemClicked(QModelIndex const & idx);
+  void onItemActivated(QModelIndex const & idx);
   void showCustomMenu(QPoint const & pos);
   void deleteSelectedItems();
   void copySelectedItems();
@@ -61,10 +60,6 @@ private:
   QHBoxLayout historyPaneTitleBarLayout;
   QLabel historyLabel;
   QLabel historyCountLabel;
-
-  /// needed to avoid multiple notifications
-  /// when selecting history items via mouse and keyboard
-  bool itemSelectionChanged;
 
   WordListItemDelegate * listItemDelegate;
 };

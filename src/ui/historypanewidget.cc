@@ -81,10 +81,10 @@ void HistoryPaneWidget::setUp( Config::Class * cfg,  History * history, QMenu * 
   // list selection and keyboard navigation
   connect( m_historyList, SIGNAL( clicked( QModelIndex const & ) ),
            this, SLOT( onItemClicked( QModelIndex const & ) ) );
+  connect( m_historyList, SIGNAL( activated( QModelIndex const & ) ),
+           this, SLOT( onItemActivated( QModelIndex const & ) ) );
   connect( m_history, SIGNAL( itemsChanged() ),
            this, SLOT( updateHistoryCounts() ) );
-  connect ( m_historyList->selectionModel(), SIGNAL( selectionChanged ( QItemSelection const & , QItemSelection const & ) ),
-      this, SLOT( onSelectionChanged( QItemSelection const & ) ) );
 
   connect( m_historyList, SIGNAL( customContextMenuRequested( QPoint const & ) ),
            this, SLOT( showCustomMenu( QPoint const & ) ) );
@@ -194,26 +194,14 @@ void HistoryPaneWidget::emitHistoryItemRequested( QModelIndex const & idx )
   }
 }
 
-void HistoryPaneWidget::onSelectionChanged( QItemSelection const & selection )
-{
-  // qDebug() << "selectionChanged";
-
-  if ( selection.empty() )
-    return;
-
-  itemSelectionChanged = true;
-  emitHistoryItemRequested( selection.front().topLeft() );
-}
-
 void HistoryPaneWidget::onItemClicked( QModelIndex const & idx )
 {
-  // qDebug() << "clicked";
+  emitHistoryItemRequested( idx );
+}
 
-  if ( !itemSelectionChanged )
-  {
-    emitHistoryItemRequested( idx );
-  }
-  itemSelectionChanged = false;
+void HistoryPaneWidget::onItemActivated( QModelIndex const & idx )
+{
+  emitHistoryItemRequested( idx );
 }
 
 void HistoryPaneWidget::updateHistoryCounts()

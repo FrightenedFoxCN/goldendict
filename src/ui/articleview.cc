@@ -362,7 +362,7 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
     static ArticleUrlSchemeHandler * schemeHandler = 0;
     static bool schemeHandlerInstalled = false;
     if ( !schemeHandler )
-      schemeHandler = new ArticleUrlSchemeHandler( articleNetMgr, ui.definition );
+      schemeHandler = new ArticleUrlSchemeHandler( articleNetMgr, 0 );
 
     if ( !schemeHandlerInstalled )
     {
@@ -512,6 +512,7 @@ ArticleView::ArticleView( QWidget * parent, ArticleNetworkAccessManager & nm,
 
   // Variable name for store current selection range
   rangeVarName = QString( "sr_%1" ).arg( QString::number( (quint64)this, 16 ) );
+
 }
 
 // explicitly report the minimum size, to avoid
@@ -682,7 +683,7 @@ void ArticleView::loadFinished( bool )
     "}"
     "were;";
 
-  runJavaScriptSync( page, expandScript );
+  page->runJavaScript( expandScript );
 
   page->runJavaScript( "gdCheckArticlesNumber();" );
 
@@ -1849,6 +1850,8 @@ void ArticleView::forward()
 
 void ArticleView::reload()
 {
+  QUrl const reloadUrl = ui.definition->url();
+
   QVariantMap userData = currentHistoryUserData();
 
   // OPTIMIZATION: Save current article asynchronously to avoid blocking on reload
@@ -1877,7 +1880,18 @@ void ArticleView::reload()
     );
   }
 
-  ui.definition->reload();
+  if ( reloadUrl.scheme() == "gdlookup"
+       && Qt4x5::Url::queryItemValue( reloadUrl, "blank" ) == "1" )
+  {
+    return;
+  }
+
+  QUrl forcedReloadUrl( reloadUrl );
+  Qt4x5::Url::addQueryItem( forcedReloadUrl,
+                            "gd_reload_nonce",
+                            QString::number( QDateTime::currentMSecsSinceEpoch() ) );
+
+  ui.definition->load( forcedReloadUrl );
 }
 
 bool ArticleView::hasSound()

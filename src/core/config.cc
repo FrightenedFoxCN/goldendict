@@ -2512,36 +2512,91 @@ QString stripManagedThemeSection( QString const & css )
 QString buildArticleOverrides( Preferences const & p )
 {
   QStringList blocks;
-  QStringList bodyProps;
+  QStringList fontProps;
+
+  QString const fontSelector =
+    "body, .gdarticle, .gdarticlebody, .gdarticlebody p, .gdarticlebody div, .gdarticlebody span, "
+    ".gdarticlebody li, .gdarticlebody dt, .gdarticlebody dd, .gdarticlebody td, .gdarticlebody th, .gdarticlebody blockquote";
+
+  QString const textSelector =
+    ".gdarticlebody, .gdarticlebody p, .gdarticlebody div, .gdarticlebody span, .gdarticlebody li, "
+    ".gdarticlebody dt, .gdarticlebody dd, .gdarticlebody td, .gdarticlebody th, .gdarticlebody blockquote";
+
+  QString const transparentBgSelector =
+    ".gdarticlebody div, .gdarticlebody span, .gdarticlebody p, .gdarticlebody li, .gdarticlebody ul, .gdarticlebody ol, "
+    ".gdarticlebody dl, .gdarticlebody dt, .gdarticlebody dd, .gdarticlebody blockquote, .gdarticlebody table, .gdarticlebody tbody, "
+    ".gdarticlebody thead, .gdarticlebody tfoot, .gdarticlebody tr, .gdarticlebody td, .gdarticlebody th, .gdarticlebody section, "
+    ".gdarticlebody article, .gdarticlebody main, .gdarticlebody aside, .gdarticlebody header, .gdarticlebody footer";
 
   QString family = p.articleFontFamily.trimmed();
   if ( !family.isEmpty() )
   {
     family.replace( "\"", "\\\"" );
-    bodyProps << QString( "font-family: \"%1\";" ).arg( family );
+    fontProps << QString( "font-family: \"%1\" !important;" ).arg( family );
   }
 
   if ( p.articleFontSize > 0 )
-    bodyProps << QString( "font-size: %1px;" ).arg( p.articleFontSize );
+    fontProps << QString( "font-size: %1px !important;" ).arg( p.articleFontSize );
+
+  if ( !fontProps.isEmpty() )
+  {
+    blocks << QString( "%1\n{\n  %2\n}\n" )
+                 .arg( fontSelector )
+                 .arg( fontProps.join( "\n  " ) );
+  }
 
   QColor textColor( p.articleTextColor.trimmed() );
-  if ( textColor.isValid() )
-    bodyProps << QString( "color: %1;" ).arg( textColor.name() );
-
   QColor backgroundColor( p.articleBackgroundColor.trimmed() );
-  if ( backgroundColor.isValid() )
-    bodyProps << QString( "background: %1;" ).arg( backgroundColor.name() );
-
-  if ( !bodyProps.isEmpty() )
-  {
-    blocks << "body\n{\n  " + bodyProps.join( "\n  " ) + "\n}\n";
-  }
-
   QColor linkColor( p.articleLinkColor.trimmed() );
-  if ( linkColor.isValid() )
-  {
-    blocks << "a, a:visited\n{\n  color: " + linkColor.name() + ";\n}\n";
-  }
+
+  QString const lightText = textColor.isValid() ? textColor.name() : QStringLiteral( "#202124" );
+  QString const lightBackground = backgroundColor.isValid() ? backgroundColor.name() : QStringLiteral( "#ffffff" );
+  QString const lightLink = linkColor.isValid() ? linkColor.name() : QStringLiteral( "#1a73e8" );
+
+  QString const darkText = textColor.isValid() ? textColor.name() : QStringLiteral( "#e6e6e6" );
+  QString const darkBackground = backgroundColor.isValid() ? backgroundColor.name() : QStringLiteral( "#1f2024" );
+  QString const darkLink = linkColor.isValid() ? linkColor.name() : QStringLiteral( "#8ab4f8" );
+
+  blocks << QString( "body, .gdarticle, .gdarticlebody\n{\n"
+                     "  color: %1 !important;\n"
+                     "  background-color: %2 !important;\n"
+                     "}\n" )
+               .arg( lightText, lightBackground );
+
+  blocks << QString( "%1\n{\n  color: %2 !important;\n}\n" )
+               .arg( textSelector, lightText );
+
+  blocks << QString( "%1\n{\n  background-color: transparent !important;\n}\n" )
+               .arg( transparentBgSelector );
+
+  blocks << QString( "a, a:visited, .gdarticlebody a, .gdarticlebody a:visited\n{\n"
+                     "  color: %1 !important;\n"
+                     "}\n" )
+               .arg( lightLink );
+
+  blocks << QString( "@media (prefers-color-scheme: dark)\n{\n"
+                     "  body, .gdarticle, .gdarticlebody\n"
+                     "  {\n"
+                     "    color: %1 !important;\n"
+                     "    background-color: %2 !important;\n"
+                     "  }\n"
+                     "\n"
+                     "  %3\n"
+                     "  {\n"
+                     "    color: %1 !important;\n"
+                     "  }\n"
+                     "\n"
+                     "  %4\n"
+                     "  {\n"
+                     "    background-color: transparent !important;\n"
+                     "  }\n"
+                     "\n"
+                     "  a, a:visited, .gdarticlebody a, .gdarticlebody a:visited\n"
+                     "  {\n"
+                     "    color: %5 !important;\n"
+                     "  }\n"
+                     "}\n" )
+               .arg( darkText, darkBackground, textSelector, transparentBgSelector, darkLink );
 
   return blocks.join( "\n" );
 }

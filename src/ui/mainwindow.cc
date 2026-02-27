@@ -799,6 +799,8 @@ MainWindow::MainWindow( Config::Class & cfg_ ):
   applyProxySettings();
   applyWebSettings();
 
+  Config::writeUserThemeOverrides( cfg.preferences );
+
   connect( &dictNetMgr, SIGNAL( proxyAuthenticationRequired( QNetworkProxy, QAuthenticator * ) ),
            this, SLOT( proxyAuthentication( QNetworkProxy, QAuthenticator * ) ) );
 
@@ -2369,6 +2371,9 @@ void MainWindow::editPreferences()
     if( cfg.preferences.helpLanguage != p.helpLanguage )
       closeGDHelp();
 
+    ArticleView * currentView = getCurrentArticleView();
+    bool reloadCurrentView = false;
+
     for( int x = 0; x < ui.tabWidget->count(); ++x )
     {
       ArticleView & view =
@@ -2376,8 +2381,8 @@ void MainWindow::editPreferences()
 
       view.setSelectionBySingleClick( p.selectWordBySingleClick );
 
-      if( needReload )
-        view.reload();
+      if( needReload && currentView == &view )
+        reloadCurrentView = true;
     }
 
     if( cfg.preferences.historyStoreInterval != p.historyStoreInterval )
@@ -2389,6 +2394,13 @@ void MainWindow::editPreferences()
     if( cfg.preferences.maxNetworkCacheSize != p.maxNetworkCacheSize )
       setupNetworkCache( p.maxNetworkCacheSize );
     cfg.preferences = p;
+
+    if ( reloadCurrentView && currentView )
+    {
+      QTimer::singleShot( 0, currentView, [currentView]() {
+        currentView->reload();
+      } );
+    }
 
     audioPlayerFactory.setPreferences( cfg.preferences );
 
@@ -2422,6 +2434,7 @@ void MainWindow::editPreferences()
     ui.fullTextSearchAction->setEnabled( cfg.preferences.fts.enabled );
 
     Config::save( cfg );
+
   }
 
   makeScanPopup();
@@ -2994,6 +3007,14 @@ void MainWindow::mutedDictionariesChanged()
 void MainWindow::showHistoryItem( QString const & word )
 {
   // qDebug() << "Showing history item" << word;
+
+  if ( word == lastHistoryNavigationWord
+       && lastHistoryNavigationTime.isValid()
+       && lastHistoryNavigationTime.elapsed() < 250 )
+    return;
+
+  lastHistoryNavigationWord = word;
+  lastHistoryNavigationTime.restart();
 
   history.enableAdd( false );
 
