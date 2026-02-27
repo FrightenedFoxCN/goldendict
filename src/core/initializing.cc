@@ -5,6 +5,7 @@
 #include "initializing.hh"
 #include <QCloseEvent>
 #include <QFontMetrics>
+#include <QFileInfo>
 
 #if defined( Q_OS_WIN32 )
 #include <qt_windows.h>
@@ -22,6 +23,53 @@ WindowsStyle & WindowsStyle::instance()
 }
 
 #endif
+
+namespace
+{
+
+QString elideTaskKeepingExtension( QString const & task,
+                                   QFontMetrics const & fm,
+                                   int maxWidth )
+{
+  if( task.isEmpty() || maxWidth <= 0 )
+    return task;
+
+  QString fileName = QFileInfo( task ).fileName();
+  if( fileName.isEmpty() )
+    fileName = task;
+
+  if( fm.horizontalAdvance( fileName ) <= maxWidth )
+    return fileName;
+
+  int dotPos = fileName.indexOf( '.' );
+  if( dotPos <= 0 || dotPos >= fileName.size() - 1 )
+    return fm.elidedText( fileName, Qt::ElideRight, maxWidth );
+
+  QString stem = fileName.left( dotPos );
+  QString extension = fileName.mid( dotPos ); // keep full extension, e.g. ".dsl.dz"
+  QString ellipsis = QString::fromLatin1( "..." );
+
+  QString minimum = ellipsis + extension;
+  if( fm.horizontalAdvance( minimum ) > maxWidth )
+    return fm.elidedText( extension, Qt::ElideLeft, maxWidth );
+
+  int low = 0;
+  int high = stem.size();
+
+  while( low < high )
+  {
+    int mid = ( low + high + 1 ) / 2;
+    QString candidate = stem.left( mid ) + ellipsis + extension;
+    if( fm.horizontalAdvance( candidate ) <= maxWidth )
+      low = mid;
+    else
+      high = mid - 1;
+  }
+
+  return stem.left( low ) + ellipsis + extension;
+}
+
+}
 
 Initializing::Initializing( QWidget * parent, bool showOnStartup ): QDialog( parent ),
   indexingWorkersActive( 0 ),
@@ -255,7 +303,7 @@ void Initializing::updateWorkerTasksText()
     if( taskWidth < 20 )
       taskWidth = 20;
 
-    QString elidedTask = fm.elidedText( task, Qt::ElideMiddle, taskWidth );
+    QString elidedTask = elideTaskKeepingExtension( task, fm, taskWidth );
     lines << prefix + elidedTask;
   }
 
